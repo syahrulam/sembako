@@ -14,46 +14,6 @@ $username = $_SESSION['username'];
 ?>
 
 
-<?php
-include('koneksi/config.php');
-
-// Saldo
-$query_saldo = "SELECT SUM(total_harga) AS saldo FROM transaksi";
-$result_saldo = $koneksi->query($query_saldo);
-$saldo = "Rp " . number_format($result_saldo->fetch_assoc()['saldo'], 0, ',', '.');
-
-// Pendapatan Bulan Ini
-$query_pendapatan_bulan_ini = "SELECT SUM(total_harga) AS pendapatan_bulan_ini 
-                               FROM transaksi 
-                               WHERE MONTH(tanggal) = MONTH(CURRENT_DATE()) AND YEAR(tanggal) = YEAR(CURRENT_DATE())";
-$result_pendapatan_bulan_ini = $koneksi->query($query_pendapatan_bulan_ini);
-$pendapatan_bulan_ini = "Rp " . number_format($result_pendapatan_bulan_ini->fetch_assoc()['pendapatan_bulan_ini'], 0, ',', '.');
-
-// Pendapatan Bulan Kemarin
-$query_pendapatan_bulan_kemarin = "SELECT SUM(total_harga) AS pendapatan_bulan_kemarin 
-                                   FROM transaksi 
-                                   WHERE MONTH(tanggal) = MONTH(CURRENT_DATE() - INTERVAL 1 MONTH) AND YEAR(tanggal) = YEAR(CURRENT_DATE())";
-$result_pendapatan_bulan_kemarin = $koneksi->query($query_pendapatan_bulan_kemarin);
-$pendapatan_bulan_kemarin = "Rp " . number_format($result_pendapatan_bulan_kemarin->fetch_assoc()['pendapatan_bulan_kemarin'], 0, ',', '.');
-
-// Ambil data pendapatan perbulan dari tabel transaksi
-$query_pendapatan = "SELECT MONTH(tanggal) AS bulan, YEAR(tanggal) AS tahun, SUM(total_harga) AS pendapatan 
-                    FROM transaksi 
-                    GROUP BY YEAR(tanggal), MONTH(tanggal)";
-
-$hasil_pendapatan = $koneksi->query($query_pendapatan);
-
-$labels = array();
-$data = array();
-while ($row = $hasil_pendapatan->fetch_assoc()) {
-  $bulan_tahun = date('F Y', strtotime($row['tahun'] . '-' . $row['bulan'] . '-01'));
-  $pendapatan = $row['pendapatan'];
-  $labels[] = $bulan_tahun;
-  $data[] = $pendapatan;
-}
-?>
-
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <body>
