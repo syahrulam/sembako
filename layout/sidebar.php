@@ -32,6 +32,9 @@
     <?php if ($_SESSION['role'] === 'Admin') : ?>
       <li><a class="nav-link" href="opname.php"><i class="fas fa-wallet"></i><span>Stock Opname</span></a></li>
     <?php endif; ?>
+    <?php if ($_SESSION['role'] === 'Admin') : ?>
+      <li><a class="nav-link" href="piutang.php"><i class="fas fa-wallet"></i><span>Piutang</span></a></li>
+    <?php endif; ?>
     <li class="menu-header">Master</li>
     <!-- <li><a class="nav-link" href="member.php"><i class="fas fa-wallet"></i><span>Member</span></a></li> -->
     <li><a class="nav-link" href="pelanggan.php"><i class="fas fa-wallet"></i><span>Daftar Pelanggan</span></a></li>

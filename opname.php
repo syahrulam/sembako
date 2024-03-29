@@ -1,13 +1,5 @@
 <?php
 include('koneksi/config.php');
-
-// Ambil data dari tabel opname
-$query_opname = "SELECT item.nama_item, item.jumlah_satuan_besar, opname.stok_opname, opname.balance, opname.keterangan, opname.id_opname, opname.tanggal
-                 FROM opname
-                 INNER JOIN item ON opname.id_item = item.id_item";
-
-$result_opname = $koneksi->query($query_opname);
-
 ?>
 
 <?php include('layout/head.php'); ?>
@@ -62,22 +54,6 @@ $username = $_SESSION['username'];
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <?php
-                                                    $query_item = "SELECT nama_item, jumlah_satuan_besar FROM item";
-                                                    $result_item = $koneksi->query($query_item);
-                                                    if ($result_item->num_rows > 0) {
-                                                        $no = 1;
-                                                        while ($row_item = $result_item->fetch_assoc()) {
-                                                            echo "<tr>";
-                                                            echo "<td>" . $no++ . "</td>";
-                                                            echo "<td>" . $row_item['nama_item'] . "</td>";
-                                                            echo "<td>" . $row_item['jumlah_satuan_besar'] . "</td>";
-                                                            echo "</tr>";
-                                                        }
-                                                    } else {
-                                                        echo "<tr><td colspan='3'>Tidak ada data nama item</td></tr>";
-                                                    }
-                                                    ?>
                                                 </tbody>
                                             </table>
                                         </div>
@@ -106,31 +82,6 @@ $username = $_SESSION['username'];
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <?php
-                                                    if ($result_opname->num_rows > 0) {
-                                                        $no = 1;
-                                                        while ($row_opname = $result_opname->fetch_assoc()) {
-                                                            echo "<tr>";
-                                                            echo "<td>" . $no++ . "</td>";
-
-                                                            // Mengubah format tanggal dari "tahun-bulan-hari" menjadi "hari-bulan-tahun"
-
-                                                            echo "<td>" . date('d F Y', strtotime($row_opname['tanggal'])) . "</td>"; // Menampilkan tanggal dengan format "hari-bulan-tahun"
-
-                                                            echo "<td>" . $row_opname['nama_item'] . "</td>";
-                                                            echo "<td>" . $row_opname['stok_opname'] . "</td>";
-                                                            echo "<td>" . $row_opname['balance'] . "</td>";
-                                                            echo "<td><input type='text' name='keterangan_" . $row_opname['id_opname'] . "' value='" . $row_opname['keterangan'] . "'></td>";
-                                                            echo "<td>
-                                                                    <button class='btn btn-success update-btn' data-id='" . $row_opname['id_opname'] . "'>Update</button>
-                                                                    <button class='btn btn-danger delete-btn' data-id='" . $row_opname['id_opname'] . "'>Delete</button>
-                                                                </td>";
-                                                            echo "</tr>";
-                                                        }
-                                                    } else {
-                                                        echo "<tr><td colspan='8'>Tidak ada data stok opname</td></tr>";
-                                                    }
-                                                    ?>
                                                 </tbody>
                                             </table>
                                         </div>
