@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 28, 2024 at 09:29 AM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Waktu pembuatan: 30 Mar 2024 pada 06.00
+-- Versi server: 10.4.32-MariaDB
+-- Versi PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -24,7 +24,7 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `item`
+-- Struktur dari tabel `item`
 --
 
 CREATE TABLE `item` (
@@ -35,24 +35,27 @@ CREATE TABLE `item` (
   `jenis_satuan_kecil` varchar(50) DEFAULT NULL,
   `jumlah_satuan_besar` int(11) DEFAULT NULL,
   `jumlah_isi_satuan_besar` int(11) DEFAULT NULL,
-  `harga_kulak` int(11) DEFAULT NULL,
+  `total_isi_satuan_kecil` int(11) NOT NULL,
+  `harga_satuan_kulak` int(11) NOT NULL,
+  `total_harga_kulak` int(11) DEFAULT NULL,
   `harga_jual_satuan_besar` int(11) DEFAULT NULL,
   `harga_jual_satuan_kecil` int(11) DEFAULT NULL,
-  `total_dibeli` int(11) DEFAULT 0,
+  `total_kulak` int(11) DEFAULT 0,
   `tanggal` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `item`
+-- Dumping data untuk tabel `item`
 --
 
-INSERT INTO `item` (`id_item`, `kategori_id`, `nama_item`, `jenis_satuan_besar`, `jenis_satuan_kecil`, `jumlah_satuan_besar`, `jumlah_isi_satuan_besar`, `harga_kulak`, `harga_jual_satuan_besar`, `harga_jual_satuan_kecil`, `total_dibeli`, `tanggal`) VALUES
-(1, 1, 'Nescafe Original', 'Dus', 'Botol', 10, 10, 500000, 600000, 7000, 0, '2024-03-28');
+INSERT INTO `item` (`id_item`, `kategori_id`, `nama_item`, `jenis_satuan_besar`, `jenis_satuan_kecil`, `jumlah_satuan_besar`, `jumlah_isi_satuan_besar`, `total_isi_satuan_kecil`, `harga_satuan_kulak`, `total_harga_kulak`, `harga_jual_satuan_besar`, `harga_jual_satuan_kecil`, `total_kulak`, `tanggal`) VALUES
+(4, 1, 'Green Tea', 'Dus', 'Botol', 5, 20, 100, 50000, 250000, 55000, 8000, 0, '2024-03-30'),
+(5, 1, 'White Coffe', 'Dus', 'Sachet', 4, 25, 100, 40000, 160000, 55000, 5000, 0, '2024-03-30');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `kategori`
+-- Struktur dari tabel `kategori`
 --
 
 CREATE TABLE `kategori` (
@@ -61,7 +64,7 @@ CREATE TABLE `kategori` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `kategori`
+-- Dumping data untuk tabel `kategori`
 --
 
 INSERT INTO `kategori` (`id`, `kategori`) VALUES
@@ -70,7 +73,7 @@ INSERT INTO `kategori` (`id`, `kategori`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `pelanggan`
+-- Struktur dari tabel `pelanggan`
 --
 
 CREATE TABLE `pelanggan` (
@@ -81,7 +84,7 @@ CREATE TABLE `pelanggan` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `pelanggan`
+-- Dumping data untuk tabel `pelanggan`
 --
 
 INSERT INTO `pelanggan` (`id`, `nama`, `alamat`, `nomor`) VALUES
@@ -91,7 +94,7 @@ INSERT INTO `pelanggan` (`id`, `nama`, `alamat`, `nomor`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `sales`
+-- Struktur dari tabel `sales`
 --
 
 CREATE TABLE `sales` (
@@ -102,7 +105,7 @@ CREATE TABLE `sales` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `sales`
+-- Dumping data untuk tabel `sales`
 --
 
 INSERT INTO `sales` (`id`, `nama`, `nomor`, `alamat`) VALUES
@@ -111,7 +114,7 @@ INSERT INTO `sales` (`id`, `nama`, `nomor`, `alamat`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `users`
+-- Struktur dari tabel `users`
 --
 
 CREATE TABLE `users` (
@@ -122,7 +125,7 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `users`
+-- Dumping data untuk tabel `users`
 --
 
 INSERT INTO `users` (`id_users`, `username`, `role`, `password`) VALUES
@@ -133,65 +136,65 @@ INSERT INTO `users` (`id_users`, `username`, `role`, `password`) VALUES
 --
 
 --
--- Indexes for table `item`
+-- Indeks untuk tabel `item`
 --
 ALTER TABLE `item`
   ADD PRIMARY KEY (`id_item`);
 
 --
--- Indexes for table `kategori`
+-- Indeks untuk tabel `kategori`
 --
 ALTER TABLE `kategori`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `pelanggan`
+-- Indeks untuk tabel `pelanggan`
 --
 ALTER TABLE `pelanggan`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `sales`
+-- Indeks untuk tabel `sales`
 --
 ALTER TABLE `sales`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `users`
+-- Indeks untuk tabel `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id_users`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- AUTO_INCREMENT untuk tabel yang dibuang
 --
 
 --
--- AUTO_INCREMENT for table `item`
+-- AUTO_INCREMENT untuk tabel `item`
 --
 ALTER TABLE `item`
-  MODIFY `id_item` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_item` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT for table `kategori`
+-- AUTO_INCREMENT untuk tabel `kategori`
 --
 ALTER TABLE `kategori`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
--- AUTO_INCREMENT for table `pelanggan`
+-- AUTO_INCREMENT untuk tabel `pelanggan`
 --
 ALTER TABLE `pelanggan`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
--- AUTO_INCREMENT for table `sales`
+-- AUTO_INCREMENT untuk tabel `sales`
 --
 ALTER TABLE `sales`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT for table `users`
+-- AUTO_INCREMENT untuk tabel `users`
 --
 ALTER TABLE `users`
   MODIFY `id_users` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;

@@ -39,9 +39,10 @@ $username = $_SESSION['username'];
             <nav class="navbar navbar-expand-lg main-navbar">
                 <?php include('layout/navbar.php'); ?>
             </nav>
-            <div class="main-sidebar sidebar-style-2">
-                <?php include('layout/sidebar.php'); ?>
-            </div>
+            <div class="main-sidebar sidebar-style-2" style="overflow-y: auto;">
+    <?php include('layout/sidebar.php'); ?>
+</div>
+
 
             <div id="app">
                 <!-- Bagian Utama -->

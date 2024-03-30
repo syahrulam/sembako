@@ -12,7 +12,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $harga_kulak = $_POST['harga_kulak'];
     $harga_jual_satuan_besar = $_POST['harga_jual_satuan_besar'];
     $harga_jual_satuan_kecil = $_POST['harga_jual_satuan_kecil'];
-    $total_dibeli = $_POST['total_dibeli'];
+    $total_kulak = $_POST['total_kulak'];
     $tanggal = $_POST['tanggal'];
 
     // Periksa apakah kategori_id yang dikirimkan ada dalam tabel kategori
@@ -20,7 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $result_check_kategori = $koneksi->query($check_kategori);
     if ($result_check_kategori->num_rows > 0) {
         // Jika kategori_id valid, jalankan pernyataan SQL untuk memperbarui data
-        $query = "UPDATE item SET kategori_id='$kategori_id', nama_item='$nama_item', jenis_satuan_besar='$jenis_satuan_besar', jenis_satuan_kecil='$jenis_satuan_kecil', jumlah_satuan_besar='$jumlah_satuan_besar', jumlah_isi_satuan_besar='$jumlah_isi_satuan_besar', harga_kulak='$harga_kulak', harga_jual_satuan_besar='$harga_jual_satuan_besar', harga_jual_satuan_kecil='$harga_jual_satuan_kecil', total_dibeli='$total_dibeli', tanggal='$tanggal' WHERE id_item='$id_item'";
+        $query = "UPDATE item SET kategori_id='$kategori_id', nama_item='$nama_item', jenis_satuan_besar='$jenis_satuan_besar', jenis_satuan_kecil='$jenis_satuan_kecil', jumlah_satuan_besar='$jumlah_satuan_besar', jumlah_isi_satuan_besar='$jumlah_isi_satuan_besar', harga_kulak='$harga_kulak', harga_jual_satuan_besar='$harga_jual_satuan_besar', harga_jual_satuan_kecil='$harga_jual_satuan_kecil', total_kulak='$total_kulak', tanggal='$tanggal' WHERE id_item='$id_item'";
         if ($koneksi->query($query) === TRUE) {
             header("Location: item.php");
             exit();
@@ -64,9 +64,10 @@ $username = $_SESSION['username'];
             <nav class="navbar navbar-expand-lg main-navbar">
                 <?php include('layout/navbar.php'); ?>
             </nav>
-            <div class="main-sidebar sidebar-style-2">
-                <?php include('layout/sidebar.php'); ?>
-            </div>
+            <div class="main-sidebar sidebar-style-2" style="overflow-y: auto;">
+    <?php include('layout/sidebar.php'); ?>
+</div>
+
 
             <div id="app">
                 <!-- Bagian Utama -->
