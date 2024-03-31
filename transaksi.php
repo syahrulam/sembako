@@ -228,6 +228,7 @@ include('koneksi/config.php');
             var newItemHtml = `
             <div class="row item-row item-container" id="item-${itemCounter}">
             
+           
                 <div class="col-md-4">
                     <div class="form-group">
                         <label for="item_${itemCounter}" class="text-dark">Item</label>
@@ -246,18 +247,16 @@ include('koneksi/config.php');
                     </div>
                 </div>
                
-                <div class="col-md-3">
-            <div class="form-group">
-                <label for="nama_item" class="text-dark">Nama Item<span class='red'> *</span></label>
-                <input class="form-control nama_item" type="text" name="nama_item_${itemCounter}" required/>
-                <div class="result"></div>
-            </div>
-        </div>
-
                 <div class="col-md-2">
                     <div class="form-group">
                         <label for="jenis_satuan_${itemCounter}" class="text-dark">Jenis Satuan</label>
                         <div id="jenis_satuan_${itemCounter}"></div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label for="id_item_s${itemCounter}" class="text-dark">id item</label>
+                        <input type="number" class="form-control id_item" name="id_item_${itemCounter}" id="id_item_${itemCounter}"  readonly />
                     </div>
                 </div>
                 <div class="col-md-2">
@@ -376,61 +375,6 @@ include('koneksi/config.php');
 
             // Panggil fungsi toggleFields untuk menyembunyikan atau menampilkan field sesuai dengan tipe pembayaran awal
             toggleFields();
-        });
-    </script>
-
-    <script>
-        $(document).ready(function() {
-            // Function to handle item search
-            function handleItemSearch(inputElement) {
-                var searchTerm = inputElement.val();
-                var resultContainer = inputElement.parent().find(".result");
-
-                if (searchTerm !== "") {
-                    $.ajax({
-                        type: "POST",
-                        url: "search_item.php",
-                        data: {
-                            searchTerm: searchTerm
-                        },
-                        success: function(data) {
-                            resultContainer.html(data);
-                        }
-                    });
-                } else {
-                    resultContainer.empty();
-                }
-            }
-
-            // Event handler for input on nama_item
-            $(document).on("input", ".nama_item", function() {
-                handleItemSearch($(this));
-            });
-
-            // Event handler for selecting an item
-            $(document).on("click", ".result li", function() {
-                var selectedItem = $(this).text();
-                var itemContainer = $(this).closest(".item-container");
-
-                // Update the input field with the selected item
-                itemContainer.find(".nama_item").val(selectedItem);
-
-                // Perform additional AJAX request for the selected item details
-                $.ajax({
-                    type: "POST",
-                    url: "get_quantity.php",
-                    data: {
-                        selectedItem: selectedItem
-                    },
-                    success: function(response) {
-                        var data = JSON.parse(response);
-                        itemContainer.find(".id_item").val(data.id_item);
-                        itemContainer.find(".jenis_satuan").val(data.jenis_satuan);
-
-
-                    }
-                });
-            });
         });
     </script>
 
