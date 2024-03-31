@@ -2,9 +2,9 @@
 // config.php
 
 $host = "localhost"; // Host database
-$username = "123"; // Username database
-$password = "123"; // Password database
-$database = "toko"; // Nama database
+$username = "root"; // Username database
+$password = ""; // Password database
+$database = "sembako-v1"; // Nama database
 
 // Membuat koneksi ke database
 $koneksi = new mysqli($host, $username, $password, $database);

@@ -79,20 +79,8 @@ include('koneksi/config.php');
                                                         <label for="nama" class="text-dark">Nama Pelanggan<span class='red'> *</span></label>
                                                         <div class="pelanggan-container">
                                                             <div class="row">
-                                                                <div class="col-8">
-                                                                    <select class="form-control" id="namaPelanggan" name="nama_pelanggan" required>
-                                                                        <option value="">Pilih Pelanggan</option>
-                                                                        <?php
-                                                                        // Ambil daftar pelanggan dari tabel pelanggan
-                                                                        $sqlPelanggan = "SELECT * FROM pelanggan";
-                                                                        $resultPelanggan = mysqli_query($koneksi, $sqlPelanggan);
-
-                                                                        // Tampilkan opsi untuk setiap pelanggan
-                                                                        while ($rowPelanggan = mysqli_fetch_assoc($resultPelanggan)) {
-                                                                            echo "<option value='" . $rowPelanggan['nama'] . "'>" . $rowPelanggan['nama'] . "</option>";
-                                                                        }
-                                                                        ?>
-                                                                    </select>
+                                                                <div class="col-6">
+                                                                    <input class="form-control nama" type="text" name="nama" placeholder="Nama Pelanggan" required />
                                                                     <div class="result_pelanggan"></div>
                                                                 </div>
                                                                 <div class="col">
@@ -237,7 +225,8 @@ include('koneksi/config.php');
             itemCounter++;
 
             var newItemHtml = `
-            <div class="row item-row" id="item-${itemCounter}">
+            <div class="row item-row item-container" id="item-${itemCounter}">
+            
                 <div class="col-md-4">
                     <div class="form-group">
                         <label for="item_${itemCounter}" class="text-dark">Item</label>
@@ -255,6 +244,15 @@ include('koneksi/config.php');
                         </select>
                     </div>
                 </div>
+               
+                <div class="col-md-3">
+            <div class="form-group">
+                <label for="nama_item" class="text-dark">Nama Item<span class='red'> *</span></label>
+                <input class="form-control nama_item" type="text" name="nama_item_${itemCounter}" required/>
+                <div class="result"></div>
+            </div>
+        </div>
+
                 <div class="col-md-2">
                     <div class="form-group">
                         <label for="jenis_satuan_${itemCounter}" class="text-dark">Jenis Satuan</label>
@@ -379,6 +377,110 @@ include('koneksi/config.php');
             toggleFields();
         });
     </script>
+
+    <script>
+        $(document).ready(function() {
+            // Function to handle item search
+            function handleItemSearch(inputElement) {
+                var searchTerm = inputElement.val();
+                var resultContainer = inputElement.parent().find(".result");
+
+                if (searchTerm !== "") {
+                    $.ajax({
+                        type: "POST",
+                        url: "search_item.php",
+                        data: {
+                            searchTerm: searchTerm
+                        },
+                        success: function(data) {
+                            resultContainer.html(data);
+                        }
+                    });
+                } else {
+                    resultContainer.empty();
+                }
+            }
+
+            // Event handler for input on nama_item
+            $(document).on("input", ".nama_item", function() {
+                handleItemSearch($(this));
+            });
+
+            // Event handler for selecting an item
+            $(document).on("click", ".result li", function() {
+                var selectedItem = $(this).text();
+                var itemContainer = $(this).closest(".item-container");
+
+                // Update the input field with the selected item
+                itemContainer.find(".nama_item").val(selectedItem);
+
+                // Perform additional AJAX request for the selected item details
+                $.ajax({
+                    type: "POST",
+                    url: "get_quantity.php",
+                    data: {
+                        selectedItem: selectedItem
+                    },
+                    success: function(response) {
+                        var data = JSON.parse(response);
+                        itemContainer.find(".id_item").val(data.id_item);
+                        itemContainer.find(".jenis_satuan").val(data.jenis_satuan);
+
+
+                    }
+                });
+            });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            function handleItemSearch(inputElement) {
+                var searchPelanggan = inputElement.val();
+                var resultPelanggan = inputElement.parent().find(".result_pelanggan");
+
+                if (searchPelanggan !== "") {
+                    $.ajax({
+                        type: "POST",
+                        url: "search_pelanggan.php",
+                        data: {
+                            searchPelanggan: searchPelanggan
+                        },
+                        success: function(data) {
+                            resultPelanggan.html(data);
+                        }
+                    });
+                } else {
+                    resultPelanggan.empty();
+                }
+            }
+
+            $(document).on("input", ".nama", function() {
+                handleItemSearch($(this));
+            });
+
+            $(document).on("click", ".result_pelanggan li", function() {
+                var selectedPelanggan = $(this).text();
+                var pelangganContainer = $(this).closest(".pelanggan-container");
+                pelangganContainer.find(".nama").val(selectedPelanggan);
+
+                $.ajax({
+                    type: "POST",
+                    url: "get_pelanggan.php",
+                    data: {
+                        selectedPelanggan: selectedPelanggan
+                    },
+                    success: function(response) {
+                        var data = JSON.parse(response);
+                        pelangganContainer.find(".nama").val(data.nama);
+                    }
+                });
+
+                pelangganContainer.find(".result_pelanggan").empty(); // Mengganti itemContainer menjadi pelangganContainer
+            });
+        });
+    </script>
+
 
 </body>
 
