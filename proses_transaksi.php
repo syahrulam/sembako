@@ -43,6 +43,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $query_detail_transaksi = "INSERT INTO detail_transaksi (id_transaksi, id_item, jenis_satuan, harga_satuan, jumlah_satuan, total)
                                        VALUES ('$id_transaksi', '$id_item', '$jenis_satuan', '$harga_satuan', '$jumlah', '$total_harga_item')";
 
+            if (mysqli_query($koneksi, $query_detail_transaksi)) {
+                if ($jenis_satuan == 'Besar') {
+                    $query_stok = "SELECT jumlah_satuan_besar FROM item WHERE id_item = '$id_item'";
+                    $result_stok = mysqli_query($koneksi, $query_stok);
+                    $row_stok = mysqli_fetch_assoc($result_stok);
+                    $stok_sekarang = $row_stok['jumlah_satuan_besar'];
+                    $stok_baru = $stok_sekarang - $jumlah;
+
+                    $query_update_stok = "UPDATE item SET jumlah_satuan_besar = '$stok_baru' WHERE id_item = '$id_item'";
+                    mysqli_query($koneksi, $query_update_stok);
+
+                } else if ($jenis_satuan == 'Kecil'){
+                    $query_stok = "SELECT jumlah_satuan_besar FROM item WHERE id_item = '$id_item'";
+                    $result_stok = mysqli_query($koneksi, $query_stok);
+                    $row_stok = mysqli_fetch_assoc($result_stok);
+                    $stok_sekarang = $row_stok['jumlah_satuan_besar'];
+                    $stok_baru = $stok_sekarang - $jumlah;
+
+                    $query_update_stok = "UPDATE item SET jumlah_satuan_besar = '$stok_baru' WHERE id_item = '$id_item'";
+                    mysqli_query($koneksi, $query_update_stok);
+
+                }
+            } else {
+                echo "Error: " . $query_detail_transaksi . "<br>" . mysqli_error($koneksi);
+            }
             // Eksekusi query detail transaksi
             if (mysqli_query($koneksi, $query_detail_transaksi)) {
                 echo "Data detail transaksi berhasil disimpan.";
@@ -55,4 +80,3 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Tutup koneksi database
     mysqli_close($koneksi);
 }
-?>
