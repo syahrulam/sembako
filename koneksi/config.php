@@ -4,7 +4,7 @@
 $host = "localhost"; // Host database
 $username = "root"; // Username database
 $password = ""; // Password database
-$database = "sembako-v1"; // Nama database
+$database = "toko"; // Nama database
 
 // Membuat koneksi ke database
 $koneksi = new mysqli($host, $username, $password, $database);

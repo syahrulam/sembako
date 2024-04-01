@@ -1,59 +1,58 @@
 <?php
 include('koneksi/config.php');
 
+// Proses data transaksi
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $tanggal = date('Y-m-d H:i:s');
+    // Ambil data transaksi dari form
+    $tgl_transaksi = date('Y-m-d H:i:s');
     $no_transaksi = $_POST['no_transaksi'];
-    $nama = $_POST['nama'];
-    $total_harga = intval(str_replace(["Rp. ", "."], "", $_POST['total_harga']));
-    $total_bayar = intval(str_replace(["Rp. ", "."], "", $_POST['uang_diterima']));
-    $kembalian = floatval(str_replace(["Rp. ", "."], "", $_POST['kembalian']));
+    $total_harga = $_POST['total_harga'];
+    $nama_pelanggan = $_POST['nama'];
     $tipe_pembayaran = $_POST['tipe_pembayaran'];
+    $uang_diterima = $_POST['uang_diterima'];
+    $kembalian = $_POST['kembalian'];
+    $kurangan = $_POST['kurangan'];
+    $nama_sales = $_POST['nama_sales'];
 
-    // Perbaikan 1: Tambahkan titik koma di sini
-    if ($tipe_pembayaran == 'Cash'){
-        $kekurangan = $_POST['kekurangan'] = 0;
+    // Query untuk menyimpan data transaksi ke dalam tabel transaksi
+    $query_transaksi = "INSERT INTO transaksi (tanggal, no_transaksi, total_harga, nama_pelanggan, tipe_pembayaran, total_bayar, kembalian, kekurangan, sales)
+                        VALUES ('$tgl_transaksi', '$no_transaksi', '$total_harga', '$nama_pelanggan', '$tipe_pembayaran', '$uang_diterima', '$kembalian', '$kurangan', '$nama_sales')";
+
+    // Eksekusi query transaksi
+    if (mysqli_query($koneksi, $query_transaksi)) {
+        echo "Data transaksi berhasil disimpan.";
     } else {
-        $kekurangan = $_POST['kekurangan'];
+        echo "Error: " . $query_transaksi . "<br>" . mysqli_error($koneksi);
     }
-    
-    $sales = $_POST['nama_sales'];
 
-    $query = "INSERT INTO transaksi (no_transaksi, tanggal, nama_pelanggan, total_harga, total_bayar, kembalian, tipe_pembayaran, kekurangan, sales) 
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-    $stmt = $koneksi->prepare($query);
-    $stmt->bind_param("sssiiddss", $no_transaksi, $tanggal, $nama, $total_harga, $total_bayar, $kembalian, $tipe_pembayaran, $kekurangan, $sales);
-
-    // Execute the main transaction insertion
-    $stmt->execute();
-
-    // Fetch the id_transaksi after insertion
     $id_transaksi = $koneksi->insert_id;
+    // Proses data detail transaksi
+    // Loop melalui setiap item dalam transaksi
+    foreach ($_POST as $key => $value) {
+        if (strpos($key, 'item_') === 0) {
+            $itemIndex = substr($key, 5);
 
-    // Loop through items and insert into 'detail_transaksi' table
-    for ($i = 1; isset($_POST['nama_item_' . $i]); $i++) {
-        $id_item = $_POST['id_item_' . $i];
-        $jumlah_satuan = $_POST['jumlah_' . $i];
-        $total_per_satuan = $_POST['total_' . $i];
+            // Ambil data detail transaksi dari form
+            $id_item = $_POST['item_' . $itemIndex];
+            $jenis_satuan = $_POST['jenis_satuan_' . $itemIndex];
+            $harga_satuan = $_POST['harga_satuan_' . $itemIndex];
+            $jumlah = $_POST['jumlah_' . $itemIndex];
+            $total_harga_item = $_POST['total_' . $itemIndex];
 
-        // Insert data into the 'detail_transaksi' table using prepared statement
-        // Perbaikan 2: Sesuaikan pengikatan parameter dengan jumlah parameter yang benar
-        $detailQuery = "INSERT INTO detail_transaksi (id_transaksi, id_item, jumlah_satuan, total) 
-                        VALUES (?, ?, ?, ?)";
+            // Query untuk menyimpan data detail transaksi ke dalam tabel detail_transaksi
+            $query_detail_transaksi = "INSERT INTO detail_transaksi (id_transaksi, id_item, jenis_satuan, harga_satuan, jumlah_satuan, total)
+                                       VALUES ('$id_transaksi', '$id_item', '$jenis_satuan', '$harga_satuan', '$jumlah', '$total_harga_item')";
 
-        $detailStmt = $koneksi->prepare($detailQuery);
-        $detailStmt->bind_param("ssssi", $id_transaksi, $id_item,$jumlah_satuan, $total_per_satuan);
-        $detailStmt->execute();
-
-        // Subtract the quantity from the 'jumlah_satuan' column in the 'item' table
-        // Perbaikan 3: Kembalikan penggunaan update item setelah melakukan transaksi
-        // $updateItemQuery = "UPDATE item SET jumlah_satuan = jumlah_satuan - ? WHERE id_item = ?";
-        // $updateItemStmt = $koneksi->prepare($updateItemQuery);
-        // $updateItemStmt->bind_param("ss", $jumlah_satuan, $id_item);
-        // $updateItemStmt->execute();
+            // Eksekusi query detail transaksi
+            if (mysqli_query($koneksi, $query_detail_transaksi)) {
+                echo "Data detail transaksi berhasil disimpan.";
+            } else {
+                echo "Error: " . $query_detail_transaksi . "<br>" . mysqli_error($koneksi);
+            }
+        }
     }
 
-    header("Location: print_invoice_riwayat.php?id_transaksi=" . $id_transaksi);
+    // Tutup koneksi database
+    mysqli_close($koneksi);
 }
 ?>

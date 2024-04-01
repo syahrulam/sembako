@@ -26,8 +26,8 @@ include('koneksi/config.php');
                 <?php include('layout/navbar.php'); ?>
             </nav>
             <div class="main-sidebar sidebar-style-2" style="overflow-y: auto;">
-    <?php include('layout/sidebar.php'); ?>
-</div>
+                <?php include('layout/sidebar.php'); ?>
+            </div>
 
             <!-- Main Content -->
             <div class="main-content">
@@ -251,12 +251,6 @@ include('koneksi/config.php');
                     <div class="form-group">
                         <label for="jenis_satuan_${itemCounter}" class="text-dark">Jenis Satuan</label>
                         <div id="jenis_satuan_${itemCounter}"></div>
-                    </div>
-                </div>
-                <div class="col-md-2">
-                    <div class="form-group">
-                        <label for="id_item_s${itemCounter}" class="text-dark">id item</label>
-                        <input type="number" class="form-control id_item" name="id_item_${itemCounter}" id="id_item_${itemCounter}"  readonly />
                     </div>
                 </div>
                 <div class="col-md-2">

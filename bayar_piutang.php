@@ -1,81 +1,88 @@
 <?php
 include('koneksi/config.php');
 
-$koneksi->close();
-?>
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $nama_pelanggan = $_POST['nama_pelanggan'];
+    $jumlah_pembayaran = $_POST['jumlah_pembayaran'];
 
-<?php include('layout/head.php'); ?>
+    // Ambil id_pelanggan dari tabel pelanggan berdasarkan nama_pelanggan
+    $query_id_pelanggan = "SELECT id FROM pelanggan WHERE nama = '$nama_pelanggan'";
+    $result_id_pelanggan = mysqli_query($koneksi, $query_id_pelanggan);
+    $row_id_pelanggan = mysqli_fetch_assoc($result_id_pelanggan);
+    $id_pelanggan = $row_id_pelanggan['id'];
 
-<?php
-session_start();
+    // Ambil total_hutang dari tabel piutang berdasarkan id_pelanggan
+    $query_total_hutang = "SELECT total_hutang FROM piutang WHERE id_pelanggan = $id_pelanggan";
+    $result_total_hutang = mysqli_query($koneksi, $query_total_hutang);
+    $row_total_hutang = mysqli_fetch_assoc($result_total_hutang);
+    $total_hutang = $row_total_hutang['total_hutang'];
 
-// Periksa apakah pengguna sudah login
-if (!isset($_SESSION['username'])) {
-    header("Location: login.php");
-    exit();
+    // Kurangi total_hutang dengan jumlah_pembayaran
+    $total_hutang_setelah_cicilan = $total_hutang - $jumlah_pembayaran;
+
+    // Simpan riwayat pembayaran
+    $query_simpan_riwayat = "INSERT INTO pembayaran_hutang (id_pelanggan, jumlah_pembayaran) VALUES ($id_pelanggan, $jumlah_pembayaran)";
+    $result_simpan_riwayat = mysqli_query($koneksi, $query_simpan_riwayat);
+
+    if ($result_simpan_riwayat) {
+        // Perbarui total_hutang di tabel piutang dengan total_hutang_setelah_cicilan
+        $query_perbarui_total_hutang = "UPDATE piutang SET total_hutang = $total_hutang_setelah_cicilan WHERE id_pelanggan = $id_pelanggan";
+        $result_perbarui_total_hutang = mysqli_query($koneksi, $query_perbarui_total_hutang);
+
+        if ($result_perbarui_total_hutang) {
+            echo "Pembayaran cicilan berhasil disimpan.";
+            // Redirect atau tampilkan pesan sukses
+        } else {
+            echo "Error: " . mysqli_error($koneksi);
+            // Tampilkan pesan error atau redirect ke halaman error
+        }
+    } else {
+        echo "Error: " . mysqli_error($koneksi);
+        // Tampilkan pesan error atau redirect ke halaman error
+    }
 }
-
-// Ambil username dari sesi
-$username = $_SESSION['username'];
 ?>
 
-<?php include('layout/head.php'); ?>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bayar Cicilan</title>
+</head>
 
 <body>
-    <div id="app">
-        <div class="main-wrapper main-wrapper-1">
-            <div class="navbar-bg"></div>
-            <nav class="navbar navbar-expand-lg main-navbar">
-                <?php include('layout/navbar.php'); ?>
-            </nav>
-            <div class="main-sidebar sidebar-style-2" style="overflow-y: auto;">
-    <?php include('layout/sidebar.php'); ?>
-</div>
+    <h2>Form Pembayaran Cicilan</h2>
+    <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+        <label for="nama_pelanggan">Nama Pelanggan:</label>
+        <select name="nama_pelanggan" id="nama_pelanggan">
+            <?php
+            // Ambil nama pelanggan dari tabel pelanggan
+            $query_nama_pelanggan = "SELECT nama FROM pelanggan";
+            $result_nama_pelanggan = mysqli_query($koneksi, $query_nama_pelanggan);
+            while ($row_nama_pelanggan = mysqli_fetch_assoc($result_nama_pelanggan)) {
+                echo "<option value='" . $row_nama_pelanggan['nama'] . "'>" . $row_nama_pelanggan['nama'] . "</option>";
+            }
+            ?>
+        </select>
+        <br><br>
+        <label for="jumlah_pembayaran">Jumlah Cicilan:</label>
+        <input type="number" name="jumlah_pembayaran" id="jumlah_pembayaran" min="0">
+        <br><br>
+        <input type="submit" value="Bayar Cicilan">
+    </form>
 
-
-            <div id="app">
-                <!-- Bagian Utama -->
-                <div class="main-content">
-                    <section class="section">
-                        <div class="row">
-                            <div class="col-lg-12 col-md-12 col-sm-12">
-
-                                <!-- Form Tambah Member -->
-                                <div class="card mt-4">
-                                    <div class="card-header">
-                                        <h4>Bayar Cicilan</h4>
-                                    </div>
-                                    <div class="card-body">
-                                        <form method="post" action="tambah_pelanggan.php">
-                                            <div class="form-group">
-                                                <label for="nama">Nama</label>
-                                                <input type="text" class="form-control" id="nama" name="nama" required>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="alamat">Bayar Cicilan</label>
-                                                <input type="text" class="form-control" id="alamat" name="alamat" required>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="nomor">Tanggal</label>
-                                                <input type="text" class="form-control" id="nomor" name="nomor" required>
-                                            </div>
-                                            <button type="submit" class="btn btn-primary">Simpan</button>
-                                            <a href="piutang.php" class="btn btn-secondary">Batal</a>
-                                        </form>
-                                    </div>
-                                </div>
-                                <!-- End Form Tambah Member -->
-
-                            </div>
-                        </div>
-                    </section>
-                </div>
-                <!-- End Bagian Utama -->
-
-            </div>
-
-            <?php include('layout/js.php'); ?>
-
+    <?php
+    // Tampilkan pesan kesalahan atau sukses
+    if (isset($error_message)) {
+        echo "<p style='color: red;'>$error_message</p>";
+    }
+    if (isset($success_message)) {
+        echo "<p style='color: green;'>$success_message</p>";
+    }
+    ?>
 </body>
 
 </html>
