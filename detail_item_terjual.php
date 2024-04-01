@@ -11,6 +11,20 @@ if (!isset($_SESSION['username'])) {
 
 // Ambil username dari sesi
 $username = $_SESSION['username'];
+
+// Ambil parameter nama pelanggan dari URL
+$nama_pelanggan = $_GET['nama_pelanggan'];
+
+// include koneksi database
+include('koneksi/config.php');
+
+$sql = "SELECT item.nama_item, SUM(detail_transaksi.jumlah_satuan) AS jumlah_terjual
+        FROM transaksi
+        INNER JOIN detail_transaksi ON transaksi.id_transaksi = detail_transaksi.id_transaksi
+        INNER JOIN item ON detail_transaksi.id_item = item.id_item
+        WHERE transaksi.nama_pelanggan = '$nama_pelanggan'
+        GROUP BY item.nama_item";
+$result = $koneksi->query($sql);
 ?>
 
 <body>
@@ -20,10 +34,9 @@ $username = $_SESSION['username'];
             <nav class="navbar navbar-expand-lg main-navbar">
                 <?php include('layout/navbar.php'); ?>
             </nav>
-            <div class="main-sidebar sidebar-style-2" style="overflow-y: auto;">
+            <div class="main-sidebar sidebar-style-2">
                 <?php include('layout/sidebar.php'); ?>
             </div>
-
 
             <div id="app">
                 <!-- Bagian Utama -->
@@ -32,60 +45,45 @@ $username = $_SESSION['username'];
                         <div class="row">
                             <div class="col-lg-12 col-md-12 col-sm-12">
 
-                                <!-- Tabel Detail Penjualan -->
+                                <!-- Tabel Detail Item Terjual -->
                                 <div class="card mt-4">
                                     <div class="card-header">
-                                        <h4>Detail Penjualan Item</h4>
+                                        <h4>Detail Item Pembelian <?php echo $nama_pelanggan; ?></h4>
                                     </div>
                                     <div class="card-body">
                                         <div class="table-responsive">
-                                            <table id="empTable" class="table mt-4">
+                                            <table class="table mt-4">
                                                 <thead>
                                                     <tr>
                                                         <th>No</th>
-                                                        <th>Nama Pelanggan</th>
-                                                        <th>Total Item Terjual</th>
-                                                        <th>Aksi</th>
+                                                        <th>Nama Item</th>
+                                                        <th>Jumlah Terjual</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     <?php
-                                                    include('koneksi/config.php');
-                                                    $sql = "SELECT 
-                                                                transaksi.nama_pelanggan,
-                                                                SUM(detail_transaksi.jumlah_satuan) AS total_item
-                                                            FROM 
-                                                                transaksi
-                                                            INNER JOIN 
-                                                                detail_transaksi ON transaksi.id_transaksi = detail_transaksi.id_transaksi
-                                                            WHERE 
-                                                                transaksi.nama_pelanggan IS NOT NULL
-                                                            GROUP BY 
-                                                                transaksi.nama_pelanggan";
-                                                    $result = $koneksi->query($sql);
-
+                                                    // Cek apakah ada data yang ditemukan
                                                     if ($result->num_rows > 0) {
+                                                        // Looping data dan tampilkan dalam tabel
                                                         $no = 1;
                                                         while ($row = $result->fetch_assoc()) {
                                                             echo "<tr>";
                                                             echo "<td>" . $no++ . "</td>";
-                                                            echo "<td>" . $row['nama_pelanggan'] . "</td>";
-                                                            echo "<td>" . $row['total_item'] . "</td>";
-                                                            echo "<td><a href='detail_item_terjual.php?nama_pelanggan=" . $row['nama_pelanggan'] . "' class='btn btn-warning btn-sm'>Detail</a></td>";
+                                                            echo "<td>" . $row['nama_item'] . "</td>";
+                                                            echo "<td>" . $row['jumlah_terjual'] . "</td>";
                                                             echo "</tr>";
                                                         }
                                                     } else {
-                                                        echo "<tr><td colspan='4'>Tidak ada data</td></tr>";
+                                                        // Jika tidak ada data yang ditemukan
+                                                        echo "<tr><td colspan='3'>Tidak ada detail item terjual untuk pelanggan ini.</td></tr>";
                                                     }
-                                                    $koneksi->close();
                                                     ?>
-
                                                 </tbody>
                                             </table>
                                         </div>
                                     </div>
                                 </div>
-                                <!-- End Tabel Detail Penjualan -->
+                                <!-- End Tabel Detail Item Terjual -->
 
                             </div>
                         </div>
@@ -101,3 +99,8 @@ $username = $_SESSION['username'];
 </body>
 
 </html>
+
+<?php
+// Tutup koneksi database
+$koneksi->close();
+?>

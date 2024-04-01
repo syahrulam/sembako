@@ -19,6 +19,7 @@ if (!isset($_SESSION['username'])) {
 // Ambil username dari sesi
 $username = $_SESSION['username'];
 ?>
+
 <body>
     <div id="app">
         <div class="main-wrapper main-wrapper-1">
@@ -26,10 +27,9 @@ $username = $_SESSION['username'];
             <nav class="navbar navbar-expand-lg main-navbar">
                 <?php include('layout/navbar.php'); ?>
             </nav>
-            <div class="main-sidebar sidebar-style-2" style="overflow-y: auto;">
-    <?php include('layout/sidebar.php'); ?>
-</div>
-
+            <div class="main-sidebar sidebar-style-2">
+                <?php include('layout/sidebar.php'); ?>
+            </div>
 
             <div id="app">
                 <!-- Bagian Utama -->
@@ -51,14 +51,47 @@ $username = $_SESSION['username'];
                                                     <tr>
                                                         <th>No</th>
                                                         <th>Nama Item</th>
-                                                        <th>Jenis</th>
-                                                        <th>Jumlah Kulak</th>
-                                                        <th>Jumlah Terjual</th>
-                                                        <th>Sisa Barang</th>
+                                                        <th>Jumlah Masuk</th>
+                                                        <th>Sisa Satuan Besar</th>
+                                                        <th>Sisa Satuan Kecil</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                   
+                                                    <?php
+                                                    include('koneksi/config.php');
+
+                                                    // Query SQL untuk mendapatkan data item beserta jumlah keluar
+                                                    $sql = "SELECT i.id_item, i.nama_item, i.jenis_satuan_besar, i.jenis_satuan_kecil, i.total_kulak, i.total_isi_satuan_kecil, COALESCE(SUM(dt.jumlah_satuan), 0) AS total_keluar, i.jumlah_isi_satuan_besar, SUM(dt.jumlah_satuan) AS jumlah_satuan
+        FROM item i
+        LEFT JOIN detail_transaksi dt ON i.id_item = dt.id_item
+        GROUP BY i.id_item";
+                                                    $result = $koneksi->query($sql);
+
+                                                    if ($result->num_rows > 0) {
+                                                        $no = 1;
+                                                        while ($row = $result->fetch_assoc()) {
+                                                            // Hitung sisa barang
+                                                            if ($row['jumlah_isi_satuan_besar'] != 0) {
+                                                                $sisa_barang = ($row['total_isi_satuan_kecil'] - $row['jumlah_satuan']) / $row['jumlah_isi_satuan_besar'];
+                                                            } else {
+                                                                $sisa_barang = "Error: Jumlah isi satuan besar adalah nol";
+                                                            }
+
+                                                            echo "<tr>";
+                                                            echo "<td>" . $no++ . "</td>";
+                                                            echo "<td>" . $row['nama_item'] . "</td>";
+                                                            echo "<td>" . $row['total_kulak'] . "</td>";
+                                                            echo "<td>" . $sisa_barang . " / " . $row['jenis_satuan_besar'] . "</td>";
+                                                            echo "<td>" . $row['total_isi_satuan_kecil'] . " / " .  $row['jenis_satuan_kecil'] . "</td>";
+
+                                                            echo "</tr>";
+                                                        }
+                                                    } else {
+                                                        echo "<tr><td colspan='6'>Tidak ada data</td></tr>";
+                                                    }
+                                                    $koneksi->close();
+                                                    ?>
+
                                                 </tbody>
                                             </table>
                                         </div>
