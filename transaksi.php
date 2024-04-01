@@ -80,7 +80,7 @@ include('koneksi/config.php');
                                                         <label for="nama" class="text-dark">Nama Pelanggan<span class='red'> *</span></label>
                                                         <div class="pelanggan-container">
                                                             <div class="row">
-                                                                <div class="col-6">
+                                                                <div class="col-5">
                                                                     <input class="form-control nama" type="text" name="nama" placeholder="Nama Pelanggan" required />
                                                                     <div class="result_pelanggan"></div>
                                                                 </div>
