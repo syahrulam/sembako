@@ -25,7 +25,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo "Error: " . $query_transaksi . "<br>" . mysqli_error($koneksi);
     }
 
-    $id_transaksi = $koneksi->insert_id;
+    $id_transaksi = mysqli_insert_id($koneksi); // Menggunakan mysqli_insert_id() untuk mendapatkan ID transaksi yang baru saja di-insert
+
     // Proses data detail transaksi
     // Loop melalui setiap item dalam transaksi
     foreach ($_POST as $key => $value) {
@@ -43,7 +44,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $query_detail_transaksi = "INSERT INTO detail_transaksi (id_transaksi, id_item, jenis_satuan, harga_satuan, jumlah_satuan, total)
                                        VALUES ('$id_transaksi', '$id_item', '$jenis_satuan', '$harga_satuan', '$jumlah', '$total_harga_item')";
 
+            // Eksekusi query detail transaksi
             if (mysqli_query($koneksi, $query_detail_transaksi)) {
+                echo "Data detail transaksi berhasil disimpan.";
+                
                 if ($jenis_satuan == 'Besar') {
                     $query_stok = "SELECT jumlah_satuan_besar FROM item WHERE id_item = '$id_item'";
                     $result_stok = mysqli_query($koneksi, $query_stok);
@@ -55,12 +59,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     mysqli_query($koneksi, $query_update_stok);
 
                 } else if ($jenis_satuan == 'Kecil'){
-                    $query_stok = "SELECT total_isi_satuan_besar FROM item WHERE id_item = '$id_item'";
-                    $stok_satuan_besar = "SELECT jumlah_isi_satuan_besar FROM item WHERE id_item = '$id_item'";
+                    $query_stok = "SELECT total_isi_satuan_kecil, jumlah_isi_satuan_besar FROM item WHERE id_item = '$id_item'";
                     $result_stok = mysqli_query($koneksi, $query_stok);
                     $row_stok = mysqli_fetch_assoc($result_stok);
-                    $stok_sekarang = $row_stok['total_isi_satuan_besar'];
-                    $stok_baru = $stok_sekarang - $jumlah / $stok_satuan_besar;
+                    $stok_sekarang = $row_stok['total_isi_satuan_kecil'];
+                    $stok_satuan_besar = $row_stok['jumlah_isi_satuan_besar'];
+                    $stok_baru = ( $stok_sekarang - $jumlah ) / $stok_satuan_besar;
+                    
                     $query_update_stok = "UPDATE item SET total_isi_satuan_kecil = '$stok_baru' WHERE id_item = '$id_item'";
                     mysqli_query($koneksi, $query_update_stok);
 
@@ -68,15 +73,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             } else {
                 echo "Error: " . $query_detail_transaksi . "<br>" . mysqli_error($koneksi);
             }
-            // Eksekusi query detail transaksi
-            if (mysqli_query($koneksi, $query_detail_transaksi)) {
-                echo "Data detail transaksi berhasil disimpan.";
-            } else {
-                echo "Error: " . $query_detail_transaksi . "<br>" . mysqli_error($koneksi);
-            }
         }
     }
-
+    
     // Tutup koneksi database
     mysqli_close($koneksi);
+    header("Location: print_invoice.php?id_transaksi=" . $id_transaksi);
 }
+?>

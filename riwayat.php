@@ -69,7 +69,7 @@ $total_harga_bulan_ini = $row_total_harga['total_harga'];
                                         <form action="export_excel_sales.php" method="POST">
                                             <div class="row mb-3">
                                                 <div class="col-3">
-                                                <div class="sales-container">
+                                                    <div class="sales-container">
                                                         <input type="text" class="form-control namaSales" id="namaSales" name="namaSales" placeholder="Nama Pelanggan">
                                                         <div class="result_sales"></div>
                                                     </div>
@@ -143,7 +143,9 @@ $total_harga_bulan_ini = $row_total_harga['total_harga'];
                                                     <tr>
                                                         <th>No Transaksi</th>
                                                         <th>Tanggal</th>
+                                                        <th>Pembayaran</th>
                                                         <th>Nama Pelanggan</th>
+                                                        <th>Keterangan</th>
                                                         <th>Aksi</th>
                                                     </tr>
                                                 </thead>
@@ -165,10 +167,19 @@ $total_harga_bulan_ini = $row_total_harga['total_harga'];
                                                                 echo "<tr>";
                                                                 echo "<td>" . $row['no_transaksi'] . "</td>";
                                                                 echo "<td>" . date('d F Y', strtotime($row['tanggal'])) . "</td>";
+                                                                echo "<td>" . $row['tipe_pembayaran'] . "</td>";
                                                                 echo "<td>" . $row['nama_pelanggan'] . "</td>";
+                                                                echo "<td>";
+
+                                                                if ($row['tipe_pembayaran'] == 'Cash') {
+                                                                    echo "Lunas";
+                                                                } else {
+                                                                    echo "Kekurangan : " . $row['kekurangan'];
+                                                                }
+
                                                                 echo "<td>
                                                                 <!-- Tombol aksi -->
-                                                                <a class='btn btn-warning btn-sm px-4 mt-2' href='print_invoice_riwayat.php?id_transaksi=" . $row['id_transaksi'] . "'>Print</a>";
+                                                                <a class='btn btn-warning btn-sm px-4 mt-2' href='print_invoice.php?id_transaksi=" . $row['id_transaksi'] . "'>Print</a>";
 
                                                                 if ($_SESSION['role'] === 'Admin') {
                                                                     echo "<a class='btn btn-danger btn-sm px-4 mt-2' href='hapus_transaksi.php?id_transaksi=" . $row['id_transaksi'] . "'>Hapus</a>";

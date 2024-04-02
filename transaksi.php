@@ -420,6 +420,21 @@ include('koneksi/config.php');
         });
     </script>
 
+<script>
+    $(document).ready(function() {
+        $('form').submit(function(event) {
+            var tipePembayaran = $('select[name="tipe_pembayaran"]').val();
+            var totalHarga = parseFloat($('#total_harus_dibayar').val());
+            var uangDiterima = parseFloat($('#uang_diterima').val());
+            if (tipePembayaran === 'Cash' && uangDiterima < totalHarga) {
+                event.preventDefault(); 
+                alert('Jumlah yang dibayarkan kurang dari jumlah yang harus dibayar!');
+            }
+        });
+    });
+</script>
+
+
 
 </body>
 
