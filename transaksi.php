@@ -17,6 +17,7 @@ $username = $_SESSION['username'];
 // Koneksi ke database
 include('koneksi/config.php');
 ?>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 <body>
     <div id="app">
@@ -227,9 +228,7 @@ include('koneksi/config.php');
 
             var newItemHtml = `
             <div class="row item-row item-container" id="item-${itemCounter}">
-            
-           
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="form-group">
                         <label for="item_${itemCounter}" class="text-dark">Item</label>
                         <select class="form-control" name="item_${itemCounter}" id="item_${itemCounter}" onchange="updateItemDetails(${itemCounter})" required>
@@ -271,6 +270,13 @@ include('koneksi/config.php');
                         <input type="number" class="form-control" name="total_${itemCounter}" id="total_${itemCounter}" min="0" readonly />
                     </div>
                 </div>
+                <div class="col-md-1">
+                    <div class="form-group" style="margin-top:30px;">
+                       <button class="btn btn-danger" onclick="removeItem(${itemCounter})"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                </div>
+
+                
             </div>
         `;
 
@@ -279,7 +285,16 @@ include('koneksi/config.php');
             // Memanggil fungsi updateItemDetails untuk menginisialisasi nilai jenis satuan dan harga satuan
             updateItemDetails(itemCounter);
 
+
+
         }
+
+        function removeItem(itemId) {
+            $('#item-' + itemId).remove();
+            updateTotal();
+        }
+
+
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         $(document).ready(function() {
             // Event listener untuk setiap perubahan pada input item, jenis satuan, harga satuan, dan jumlah
@@ -420,19 +435,19 @@ include('koneksi/config.php');
         });
     </script>
 
-<script>
-    $(document).ready(function() {
-        $('form').submit(function(event) {
-            var tipePembayaran = $('select[name="tipe_pembayaran"]').val();
-            var totalHarga = parseFloat($('#total_harus_dibayar').val());
-            var uangDiterima = parseFloat($('#uang_diterima').val());
-            if (tipePembayaran === 'Cash' && uangDiterima < totalHarga) {
-                event.preventDefault(); 
-                alert('Jumlah yang dibayarkan kurang dari jumlah yang harus dibayar!');
-            }
+    <script>
+        $(document).ready(function() {
+            $('form').submit(function(event) {
+                var tipePembayaran = $('select[name="tipe_pembayaran"]').val();
+                var totalHarga = parseFloat($('#total_harus_dibayar').val());
+                var uangDiterima = parseFloat($('#uang_diterima').val());
+                if (tipePembayaran === 'Cash' && uangDiterima < totalHarga) {
+                    event.preventDefault();
+                    alert('Jumlah yang dibayarkan kurang dari jumlah yang harus dibayar!');
+                }
+            });
         });
-    });
-</script>
+    </script>
 
 
 
