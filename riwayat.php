@@ -174,7 +174,8 @@ $total_harga_bulan_ini = $row_total_harga['total_harga'];
                                                                 if ($row['tipe_pembayaran'] == 'Cash') {
                                                                     echo "Lunas";
                                                                 } else {
-                                                                    echo "Kekurangan : " . number_format($row['kekurangan'], 0, ',', '.');;
+                                                                    echo "Kekurangan : Rp " . number_format($row['kekurangan'], 0, ',', '.');
+
                                                                 }
 
                                                                 echo "<td>
@@ -182,7 +183,7 @@ $total_harga_bulan_ini = $row_total_harga['total_harga'];
                                                                 <a class='btn btn-warning btn-sm px-4 mt-2' href='print_invoice.php?id_transaksi=" . $row['id_transaksi'] . "'>Print</a>";
 
                                                                 if ($_SESSION['role'] === 'Admin') {
-                                                                    echo "<a class='btn btn-danger btn-sm px-4 mt-2' href='hapus_transaksi.php?id_transaksi=" . $row['id_transaksi'] . "'>Hapus</a>";
+                                                                    echo "<a class='btn btn-danger btn-sm px-4 mt-2' href='hapus_transaksi.php?id_transaksi=" . $row['id_transaksi'] . "' onclick='return confirmDelete()'>Hapus</a>";
                                                                 }
 
                                                                 echo "<a class='btn btn-primary btn-sm px-4 mt-2' href='detail_transaksi.php?id_transaksi=" . $row['id_transaksi'] . "'>Detail</a>";
@@ -221,6 +222,11 @@ $total_harga_bulan_ini = $row_total_harga['total_harga'];
 
             <?php include('layout/js.php'); ?>
 
+            <script>
+    function confirmDelete() {
+        return confirm("Apakah Anda yakin ingin menghapus transaksi ini?");
+    }
+</script>
             <!-- ... (your existing code) ... -->
             <script>
                 // Fungsi untuk mencetak invoice
