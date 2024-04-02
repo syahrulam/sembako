@@ -34,8 +34,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $total_isi_satuan_kecil = $jumlah_satuan_besar * $jumlah_isi_satuan_besar;
 
     // Query untuk menyimpan data ke database
-    $query = "INSERT INTO item (kategori_id, nama_item, jenis_satuan_besar, jenis_satuan_kecil, jumlah_satuan_besar, jumlah_isi_satuan_besar, total_isi_satuan_kecil, harga_satuan_kulak, total_harga_kulak, harga_jual_satuan_besar, harga_jual_satuan_kecil, tanggal) 
-              VALUES ('$kategori_id', '$nama_item', '$jenis_satuan_besar', '$jenis_satuan_kecil', '$jumlah_satuan_besar', '$jumlah_isi_satuan_besar', '$total_isi_satuan_kecil', '$harga_satuan_kulak', '$total_harga_kulak', '$harga_jual_satuan_besar', '$harga_jual_satuan_kecil', '$tanggal')";
+    $query = "INSERT INTO item (kategori_id, nama_item, jenis_satuan_besar, jenis_satuan_kecil, jumlah_satuan_besar, jumlah_isi_satuan_besar, total_isi_satuan_kecil, harga_satuan_kulak, total_harga_kulak, harga_jual_satuan_besar, harga_jual_satuan_kecil, tanggal, total_kulak) 
+              VALUES ('$kategori_id', '$nama_item', '$jenis_satuan_besar', '$jenis_satuan_kecil', '$jumlah_satuan_besar', '$jumlah_isi_satuan_besar', '$total_isi_satuan_kecil', '$harga_satuan_kulak', '$total_harga_kulak', '$harga_jual_satuan_besar', '$harga_jual_satuan_kecil', '$tanggal', '$jumlah_satuan_besar')";
     if ($koneksi->query($query) === TRUE) {
         header("Location: item.php");
         exit();
@@ -154,50 +154,14 @@ function unformatRupiah($str)
                                                 <label for="total_harga_kulak">Total Harga Kulak:</label>
                                                 <input type="text" class="form-control" id="total_harga_kulak" name="total_harga_kulak" required>
                                             </div>
-                                            <div class="form-group">
-                                                <label for="jenis_satuan_kecil">Satuan Jenis Kecil:</label>
-                                                <input type="text" class="form-control" id="jenis_satuan_kecil" name="jenis_satuan_kecil" required>
+                                        </div>
+                                        <!-- Tambahkan bagian lain sesuai kebutuhan -->
+                                        <div class="form-group row">
+                                            <div class="col-md-12">
+                                                <button type="submit" class="btn btn-primary">Simpan</button>
+                                                <a href="item.php" class="btn btn-secondary">Batal</a>
                                             </div>
-                                            <div class="form-group">
-                                                <label for="jumlah_satuan_besar">Jumlah Satuan Besar:</label>
-                                                <input type="number" class="form-control" id="jumlah_satuan_besar" name="jumlah_satuan_besar" required>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="jumlah_isi_satuan_besar">Isi Satuan Besar:</label>
-                                                <input type="number" class="form-control" id="jumlah_isi_satuan_besar" name="jumlah_isi_satuan_besar" required>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="total_isi_satuan_kecil">Total Isi Satuan Kecil:</label>
-                                                <input type="number" class="form-control" id="total_isi_satuan_kecil" name="total_isi_satuan_kecil" required readonly>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="harga_satuan_kulak">Harga Satuan Kulak:</label>
-                                                <input type="text" class="form-control" id="harga_satuan_kulak" name="harga_satuan_kulak" placeholder="Misal 1 Dusnya Rp. 50.000" required>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="total_harga_kulak">Total Harga Kulak:</label>
-                                                <input type="text" class="form-control" id="total_harga_kulak" name="total_harga_kulak" required>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="harga_jual_satuan_besar">Harga Jual PerSatuan Besar:</label>
-                                                <input type="text" class="form-control" id="harga_jual_satuan_besar" name="harga_jual_satuan_besar" required>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="harga_jual_satuan_kecil">Harga Jual PerSatuan Kecil:</label>
-                                                <input type="text" class="form-control" id="harga_jual_satuan_kecil" name="harga_jual_satuan_kecil" required>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="tanggal">Tanggal:</label>
-                                                <input type="date" class="form-control" id="tanggal" name="tanggal" required>
-                                                >>>>>>> 68300dd5406a3fea81a69c5ebc9a4fe62e208314
-                                            </div>
-                                            <!-- Tambahkan bagian lain sesuai kebutuhan -->
-                                            <div class="form-group row">
-                                                <div class="col-md-12">
-                                                    <button type="submit" class="btn btn-primary">Simpan</button>
-                                                    <a href="item.php" class="btn btn-secondary">Batal</a>
-                                                </div>
-                                            </div>
+                                        </div>
 
                                     </form>
                                 </div>

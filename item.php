@@ -57,10 +57,9 @@ $username = $_SESSION['username'];
                                                 <tbody>
                                                     <?php
                                                     include('koneksi/config.php');
-
                                                     $sql = "SELECT item.*, kategori.kategori 
-                    FROM item 
-                    INNER JOIN kategori ON item.kategori_id = kategori.id";
+                                                    FROM item 
+                                                    INNER JOIN kategori ON item.kategori_id = kategori.id";
                                                     $result = $koneksi->query($sql);
 
                                                     if ($result->num_rows > 0) {

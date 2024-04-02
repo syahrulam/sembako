@@ -60,38 +60,25 @@ $username = $_SESSION['username'];
                                                     <?php
                                                     include('koneksi/config.php');
 
-                                                    // Query SQL untuk mendapatkan data item beserta jumlah keluar
-                                                    $sql = "SELECT i.id_item, i.nama_item, i.jenis_satuan_besar, i.jenis_satuan_kecil, i.total_kulak, i.total_isi_satuan_kecil, COALESCE(SUM(dt.jumlah_satuan), 0) AS total_keluar, i.jumlah_isi_satuan_besar, SUM(dt.jumlah_satuan) AS jumlah_satuan
-        FROM item i
-        LEFT JOIN detail_transaksi dt ON i.id_item = dt.id_item
-        GROUP BY i.id_item";
+                                                    $sql = "SELECT * FROM item";
                                                     $result = $koneksi->query($sql);
 
                                                     if ($result->num_rows > 0) {
                                                         $no = 1;
                                                         while ($row = $result->fetch_assoc()) {
-                                                            // Hitung sisa barang
-                                                            if ($row['jumlah_isi_satuan_besar'] != 0) {
-                                                                $sisa_barang = ($row['total_isi_satuan_kecil'] - $row['jumlah_satuan']) / $row['jumlah_isi_satuan_besar'];
-                                                            } else {
-                                                                $sisa_barang = "Error: Jumlah isi satuan besar adalah nol";
-                                                            }
-
                                                             echo "<tr>";
                                                             echo "<td>" . $no++ . "</td>";
                                                             echo "<td>" . $row['nama_item'] . "</td>";
-                                                            echo "<td>" . $row['total_kulak'] . "</td>";
-                                                            echo "<td>" . $sisa_barang . " / " . $row['jenis_satuan_besar'] . "</td>";
-                                                            echo "<td>" . $row['total_isi_satuan_kecil'] . " / " .  $row['jenis_satuan_kecil'] . "</td>";
-
+                                                            echo "<td>" . $row['total_kulak'] . " / " . $row['jenis_satuan_besar'] . "</td>";
+                                                            echo "<td>" . $row['jumlah_satuan_besar'] . " / " . $row['jenis_satuan_besar'] . "</td>";
+                                                            echo "<td>" . $row['total_isi_satuan_kecil'] . " / " . $row['jenis_satuan_kecil'] . "</td>";
                                                             echo "</tr>";
                                                         }
                                                     } else {
-                                                        echo "<tr><td colspan='6'>Tidak ada data</td></tr>";
+                                                        echo "<tr><td colspan='5'>Tidak ada data</td></tr>";
                                                     }
                                                     $koneksi->close();
                                                     ?>
-
                                                 </tbody>
                                             </table>
                                         </div>

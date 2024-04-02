@@ -27,8 +27,8 @@ $username = $_SESSION['username'];
                 <?php include('layout/navbar.php'); ?>
             </nav>
             <div class="main-sidebar sidebar-style-2" style="overflow-y: auto;">
-    <?php include('layout/sidebar.php'); ?>
-</div>
+                <?php include('layout/sidebar.php'); ?>
+            </div>
 
 
             <div id="app">
@@ -51,10 +51,32 @@ $username = $_SESSION['username'];
                                                     <tr>
                                                         <th>No</th>
                                                         <th>Nama Item</th>
-                                                        <th>Jumlah Item</th>
+                                                        <th>Jumlah Item Besar</th>
+                                                        <th>Jumlah Item Kecil</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
+                                                    <?php
+                                                    include('koneksi/config.php');
+
+                                                    $sql = "SELECT * FROM item";
+                                                    $result = $koneksi->query($sql);
+
+                                                    if ($result->num_rows > 0) {
+                                                        $no = 1;
+                                                        while ($row = $result->fetch_assoc()) {
+                                                            echo "<tr>";
+                                                            echo "<td>" . $no++ . "</td>";
+                                                            echo "<td>" . $row['nama_item'] . "</td>";
+                                                            echo "<td>" . $row['jumlah_satuan_besar'] . " / " . $row['jenis_satuan_besar'] . "</td>";
+                                                            echo "<td>" . $row['total_isi_satuan_kecil'] . " / " . $row['jenis_satuan_kecil'] . "</td>";
+                                                            echo "</tr>";
+                                                        }
+                                                    } else {
+                                                        echo "<tr><td colspan='5'>Tidak ada data</td></tr>";
+                                                    }
+                                                    $koneksi->close();
+                                                    ?>
                                                 </tbody>
                                             </table>
                                         </div>
