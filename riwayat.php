@@ -70,7 +70,7 @@ $total_harga_bulan_ini = $row_total_harga['total_harga'];
                                             <div class="row mb-3">
                                                 <div class="col-3">
                                                     <div class="sales-container">
-                                                        <input type="text" class="form-control namaSales" id="namaSales" name="namaSales" placeholder="Nama Pelanggan">
+                                                        <input type="text" class="form-control namaSales" id="namaSales" name="namaSales" placeholder="Nama Sales">
                                                         <div class="result_sales"></div>
                                                     </div>
 
@@ -174,7 +174,7 @@ $total_harga_bulan_ini = $row_total_harga['total_harga'];
                                                                 if ($row['tipe_pembayaran'] == 'Cash') {
                                                                     echo "Lunas";
                                                                 } else {
-                                                                    echo "Kekurangan : " . $row['kekurangan'];
+                                                                    echo "Kekurangan : " . number_format($row['kekurangan'], 0, ',', '.');;
                                                                 }
 
                                                                 echo "<td>
@@ -363,7 +363,7 @@ $total_harga_bulan_ini = $row_total_harga['total_harga'];
                     }
 
                     $(document).on("input", ".namaSales", function() {
-                        handleItemSearch($(this));
+                        handleSalesSearch($(this)); // Perbaikan: Memanggil fungsi handleSalesSearch
                     });
 
                     $(document).on("click", ".result_sales li", function() {
@@ -378,8 +378,10 @@ $total_harga_bulan_ini = $row_total_harga['total_harga'];
                                 selectedSales: selectedSales
                             },
                             success: function(response) {
-                                var data = JSON.parse(response);
-                                salesContainer.find(".namaSales").val(data.nama);
+                                if (response) {
+                                    var data = JSON.parse(response);
+                                    salesContainer.find(".namaSales").val(data.nama);
+                                }
                             }
                         });
 
@@ -387,6 +389,7 @@ $total_harga_bulan_ini = $row_total_harga['total_harga'];
                     });
                 });
             </script>
+
 
 </body>
 

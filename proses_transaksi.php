@@ -64,10 +64,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $row_stok = mysqli_fetch_assoc($result_stok);
                     $stok_sekarang = $row_stok['total_isi_satuan_kecil'];
                     $stok_satuan_besar = $row_stok['jumlah_isi_satuan_besar'];
-                    $stok_baru = ( $stok_sekarang - $jumlah ) / $stok_satuan_besar;
+                    $stok_baru_besar = ( $stok_sekarang - $jumlah ) / $stok_satuan_besar;
                     
-                    $query_update_stok = "UPDATE item SET total_isi_satuan_kecil = '$stok_baru' WHERE id_item = '$id_item'";
-                    mysqli_query($koneksi, $query_update_stok);
+                    $query_update_stok = "UPDATE item SET jumlah_satuan_besar = '$stok_baru_besar' WHERE id_item = '$id_item'";
+                
+                    $update_stok_kecil = $stok_baru_besar * $stok_satuan_besar;
+                    $query_update_stok_kecil = "UPDATE item SET total_isi_satuan_kecil = '$stok_baru_besar' WHERE id_item = '$id_item'";
+                    mysqli_query($koneksi, $query_update_stok,$query_update_stok_kecil);
 
                 }
             } else {

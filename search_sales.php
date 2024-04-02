@@ -2,7 +2,7 @@
 // include file koneksi
 include('koneksi/config.php');
 
-if (isset($_POST['searchPelanggan'])) {
+if (isset($_POST['searchSales'])) {
     $searchSales = $_POST['searchSales'];
 
     // Query untuk mencari nama item berdasarkan kata kunci
