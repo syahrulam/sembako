@@ -49,34 +49,36 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 echo "Data detail transaksi berhasil disimpan.";
 
                 if ($jenis_satuan == 'Besar') {
-                    $query_stok = "SELECT jumlah_satuan_besar FROM item WHERE id_item = '$id_item'";
+                    // Ambil stok satuan besar dan jumlah isi satuan kecil dari database
+                    $query_stok = "SELECT jumlah_satuan_besar, jumlah_isi_satuan_besar FROM item WHERE id_item = '$id_item'";
                     $result_stok = mysqli_query($koneksi, $query_stok);
                     $row_stok = mysqli_fetch_assoc($result_stok);
-                    $stok_sekarang = $row_stok['jumlah_satuan_besar'];
-                    $stok_baru = $stok_sekarang - $jumlah;
+                    $stok_satuan_besar = $row_stok['jumlah_satuan_besar'];
+                    $stok_satuan_kecil = $row_stok['jumlah_isi_satuan_besar'];
 
-                    $query_update_stok = "UPDATE item SET jumlah_satuan_besar = '$stok_baru' WHERE id_item = '$id_item'";
+                    // Kurangi jumlah terjual dari stok satuan besar
+                    $stok_baru_satuan_besar = $stok_satuan_besar - $jumlah;
+
+                    $total_sisa_perpcs = ($stok_baru_satuan_besar * $stok_satuan_kecil);
+
+                    $query_update_stok = "UPDATE item SET jumlah_satuan_besar = '$stok_baru_satuan_besar', total_isi_satuan_kecil = '$total_sisa_perpcs' WHERE id_item = '$id_item'";
                     mysqli_query($koneksi, $query_update_stok);
                 } else if ($jenis_satuan == 'Kecil') {
+                    // Ambil total isi satuan kecil dan jumlah isi satuan besar dari database
                     $query_stok = "SELECT total_isi_satuan_kecil, jumlah_isi_satuan_besar FROM item WHERE id_item = '$id_item'";
                     $result_stok = mysqli_query($koneksi, $query_stok);
                     $row_stok = mysqli_fetch_assoc($result_stok);
-                    $stok_sekarang_kecil = $row_stok['total_isi_satuan_kecil'];
+                    $stok_total_kecil = $row_stok['total_isi_satuan_kecil'];
                     $stok_satuan_besar = $row_stok['jumlah_isi_satuan_besar'];
 
-                    // Hitung stok baru untuk satuan "Kecil" dan "Besar"
-                    $stok_baru_kecil = $stok_sekarang_kecil - $jumlah;
-                    $stok_baru_besar = $stok_baru_kecil / $stok_satuan_besar;
+                    // Kurangi jumlah terjual dari total isi satuan kecil
+                    $stok_baru_kecil = $stok_total_kecil - $jumlah;
 
-                    // Hitung total stok kecil berdasarkan stok baru besar
-                    $update_stok_kecil = $stok_baru_besar * $stok_satuan_besar;
+                    // Hitung total sisa perdus berdasarkan total isi satuan kecil dan jumlah isi satuan besar
+                    $jumlah_satuan_besar = $stok_baru_kecil / $stok_satuan_besar;
 
-                    // Update stok untuk satuan "Besar"
-                    $query_update_stok_besar = "UPDATE item SET jumlah_satuan_besar = '$stok_baru_besar' WHERE id_item = '$id_item'";
-                    mysqli_query($koneksi, $query_update_stok_besar);
-
-                    // Update stok untuk satuan "Kecil"
-                    $query_update_stok_kecil = "UPDATE item SET total_isi_satuan_kecil = '$update_stok_kecil' WHERE id_item = '$id_item'";
+                    // Update total isi satuan kecil dan total sisa perdus di database
+                    $query_update_stok_kecil = "UPDATE item SET total_isi_satuan_kecil = '$stok_baru_kecil', jumlah_satuan_besar = '$jumlah_satuan_besar' WHERE id_item = '$id_item'";
                     mysqli_query($koneksi, $query_update_stok_kecil);
                 }
             } else {

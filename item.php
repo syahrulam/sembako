@@ -49,7 +49,7 @@ $username = $_SESSION['username'];
                                                         <th>Kategori</th>
                                                         <th>Nama Item</th>
                                                         <th>Stok Satuan Besar</th>
-                                                        <th>Isi dalam Satuan Besar</th>
+                                                        <th>Isi Satuan Besar</th>
                                                         <th>Totalnya</th>
                                                         <th>Aksi</th>
                                                     </tr>
@@ -72,7 +72,7 @@ $username = $_SESSION['username'];
                                                             echo "<td>" . $row['nama_item'] . "</td>";
 
                                                             // Menghitung Stok Satuan Besar dan Isi dalam Satuan Besar
-                                                            $stok_satuan_besar = $row['jumlah_satuan_besar'] . ' ' . $row['jenis_satuan_besar'];
+                                                            $stok_satuan_besar = floatval($row['jumlah_satuan_besar']) . ' ' . $row['jenis_satuan_besar'];
                                                             $isi_dalam_satuan_besar = $row['jumlah_isi_satuan_besar'] . ' ' . $row['jenis_satuan_kecil'];
 
                                                             // Menghitung Totalnya
