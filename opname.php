@@ -12,6 +12,12 @@ if (!isset($_SESSION['username'])) {
     header("Location: login.php");
     exit();
 }
+// Ambil data dari tabel opname
+$query_opname = "SELECT opname.id_opname, opname.tanggal, item.nama_item, item.total_isi_satuan_kecil, opname.stok_opname, opname.balance, opname.keterangan, item.jenis_satuan_kecil, item.jenis_satuan_besar
+                 FROM opname
+                 INNER JOIN item ON opname.id_item = item.id_item";
+
+$result_opname = $koneksi->query($query_opname);
 
 // Ambil username dari sesi
 $username = $_SESSION['username'];
@@ -100,13 +106,39 @@ $username = $_SESSION['username'];
                                                         <th>No</th>
                                                         <th>Tanggal</th>
                                                         <th>Nama Item</th>
-                                                        <th>Jumlah Fisik</th>
+                                                        <th>Total Jumlah Fisik Satuan Kecil</th>
                                                         <th>Balance</th>
                                                         <th>Keterangan</th>
                                                         <th>Aksi</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
+                                                    <?php
+                                                    if ($result_opname->num_rows > 0) {
+                                                        $no = 1;
+                                                        while ($row_opname = $result_opname->fetch_assoc()) {
+                                                            echo "<tr>";
+                                                            echo "<td>" . $no++ . "</td>";
+
+                                                            // Mengubah format tanggal dari "tahun-bulan-hari" menjadi "hari-bulan-tahun"
+
+                                                            echo "<td>" . date('d F Y', strtotime($row_opname['tanggal'])) . "</td>"; // Menampilkan tanggal dengan format "hari-bulan-tahun"
+
+                                                            echo "<td>" . $row_opname['nama_item'] . "</td>";
+                                                            echo "<td>" . $row_opname['stok_opname'] . " " . $row_opname['jenis_satuan_kecil'] . "</td>";
+                                                            echo "<td>" . $row_opname['balance'] . " " . $row_opname['jenis_satuan_besar'] . "</td>";
+
+                                                            echo "<td><input type='text' name='keterangan_" . $row_opname['id_opname'] . "' value='" . $row_opname['keterangan'] . "'></td>";
+                                                            echo "<td>
+                                                                    <button class='btn btn-success update-btn' data-id='" . $row_opname['id_opname'] . "'>Update</button>
+                                                                    <button class='btn btn-danger delete-btn' data-id='" . $row_opname['id_opname'] . "'>Delete</button>
+                                                                </td>";
+                                                            echo "</tr>";
+                                                        }
+                                                    } else {
+                                                        echo "<tr><td colspan='8'>Tidak ada data stok opname</td></tr>";
+                                                    }
+                                                    ?>
                                                 </tbody>
                                             </table>
                                         </div>

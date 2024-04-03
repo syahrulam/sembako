@@ -1,6 +1,55 @@
 <?php
 include('koneksi/config.php');
 
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $id_item = $_POST['id_item'];
+    $stok_opname = $_POST['stok_opname'];
+    $total_isi_satuan_kecil = $_POST['total_isi_satuan_kecil'];
+
+    // Ambil data jumlah_isi_satuan_besar dari database
+    $query_get_jumlah_isi_satuan_besar = "SELECT jumlah_isi_satuan_besar FROM item WHERE id_item = '$id_item'";
+    $result = $koneksi->query($query_get_jumlah_isi_satuan_besar);
+    $row = $result->fetch_assoc();
+    $jumlah_isi_satuan_besar = $row['jumlah_isi_satuan_besar'];
+
+    // Hitung nilai stok opname yang setara dengan jumlah_satuan_besar dalam database
+    $stok_opname_setara = $stok_opname / $jumlah_isi_satuan_besar;
+
+    // Ambil nilai jumlah_satuan_besar dari database
+    $query_get_jumlah_satuan_besar = "SELECT jumlah_satuan_besar FROM item WHERE id_item = '$id_item'";
+    $result = $koneksi->query($query_get_jumlah_satuan_besar);
+    $row = $result->fetch_assoc();
+    $jumlah_satuan_besar = $row['jumlah_satuan_besar'];
+
+    // Validasi
+    if ($stok_opname_setara == $jumlah_satuan_besar) {
+        $balance = "Benar";
+    } elseif ($stok_opname_setara < $jumlah_satuan_besar) {
+        $kurang = $jumlah_satuan_besar - $stok_opname_setara;
+        $balance = "Kurang $kurang";
+    } else {
+        $lebih = $stok_opname_setara - $jumlah_satuan_besar;
+        $balance = "Lebih $lebih";
+    }
+
+    // Simpan data opname ke database
+    $query_simpan = "INSERT INTO opname (id_item, stok_opname, balance, keterangan) VALUES ('$id_item', '$stok_opname', '$balance', 'Tulis Keterangan')";
+    if ($koneksi->query($query_simpan) === TRUE) {
+        echo "Data berhasil disimpan.";
+        header("Location: opname.php");
+        exit();
+    } else {
+        echo "Error: " . $query_simpan . "<br>" . $koneksi->error;
+    }
+} else {
+}
+
+$koneksi->close();
+?>
+
+<?php include('layout/head.php'); ?>
+
+<?php
 session_start();
 
 // Periksa apakah pengguna sudah login
@@ -11,30 +60,6 @@ if (!isset($_SESSION['username'])) {
 
 // Ambil username dari sesi
 $username = $_SESSION['username'];
-
-// Jika formulir dikirimkan
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Terima input jumlah stok opname dari admin
-    $stok_opname = $_POST['stok_opname'];
-
-    // Lakukan konversi nilai yang dimasukkan admin ke nilai yang sesuai dengan keadaan fisik yang terlihat
-    $stok_fisik = ceil($stok_opname); // Menggunakan fungsi ceil() untuk pembulatan ke atas
-
-    // Ambil nilai lainnya dari formulir
-    $id_item = $_POST['id_item'];
-    $jumlah_satuan = $_POST['jumlah_satuan'];
-
-    // Lakukan penyimpanan data ke dalam database
-    // Misalnya, Anda dapat menggunakan koneksi database dan query SQL untuk menyimpan nilai $stok_fisik ke dalam database
-    // Pastikan Anda mengikuti praktik pengamanan data seperti penggunaan parameterized queries atau prepared statements
-
-    // Setelah menyimpan data, Anda dapat mengarahkan pengguna ke halaman lain atau menampilkan pesan sukses
-    // Misalnya, mengarahkan pengguna kembali ke halaman utama
-    header("Location: index.php");
-    exit();
-}
-
-$koneksi->close();
 ?>
 
 <?php include('layout/head.php'); ?>
@@ -46,10 +71,9 @@ $koneksi->close();
             <nav class="navbar navbar-expand-lg main-navbar">
                 <?php include('layout/navbar.php'); ?>
             </nav>
-            <div class="main-sidebar sidebar-style-2" style="overflow-y: auto;">
+            <div class="main-sidebar sidebar-style-2">
                 <?php include('layout/sidebar.php'); ?>
             </div>
-
 
             <div id="app">
                 <!-- Bagian Utama -->
@@ -63,19 +87,19 @@ $koneksi->close();
                                         <h4>Cek Stock Opname</h4>
                                     </div>
                                     <div class="card-body">
-                                        <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+                                        <form method="post" action="tambah_opname.php">
                                             <div class="item-container">
                                                 <div class="form-group">
                                                     <label for="nama_item">Nama Item:</label>
                                                     <input class="form-control id_item" type="text" name="id_item" style="display: none;" />
-                                                    <input class="form-control jumlah_satuan" type="text" name="jumlah_satuan" style="display: none;" />
+                                                    <input class="form-control total_isi_satuan_kecil" type="text" name="total_isi_satuan_kecil" style="display: none;" />
                                                     <input class="form-control nama_item" type="text" name="nama_item" placeholder="Nama Item" required />
                                                     <div class="result"></div>
                                                 </div>
 
                                                 <div class="form-group">
-                                                    <label for="jumlah_satuan">Stok Opname:</label>
-                                                    <input class="form-control" id="stok_opname" type="number" name="stok_opname" required />
+                                                    <label for="total_isi_satuan_kecil">Stok Opname:</label>
+                                                    <input class="form-control" id="nilai" value="0" min="0" type="number" name="stok_opname" required />
                                                 </div>
                                             </div>
                                             <button type="submit" class="btn btn-primary">Cek Stok Opname</button>
@@ -91,6 +115,55 @@ $koneksi->close();
             </div>
 
             <?php include('layout/js.php'); ?>
+
+            <script>
+                $(document).ready(function() {
+                    function handleItemSearch(inputElement) {
+                        var searchTerm = inputElement.val();
+                        var resultContainer = inputElement.parent().find(".result");
+
+                        if (searchTerm !== "") {
+                            $.ajax({
+                                type: "POST",
+                                url: "search_item.php",
+                                data: {
+                                    searchTerm: searchTerm
+                                },
+                                success: function(data) {
+                                    resultContainer.html(data);
+                                }
+                            });
+                        } else {
+                            resultContainer.empty();
+                        }
+                    }
+
+                    $(document).on("input", ".nama_item", function() {
+                        handleItemSearch($(this));
+                    });
+
+                    $(document).on("click", ".result li", function() {
+                        var selectedItem = $(this).text();
+                        var itemContainer = $(this).closest(".item-container");
+                        itemContainer.find(".nama_item").val(selectedItem);
+
+                        $.ajax({
+                            type: "POST",
+                            url: "get_opname.php",
+                            data: {
+                                selectedItem: selectedItem
+                            },
+                            success: function(response) {
+                                var data = JSON.parse(response);
+                                itemContainer.find(".id_item").val(data.id_item);
+                                itemContainer.find(".total_isi_satuan_kecil").val(data.total_isi_satuan_kecil);
+                            }
+                        });
+
+                        itemContainer.find(".result").empty();
+                    });
+                });
+            </script>
 
         </div>
     </div>
