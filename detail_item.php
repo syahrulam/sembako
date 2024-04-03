@@ -82,7 +82,7 @@ $username = $_SESSION['username'];
                                                             </tr>
                                                             <tr>
                                                                 <th>Stok Satuan Besar</th>
-                                                                <td><?php echo $row['jumlah_satuan_besar']; ?> <?php echo $row['jenis_satuan_besar']; ?></td>
+                                                                <td><?php echo floatval($row['jumlah_satuan_besar']) . ' ' . $row['jenis_satuan_besar']; ?></td>
                                                             </tr>
                                                             <tr>
                                                                 <th>Isi dalam Satuan Besar</th>

@@ -11,6 +11,24 @@ if (!isset($_SESSION['username'])) {
 
 // Ambil username dari sesi
 $username = $_SESSION['username'];
+
+// include koneksi database
+include('koneksi/config.php');
+
+// Query untuk mengambil jumlah jenis item yang terjual oleh setiap pelanggan
+$sql = "SELECT 
+            trans.nama_pelanggan,
+            COUNT(DISTINCT det.id_item) AS total_jenis_item
+        FROM 
+            detail_transaksi AS det
+        INNER JOIN 
+            transaksi AS trans ON det.id_transaksi = trans.id_transaksi
+        WHERE 
+            trans.nama_pelanggan IS NOT NULL
+        GROUP BY 
+            trans.nama_pelanggan";
+
+$result = $koneksi->query($sql);
 ?>
 
 <body>
@@ -44,45 +62,33 @@ $username = $_SESSION['username'];
                                                     <tr>
                                                         <th>No</th>
                                                         <th>Nama Pelanggan</th>
-                                                        <th>Total Item Terjual</th>
+                                                        <th>Total Jenis Item Terjual</th>
                                                         <th>Aksi</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     <?php
-                                                    include('koneksi/config.php');
-                                                    $sql = "SELECT 
-                                                                transaksi.nama_pelanggan,
-                                                                SUM(detail_transaksi.jumlah_satuan) AS total_item
-                                                            FROM 
-                                                                transaksi
-                                                            INNER JOIN 
-                                                                detail_transaksi ON transaksi.id_transaksi = detail_transaksi.id_transaksi
-                                                            WHERE 
-                                                                transaksi.nama_pelanggan IS NOT NULL
-                                                            GROUP BY 
-                                                                transaksi.nama_pelanggan";
-                                                    $result = $koneksi->query($sql);
-
+                                                    // Cek apakah ada data yang ditemukan
                                                     if ($result->num_rows > 0) {
+                                                        // Looping data dan tampilkan dalam tabel
                                                         $no = 1;
                                                         while ($row = $result->fetch_assoc()) {
                                                             echo "<tr>";
                                                             echo "<td>" . $no++ . "</td>";
                                                             echo "<td>" . $row['nama_pelanggan'] . "</td>";
-                                                            echo "<td>" . $row['total_item'] . "</td>";
+                                                            echo "<td>" . $row['total_jenis_item'] . "</td>";
                                                             echo "<td><a href='detail_item_terjual.php?nama_pelanggan=" . $row['nama_pelanggan'] . "' class='btn btn-warning btn-sm'>Detail</a></td>";
                                                             echo "</tr>";
                                                         }
                                                     } else {
-                                                        echo "<tr><td colspan='4'>Tidak ada data</td></tr>";
+                                                        // Jika tidak ada data yang ditemukan
+                                                        echo "<tr><td colspan='4'>Tidak ada detail item terjual untuk pelanggan ini.</td></tr>";
                                                     }
-                                                    $koneksi->close();
                                                     ?>
-
                                                 </tbody>
                                             </table>
                                         </div>
+
                                     </div>
                                 </div>
                                 <!-- End Tabel Detail Penjualan -->

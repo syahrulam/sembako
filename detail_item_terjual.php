@@ -12,18 +12,24 @@ if (!isset($_SESSION['username'])) {
 // Ambil username dari sesi
 $username = $_SESSION['username'];
 
-// Ambil parameter nama pelanggan dari URL
-$nama_pelanggan = $_GET['nama_pelanggan'];
-
 // include koneksi database
 include('koneksi/config.php');
 
-$sql = "SELECT item.nama_item, SUM(detail_transaksi.jumlah_satuan) AS jumlah_terjual
-        FROM transaksi
-        INNER JOIN detail_transaksi ON transaksi.id_transaksi = detail_transaksi.id_transaksi
-        INNER JOIN item ON detail_transaksi.id_item = item.id_item
-        WHERE transaksi.nama_pelanggan = '$nama_pelanggan'
-        GROUP BY item.nama_item";
+// Query untuk mengambil jumlah total dari setiap jenis satuan untuk setiap pelanggan dengan nama yang sama
+$sql = "SELECT 
+            trans.nama_pelanggan,
+            item.nama_item,
+            SUM(CASE WHEN det.jenis_satuan = 'Besar' THEN det.jumlah_satuan ELSE 0 END) AS total_besar,
+            SUM(CASE WHEN det.jenis_satuan = 'Kecil' THEN det.jumlah_satuan ELSE 0 END) AS total_kecil
+        FROM 
+            detail_transaksi AS det
+        INNER JOIN 
+            transaksi AS trans ON det.id_transaksi = trans.id_transaksi
+        INNER JOIN 
+            item ON det.id_item = item.id_item
+        GROUP BY 
+            trans.nama_pelanggan, item.nama_item";
+
 $result = $koneksi->query($sql);
 ?>
 
@@ -48,7 +54,7 @@ $result = $koneksi->query($sql);
                                 <!-- Tabel Detail Item Terjual -->
                                 <div class="card mt-4">
                                     <div class="card-header">
-                                        <h4>Detail Item Pembelian <?php echo $nama_pelanggan; ?></h4>
+                                        <h4>Detail Item Pembelian</h4>
                                     </div>
                                     <div class="card-body">
                                         <div class="table-responsive">
@@ -56,8 +62,11 @@ $result = $koneksi->query($sql);
                                                 <thead>
                                                     <tr>
                                                         <th>No</th>
+                                                        <th>Nama Pelanggan</th>
                                                         <th>Nama Item</th>
-                                                        <th>Jumlah Terjual</th>
+                                                        <th>Beli Dalam Satuan Besar</th>
+                                                        <th>Beli Dalam Satuan Kecil</th>
+                                                        <th>Total Akumulasi /Satuan Kecil</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -69,13 +78,16 @@ $result = $koneksi->query($sql);
                                                         while ($row = $result->fetch_assoc()) {
                                                             echo "<tr>";
                                                             echo "<td>" . $no++ . "</td>";
+                                                            echo "<td>" . $row['nama_pelanggan'] . "</td>";
                                                             echo "<td>" . $row['nama_item'] . "</td>";
-                                                            echo "<td>" . $row['jumlah_terjual'] . "</td>";
+                                                            echo "<td>" . $row['total_besar'] . "</td>";
+                                                            echo "<td>" . $row['total_kecil'] . "</td>";
+                                                            echo "<td>" . ($row['total_besar'] * $row['total_kecil']) . "</td>";
                                                             echo "</tr>";
                                                         }
                                                     } else {
                                                         // Jika tidak ada data yang ditemukan
-                                                        echo "<tr><td colspan='3'>Tidak ada detail item terjual untuk pelanggan ini.</td></tr>";
+                                                        echo "<tr><td colspan='6'>Tidak ada detail item pembelian.</td></tr>";
                                                     }
                                                     ?>
                                                 </tbody>
