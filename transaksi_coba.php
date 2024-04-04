@@ -41,7 +41,7 @@ include('koneksi/config.php');
                                 </div>
                                 <div class="card-body">
                                     <!-- Form untuk input transaksi -->
-                                    <form action="proses_transaksi.php" method="post">
+                                    <form action="proses_transaksi_new.php" method="post">
                                         <div class="card-body">
                                             <div id="items-container">
                                                 <div class="row">
