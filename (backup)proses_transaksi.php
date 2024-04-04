@@ -30,12 +30,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Proses data detail transaksi
     // Loop melalui setiap item dalam transaksi
     foreach ($_POST as $key => $value) {
-        if (strpos($key, 'nama_item_') === 0) {
-            $itemIndex = substr($key, 10);
+        if (strpos($key, 'item_') === 0) {
+            $itemIndex = substr($key, 5);
 
             // Ambil data detail transaksi dari form
-            $nama_item = $_POST['nama_item_' . $itemIndex];
-            $id_item = $_POST['id_item_' . $itemIndex];
+            $id_item = $_POST['item_' . $itemIndex];
             $jenis_satuan = $_POST['jenis_satuan_' . $itemIndex];
             $harga_satuan = $_POST['harga_satuan_' . $itemIndex];
             $jumlah = $_POST['jumlah_' . $itemIndex];
@@ -92,4 +91,3 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     mysqli_close($koneksi);
     header("Location: print_invoice.php?id_transaksi=" . $id_transaksi);
 }
-?>

@@ -14,7 +14,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Hitung nilai stok opname yang setara dengan jumlah_satuan_besar dalam database
     $stok_opname_setara = $stok_opname / $jumlah_isi_satuan_besar;
-
+    // Konversi ke satuan kecil
+    $stok_opname_satuan_kecil = $stok_opname_setara * $jumlah_isi_satuan_besar;
+    // Hitung nilai balance small
+    $balance_small = $stok_opname_satuan_kecil - $total_isi_satuan_kecil;
     // Ambil nilai jumlah_satuan_besar dari database
     $query_get_jumlah_satuan_besar = "SELECT jumlah_satuan_besar FROM item WHERE id_item = '$id_item'";
     $result = $koneksi->query($query_get_jumlah_satuan_besar);
@@ -31,9 +34,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $lebih = $stok_opname_setara - $jumlah_satuan_besar;
         $balance = "Lebih $lebih";
     }
+    // Validasi untuk balance_small
+    if ($stok_opname_satuan_kecil == $total_isi_satuan_kecil) {
+        $balance_small = "Sesuai";
+    } elseif ($stok_opname_satuan_kecil < $total_isi_satuan_kecil) {
+        $kurang_small = $total_isi_satuan_kecil - $stok_opname_satuan_kecil;
+        $balance_small = "Kurang $kurang_small";
+    } else {
+        $lebih_small = $stok_opname_satuan_kecil - $total_isi_satuan_kecil;
+        $balance_small = "Lebih $lebih_small";
+    }
+
 
     // Simpan data opname ke database
-    $query_simpan = "INSERT INTO opname (id_item, stok_opname, balance, keterangan) VALUES ('$id_item', '$stok_opname', '$balance', 'Tulis Keterangan')";
+    $query_simpan = "INSERT INTO opname (id_item, stok_opname, balance, balance_small, keterangan) VALUES ('$id_item', '$stok_opname', '$balance', '$balance_small', 'Tulis Keterangan')";
     if ($koneksi->query($query_simpan) === TRUE) {
         echo "Data berhasil disimpan.";
         header("Location: opname.php");
@@ -71,7 +85,7 @@ $username = $_SESSION['username'];
             <nav class="navbar navbar-expand-lg main-navbar">
                 <?php include('layout/navbar.php'); ?>
             </nav>
-            <div class="main-sidebar sidebar-style-2">
+            <div class="main-sidebar sidebar-style-2" style="overflow-y: auto;">
                 <?php include('layout/sidebar.php'); ?>
             </div>
 

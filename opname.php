@@ -13,7 +13,7 @@ if (!isset($_SESSION['username'])) {
     exit();
 }
 // Ambil data dari tabel opname
-$query_opname = "SELECT opname.id_opname, opname.tanggal, item.nama_item, item.total_isi_satuan_kecil, opname.stok_opname, opname.balance, opname.keterangan, item.jenis_satuan_kecil, item.jenis_satuan_besar
+$query_opname = "SELECT opname.id_opname, opname.tanggal, item.nama_item, item.total_isi_satuan_kecil, opname.stok_opname, opname.balance, opname.balance_small, opname.keterangan, item.jenis_satuan_kecil, item.jenis_satuan_besar
                  FROM opname
                  INNER JOIN item ON opname.id_item = item.id_item";
 
@@ -107,7 +107,8 @@ $username = $_SESSION['username'];
                                                         <th>Tanggal</th>
                                                         <th>Nama Item</th>
                                                         <th>Total Jumlah Fisik Satuan Kecil</th>
-                                                        <th>Balance</th>
+                                                        <th>Balance Satuan Besar</th>
+                                                        <th>Balance Satuan Kecil</th>
                                                         <th>Keterangan</th>
                                                         <th>Aksi</th>
                                                     </tr>
@@ -126,8 +127,8 @@ $username = $_SESSION['username'];
 
                                                             echo "<td>" . $row_opname['nama_item'] . "</td>";
                                                             echo "<td>" . $row_opname['stok_opname'] . " " . $row_opname['jenis_satuan_kecil'] . "</td>";
-                                                            echo "<td>" . $row_opname['balance'] . " " . $row_opname['jenis_satuan_besar'] . "</td>";
-
+                                                            echo "<td>" . $row_opname['balance'] . " (" . $row_opname['jenis_satuan_besar'] . ")" . "</td>";
+                                                            echo "<td>" . $row_opname['balance_small'] . " (" . $row_opname['jenis_satuan_kecil'] . ")" . "</td>";
                                                             echo "<td><input type='text' name='keterangan_" . $row_opname['id_opname'] . "' value='" . $row_opname['keterangan'] . "'></td>";
                                                             echo "<td>
                                                                     <button class='btn btn-success update-btn' data-id='" . $row_opname['id_opname'] . "'>Update</button>

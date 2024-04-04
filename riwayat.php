@@ -38,7 +38,7 @@ $total_harga_bulan_ini = $row_total_harga['total_harga'];
             <nav class="navbar navbar-expand-lg main-navbar">
                 <?php include('layout/navbar.php'); ?>
             </nav>
-            <div class="main-sidebar sidebar-style-2">
+            <div class="main-sidebar sidebar-style-2" style="overflow-y: auto;">
                 <?php include('layout/sidebar.php'); ?>
             </div>
 
@@ -175,7 +175,6 @@ $total_harga_bulan_ini = $row_total_harga['total_harga'];
                                                                     echo "Lunas";
                                                                 } else {
                                                                     echo "Kekurangan : Rp " . number_format($row['kekurangan'], 0, ',', '.');
-
                                                                 }
 
                                                                 echo "<td>
@@ -223,10 +222,10 @@ $total_harga_bulan_ini = $row_total_harga['total_harga'];
             <?php include('layout/js.php'); ?>
 
             <script>
-    function confirmDelete() {
-        return confirm("Apakah Anda yakin ingin menghapus transaksi ini?");
-    }
-</script>
+                function confirmDelete() {
+                    return confirm("Apakah Anda yakin ingin menghapus transaksi ini?");
+                }
+            </script>
             <!-- ... (your existing code) ... -->
             <script>
                 // Fungsi untuk mencetak invoice

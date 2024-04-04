@@ -27,7 +27,7 @@ $username = $_SESSION['username'];
             <nav class="navbar navbar-expand-lg main-navbar">
                 <?php include('layout/navbar.php'); ?>
             </nav>
-            <div class="main-sidebar sidebar-style-2">
+            <div class="main-sidebar sidebar-style-2" style="overflow-y: auto;">
                 <?php include('layout/sidebar.php'); ?>
             </div>
 
@@ -51,7 +51,7 @@ $username = $_SESSION['username'];
                                                     <tr>
                                                         <th>No</th>
                                                         <th>Nama Item</th>
-                                                        <th>Jumlah Masuk</th>
+                                                        <th>Jumlah Kulak</th>
                                                         <th>Sisa Satuan Besar</th>
                                                         <th>Sisa Satuan Kecil</th>
                                                     </tr>

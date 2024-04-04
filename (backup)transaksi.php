@@ -41,7 +41,7 @@ include('koneksi/config.php');
                                 </div>
                                 <div class="card-body">
                                     <!-- Form untuk input transaksi -->
-                                    <form action="proses_transaksi_new.php" method="post">
+                                    <form action="proses_transaksi.php" method="post">
                                         <div class="card-body">
                                             <div id="items-container">
                                                 <div class="row">
@@ -181,54 +181,103 @@ include('koneksi/config.php');
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- JavaScript -->
     <script>
+        ////////////////////////////////////////////// NAMA ITEM - JENIS - HARGA ///////////////////////////////////////
         var itemCounter = 1;
+
+        function updateItemDetails(itemIndex) {
+            var selectedOption = $('#item_' + itemIndex + ' option:selected');
+            var jenisSatuanBesar = selectedOption.data('jenis-satuan-besar');
+            var jenisSatuanKecil = selectedOption.data('jenis-satuan-kecil');
+            var hargaSatuanBesar = selectedOption.data('harga-jual-satuan-besar');
+            var hargaSatuanKecil = selectedOption.data('harga-jual-satuan-kecil');
+
+            // Membuat dropdown jenis satuan
+            var jenisSatuanDropdownHtml = `
+            <select class="form-control jenis-satuan" name="jenis_satuan_${itemIndex}" id="jenis_satuan_${itemIndex}" onchange="updateHarga(${itemIndex})">
+                <option value="Besar">${jenisSatuanBesar}</option>
+                <option value="Kecil">${jenisSatuanKecil}</option>
+            </select>
+        `;
+            $('#jenis_satuan_' + itemIndex).html(jenisSatuanDropdownHtml);
+
+            // Menentukan harga satuan berdasarkan jenis satuan yang dipilih
+            var hargaSatuan;
+            if ($('#jenis_satuan_' + itemIndex + ' option:selected').val() === 'Besar') {
+                hargaSatuan = hargaSatuanBesar;
+            } else {
+                hargaSatuan = hargaSatuanKecil;
+            }
+            $('#harga_satuan_' + itemIndex).val(hargaSatuan);
+        }
+
+        function updateHarga(itemIndex) {
+            var selectedOption = $('#jenis_satuan_' + itemIndex + ' option:selected').val();
+            var selectedOptionData;
+
+            if (selectedOption === 'Besar') {
+                selectedOptionData = $('#item_' + itemIndex + ' option:selected').data('harga-jual-satuan-besar');
+            } else {
+                selectedOptionData = $('#item_' + itemIndex + ' option:selected').data('harga-jual-satuan-kecil');
+            }
+
+            $('#harga_satuan_' + itemIndex).val(selectedOptionData);
+        }
+
         function addNewItem() {
             itemCounter++;
 
             var newItemHtml = `
             <div class="row item-row item-container" id="item-${itemCounter}">
-    <div class="col-md-3">
-        <label for="nama_item_${itemCounter}" class="text-dark">Nama Item<span class='red'> *</span></label>
-        <input class="form-control nama_item" type="text" name="nama_item_${itemCounter}" required />
-        <input class="form-control id_item" type="text" name="id_item_${itemCounter}" required style="display:none;"/>
-        <!-- Result container for item search -->
-        <div class="result"></div>
-    </div>
-    <div class="col-md-2">
-        <div class="form-group">
-            <label for="jenis_satuan_${itemCounter}" class="text-dark">Jenis Satuan</label>
-            <select class="form-control jenis_satuan" name="jenis_satuan_${itemCounter}" id="jenis_satuan_${itemCounter}">
-            </select>
-        </div>
-    </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="item_${itemCounter}" class="text-dark">Item</label>
+                        <select class="form-control" name="item_${itemCounter}" id="item_${itemCounter}" onchange="updateItemDetails(${itemCounter})" required>
+                            <?php
+                            // Ambil daftar item dari database
+                            $sql = "SELECT id_item, nama_item, jenis_satuan_besar, jenis_satuan_kecil, harga_jual_satuan_besar, harga_jual_satuan_kecil FROM item";
+                            $result = mysqli_query($koneksi, $sql);
 
-    <div class="col-md-2">
-        <div class="form-group">
-            <label for="harga_satuan_${itemCounter}" class="text-dark">Harga Satuan (Rp.)</label>
-            <input class="form-control harga_satuan" type="text" name="harga_satuan_${itemCounter}" id="harga_satuan_${itemCounter}" readonly />
-        </div>
-    </div>
-    <div class="col-md-2">
-        <div class="form-group">
-            <label for="jumlah_${itemCounter}" class="text-dark">Jumlah</label>
-            <input type="number" class="form-control" name="jumlah_${itemCounter}" id="jumlah_${itemCounter}" min="1" onchange="updateTotal(${itemCounter})" required />
-        </div>
-    </div>
-    <div class="col-md-2">
-        <div class="form-group">
-            <label for="total_${itemCounter}" class="text-dark">Total Harga (Rp.)</label>
-            <input type="number" class="form-control" name="total_${itemCounter}" id="total_${itemCounter}" min="0" readonly />
-        </div>
-    </div>
-    <div class="col-md-1">
-        <div class="form-group" style="margin-top:30px;">
-            <button class="btn btn-danger remove-item" onclick="removeItem(${itemCounter})"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-    </div>
-</div>
+                            // Tampilkan opsi untuk setiap item
+                            while ($row = mysqli_fetch_assoc($result)) {
+                                echo "<option value='" . $row['id_item'] . "' data-jenis-satuan-besar='" . $row['jenis_satuan_besar'] . "' data-jenis-satuan-kecil='" . $row['jenis_satuan_kecil'] . "' data-harga-jual-satuan-besar='" . $row['harga_jual_satuan_besar'] . "' data-harga-jual-satuan-kecil='" . $row['harga_jual_satuan_kecil'] . "'>" . $row['nama_item'] . "</option>";
+                            }
+                            ?>
+                        </select>
+                    </div>
+                </div>
+               
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label for="jenis_satuan_${itemCounter}" class="text-dark">Jenis Satuan</label>
+                        <div id="jenis_satuan_${itemCounter}"></div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label for="harga_satuan_${itemCounter}" class="text-dark">Harga Satuan (Rp.)</label>
+                        <input type="number" class="form-control harga-satuan" name="harga_satuan_${itemCounter}" id="harga_satuan_${itemCounter}" min="0" readonly />
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label for="jumlah_${itemCounter}" class="text-dark">Jumlah</label>
+                        <input type="number" class="form-control" name="jumlah_${itemCounter}" id="jumlah_${itemCounter}" min="1" onchange="updateTotal(${itemCounter})" required />
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label for="total_${itemCounter}" class="text-dark">Total Harga (Rp.)</label>
+                        <input type="number" class="form-control" name="total_${itemCounter}" id="total_${itemCounter}" min="0" readonly />
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="form-group" style="margin-top:30px;">
+                       <button class="btn btn-danger" onclick="removeItem(${itemCounter})"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                </div>
 
-
-
+                
+            </div>
         `;
 
             $('#items-container').append(newItemHtml);
@@ -401,83 +450,6 @@ include('koneksi/config.php');
     </script>
 
 
-    <script>
-        $(document).ready(function() {
-            function handleItemSearch(inputElement) {
-                var searchTerm = inputElement.val();
-                var resultContainer = inputElement.parent().find(".result");
-
-                if (searchTerm !== "") {
-                    $.ajax({
-                        type: "POST",
-                        url: "search_item.php",
-                        data: {
-                            searchTerm: searchTerm
-                        },
-                        success: function(data) {
-                            resultContainer.html(data);
-                        }
-                    });
-                } else {
-                    resultContainer.empty();
-                }
-            }
-            $(document).on("input", ".nama_item", function() {
-                handleItemSearch($(this));
-            });
-            $(document).on("click", ".result li", function() {
-                var selectedItem = $(this).text();
-                var itemContainer = $(this).closest(".item-container");
-                itemContainer.find(".nama_item").val(selectedItem);
-                $.ajax({
-                    type: "POST",
-                    url: "get_quantity.php",
-                    data: {
-                        selectedItem: selectedItem
-                    },
-                    success: function(response) {
-                        var data = JSON.parse(response);
-                        itemContainer.find(".id_item").val(data.id_item);
-                        var jenisSatuanSelect = itemContainer.find(".jenis_satuan");
-                        jenisSatuanSelect.empty();
-                        jenisSatuanSelect.append('<option value="Besar">' + data.jenis_satuan_besar + '</option>');
-                        jenisSatuanSelect.append('<option value="Kecil">' + data.jenis_satuan_kecil + '</option>');
-                        var hargaJualSatuanInput = itemContainer.find(".harga_satuan");
-
-                        hargaJualSatuanInput.val(data.harga_jual_satuan_besar);
-                        jenisSatuanSelect.on("change", function() {
-                            var selectedJenisSatuan = $(this).val();
-
-                            if (selectedJenisSatuan === "Besar") {
-                                hargaJualSatuanInput.val(data.harga_jual_satuan_besar);
-                            } else if (selectedJenisSatuan === "Kecil") {
-                                hargaJualSatuanInput.val(data.harga_jual_satuan_kecil);
-                            }
-                        });
-                    }
-                });
-                itemContainer.find(".result").empty();
-            });
-
-            $(document).on("click", ".remove-item", function() {
-                var itemContainer = $(this).closest(".item-container");
-                itemContainer.find(".jenis_satuan").empty();
-                itemContainer.find(".harga_satuan").val("");
-                itemContainer.find(".nama_item").val("");
-                itemContainer.find(".id_item").val(""); 
-                itemContainer.remove();
-            });
-            $(document).on("input", ".nama_item", function() {
-                var itemContainer = $(this).closest(".item-container");
-                var inputLength = $(this).val().length;
-                if (inputLength === 0) {
-                    itemContainer.find(".jenis_satuan").empty();
-                    itemContainer.find(".harga_satuan").val("");
-                    itemContainer.find(".id_item").val("");
-                }
-            });
-        });
-    </script>
 
 </body>
 

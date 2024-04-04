@@ -5,12 +5,60 @@ session_start();
 
 // Periksa apakah pengguna sudah login
 if (!isset($_SESSION['username'])) {
-    header("Location: login.php");
-    exit();
+  header("Location: login.php");
+  exit();
 }
 
 // Ambil username dari sesi
 $username = $_SESSION['username'];
+?>
+
+
+<?php
+include('koneksi/config.php');
+
+// Saldo
+$query_saldo = "SELECT SUM(total_harga) AS saldo FROM transaksi";
+$result_saldo = $koneksi->query($query_saldo);
+$saldo = "Rp " . number_format($result_saldo->fetch_assoc()['saldo'], 0, ',', '.');
+
+// Pendapatan Bulan Ini
+$query_pendapatan_bulan_ini = "SELECT SUM(total_harga) AS pendapatan_bulan_ini 
+                               FROM transaksi 
+                               WHERE MONTH(tanggal) = MONTH(CURRENT_DATE()) AND YEAR(tanggal) = YEAR(CURRENT_DATE())";
+$result_pendapatan_bulan_ini = $koneksi->query($query_pendapatan_bulan_ini);
+$pendapatan_bulan_ini = "Rp " . number_format($result_pendapatan_bulan_ini->fetch_assoc()['pendapatan_bulan_ini'], 0, ',', '.');
+
+// Pendapatan Bulan Kemarin
+$query_pendapatan_bulan_kemarin = "SELECT SUM(total_harga) AS pendapatan_bulan_kemarin 
+                                   FROM transaksi 
+                                   WHERE MONTH(tanggal) = MONTH(CURRENT_DATE() - INTERVAL 1 MONTH) AND YEAR(tanggal) = YEAR(CURRENT_DATE())";
+$result_pendapatan_bulan_kemarin = $koneksi->query($query_pendapatan_bulan_kemarin);
+$pendapatan_bulan_kemarin = "Rp " . number_format($result_pendapatan_bulan_kemarin->fetch_assoc()['pendapatan_bulan_kemarin'], 0, ',', '.');
+
+  // Ambil data pendapatan perbulan dari tabel transaksi, maksimal 6 bulan terakhir
+  $query_pendapatan = "SELECT MONTH(tanggal) AS bulan, YEAR(tanggal) AS tahun, SUM(total_harga) AS pendapatan 
+                    FROM transaksi 
+                    WHERE tanggal >= DATE_SUB(CURRENT_DATE(), INTERVAL 6 MONTH)
+                    GROUP BY YEAR(tanggal), MONTH(tanggal)
+                    ORDER BY tahun DESC, bulan DESC
+                    LIMIT 6";
+
+  $hasil_pendapatan = $koneksi->query($query_pendapatan);
+
+  $labels = array();
+  $data = array();
+  while ($row = $hasil_pendapatan->fetch_assoc()) {
+    $bulan_tahun = date('F Y', strtotime($row['tahun'] . '-' . $row['bulan'] . '-01'));
+    $pendapatan = $row['pendapatan'];
+    $labels[] = $bulan_tahun;
+    $data[] = $pendapatan;
+  }
+
+  // Memutar array agar bulan berurutan dari yang terlama ke yang terbaru
+  $labels = array_reverse($labels);
+  $data = array_reverse($data);
+
 ?>
 
 
@@ -23,7 +71,7 @@ $username = $_SESSION['username'];
       <nav class="navbar navbar-expand-lg main-navbar">
         <?php include('layout/navbar.php'); ?>
       </nav>
-      <div class="main-sidebar sidebar-style-2">
+      <div class="main-sidebar sidebar-style-2" style="overflow-y: auto;">
         <?php include('layout/sidebar.php'); ?>
       </div>
 
@@ -79,8 +127,8 @@ $username = $_SESSION['username'];
           </div>
           <div class="row">
             <div class="col px-3">
-            <canvas id="grafikPendapatan"></canvas>
-            </div> 
+              <canvas id="grafikPendapatan"></canvas>
+            </div>
           </div>
 
         </section>
@@ -91,40 +139,40 @@ $username = $_SESSION['username'];
         <?php include('layout/footer.php'); ?>
       </footer>
 
-<script>
-  var ctx = document.getElementById('grafikPendapatan').getContext('2d');
-  var myChart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: <?php echo json_encode($labels); ?>,
-      datasets: [{
-        label: 'Pendapatan',
-        data: <?php echo json_encode($data); ?>,
-        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-        borderColor: 'rgba(75, 192, 192, 1)',
-        borderWidth: 1
-      }]
-    },
-    options: {
-      aspectRatio: 3, // Mengatur rasio aspek menjadi 3:1
-      scales: {
-        y: {
-          beginAtZero: true
-        }
-      },
-      plugins: {
-        title: {
-          display: true,
-          text: 'Pendapatan bulan ini', // Menambahkan judul grafik
-          font: {
-            size: 20, // Mengatur ukuran font judul
-            weight: 'bold' // Mengatur ketebalan font judul
+      <script>
+        var ctx = document.getElementById('grafikPendapatan').getContext('2d');
+        var myChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: <?php echo json_encode($labels); ?>,
+            datasets: [{
+              label: 'Pendapatan',
+              data: <?php echo json_encode($data); ?>,
+              backgroundColor: 'rgba(75, 192, 192, 0.2)',
+              borderColor: 'rgba(75, 192, 192, 1)',
+              borderWidth: 1
+            }]
+          },
+          options: {
+            aspectRatio: 3, // Mengatur rasio aspek menjadi 3:1
+            scales: {
+              y: {
+                beginAtZero: true
+              }
+            },
+            plugins: {
+              title: {
+                display: true,
+                text: 'Grafik Pemasukan Perbulan', // Menambahkan judul grafik
+                font: {
+                  size: 20, // Mengatur ukuran font judul
+                  weight: 'bold' // Mengatur ketebalan font judul
+                }
+              }
+            }
           }
-        }
-      }
-    }
-  });
-</script>
+        });
+      </script>
 
 
 
