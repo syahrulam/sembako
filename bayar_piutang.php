@@ -3,46 +3,41 @@ include('koneksi/config.php');
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nama_pelanggan = $_POST['nama_pelanggan'];
-    $jumlah_pembayaran = $_POST['jumlah_pembayaran'];
+    $total_hutang_baru = $_POST['total_hutang'];
 
-    // Ambil id_pelanggan dari tabel pelanggan berdasarkan nama_pelanggan
-    $query_id_pelanggan = "SELECT id FROM pelanggan WHERE nama = '$nama_pelanggan'";
-    $result_id_pelanggan = mysqli_query($koneksi, $query_id_pelanggan);
-    $row_id_pelanggan = mysqli_fetch_assoc($result_id_pelanggan);
-    $id_pelanggan = $row_id_pelanggan['id'];
+    // Periksa apakah nama pelanggan sudah ada dalam database
+    $sql_cek_pelanggan = "SELECT * FROM pelanggan WHERE nama='$nama_pelanggan'";
+    $result_cek_pelanggan = mysqli_query($koneksi, $sql_cek_pelanggan);
 
-    // Ambil total_hutang dari tabel piutang berdasarkan id_pelanggan
-    $query_total_hutang = "SELECT total_hutang FROM piutang WHERE id_pelanggan = $id_pelanggan";
-    $result_total_hutang = mysqli_query($koneksi, $query_total_hutang);
-    $row_total_hutang = mysqli_fetch_assoc($result_total_hutang);
-    $total_hutang = $row_total_hutang['total_hutang'];
+    if (mysqli_num_rows($result_cek_pelanggan) > 0) {
+        $row = mysqli_fetch_assoc($result_cek_pelanggan);
+        $id_pelanggan = $row['id'];
 
-    // Kurangi total_hutang dengan jumlah_pembayaran
-    $total_hutang_setelah_cicilan = $total_hutang - $jumlah_pembayaran;
+        // Cek apakah pelanggan sudah memiliki entri piutang
+        $sql_cek_piutang = "SELECT * FROM piutang WHERE id_pelanggan='$id_pelanggan'";
+        $result_cek_piutang = mysqli_query($koneksi, $sql_cek_piutang);
 
-    // Simpan riwayat pembayaran
-    $query_simpan_riwayat = "INSERT INTO pembayaran_hutang (id_pelanggan, jumlah_pembayaran) VALUES ($id_pelanggan, $jumlah_pembayaran)";
-    $result_simpan_riwayat = mysqli_query($koneksi, $query_simpan_riwayat);
-
-    if ($result_simpan_riwayat) {
-        // Perbarui total_hutang di tabel piutang dengan total_hutang_setelah_cicilan
-        $query_perbarui_total_hutang = "UPDATE piutang SET total_hutang = $total_hutang_setelah_cicilan WHERE id_pelanggan = $id_pelanggan";
-        $result_perbarui_total_hutang = mysqli_query($koneksi, $query_perbarui_total_hutang);
-
-        if ($result_perbarui_total_hutang) {
-            echo "Pembayaran cicilan berhasil disimpan.";
-            // Redirect atau tampilkan pesan sukses
+        if (mysqli_num_rows($result_cek_piutang) > 0) {
+            // Jika sudah ada entri piutang, tambahkan total hutang baru
+            $sql_update_total_hutang = "UPDATE piutang SET total_hutang=total_hutang+'$total_hutang_baru' WHERE id_pelanggan='$id_pelanggan'";
         } else {
-            echo "Error: " . mysqli_error($koneksi);
-            // Tampilkan pesan error atau redirect ke halaman error
+            // Jika belum ada entri piutang, buat entri baru
+            $sql_update_total_hutang = "INSERT INTO piutang (id_pelanggan, total_hutang) VALUES ('$id_pelanggan', '$total_hutang_baru')";
+        }
+
+        if (mysqli_query($koneksi, $sql_update_total_hutang)) {
+            $message = "Total hutang berhasil diperbarui untuk pelanggan $nama_pelanggan.";
+        } else {
+            $message = "Terjadi kesalahan dalam memperbarui total hutang untuk pelanggan $nama_pelanggan.";
         }
     } else {
-        echo "Error: " . mysqli_error($koneksi);
-        // Tampilkan pesan error atau redirect ke halaman error
+        $message = "Pelanggan dengan nama $nama_pelanggan tidak ditemukan dalam database.";
     }
 }
-?>
 
+// Tutup koneksi
+$koneksi->close();
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -50,39 +45,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bayar Cicilan</title>
+    <title>Tambah Total Hutang</title>
 </head>
 
 <body>
-    <h2>Form Pembayaran Cicilan</h2>
-    <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-        <label for="nama_pelanggan">Nama Pelanggan:</label>
-        <select name="nama_pelanggan" id="nama_pelanggan">
-            <?php
-            // Ambil nama pelanggan dari tabel pelanggan
-            $query_nama_pelanggan = "SELECT nama FROM pelanggan";
-            $result_nama_pelanggan = mysqli_query($koneksi, $query_nama_pelanggan);
-            while ($row_nama_pelanggan = mysqli_fetch_assoc($result_nama_pelanggan)) {
-                echo "<option value='" . $row_nama_pelanggan['nama'] . "'>" . $row_nama_pelanggan['nama'] . "</option>";
-            }
-            ?>
-        </select>
-        <br><br>
-        <label for="jumlah_pembayaran">Jumlah Cicilan:</label>
-        <input type="number" name="jumlah_pembayaran" id="jumlah_pembayaran" min="0">
-        <br><br>
-        <input type="submit" value="Bayar Cicilan">
+    <h2>Tambah Total Hutang</h2>
+    <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+        <label for="nama_pelanggan">Nama Pelanggan:</label><br>
+        <input type="text" id="nama_pelanggan" name="nama_pelanggan" required><br><br>
+        <label for="total_hutang">Total Hutang Baru:</label><br>
+        <input type="number" id="total_hutang" name="total_hutang" required><br><br>
+        <input type="submit" value="Tambah Total Hutang">
     </form>
-
-    <?php
-    // Tampilkan pesan kesalahan atau sukses
-    if (isset($error_message)) {
-        echo "<p style='color: red;'>$error_message</p>";
-    }
-    if (isset($success_message)) {
-        echo "<p style='color: green;'>$success_message</p>";
-    }
-    ?>
+    <p><?php echo isset($message) ? $message : ''; ?></p>
 </body>
 
 </html>

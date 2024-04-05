@@ -14,17 +14,21 @@ $username = $_SESSION['username'];
 // Menggunakan tanda == untuk perbandingan dalam query SQL
 include('koneksi/config.php');
 
-// Query untuk mengambil beberapa transaksi per masing-masing nama pelanggan yang tipe pembayarannya adalah Debit
-$query = "SELECT nama_pelanggan, 
-                 COUNT(id_transaksi) AS jumlah_transaksi, 
-                 SUM(total_harga) AS total_harga, 
-                 SUM(total_bayar) AS total_bayar, 
-                 SUM(kembalian) AS total_kembalian 
-          FROM transaksi 
-          WHERE tipe_pembayaran = 'Debit' 
-          GROUP BY nama_pelanggan";
+// Ambil ID pelanggan dari URL
+$id_pelanggan = $_GET['id'];
 
-$result = mysqli_query($koneksi, $query);
+// Query untuk mengambil transaksi berdasarkan ID pelanggan
+$query = "SELECT id_transaksi,
+                 no_transaksi,
+                 tanggal,
+                 kekurangan
+          FROM transaksi 
+          WHERE nama_pelanggan = ? AND tipe_pembayaran = 'Debit'";
+
+$stmt = mysqli_prepare($koneksi, $query);
+mysqli_stmt_bind_param($stmt, "s", $id_pelanggan);
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
 
 // Variabel untuk menyimpan nomor urut
 $no = 1;
@@ -57,25 +61,24 @@ $no = 1;
                                             <thead>
                                                 <tr>
                                                     <th>No.</th>
-                                                    <th>Nama Pelanggan</th>
-                                                    <th>Jumlah Transaksi</th>
-                                                    <th>Hutang Sekarang</th>
-                                                    <th>Detail</th>
+                                                    <th>No. Transaksi</th>
+                                                    <th>Tanggal</th>
+                                                    <th>Hutang</th>
+                                                    <th>Aksi</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <?php while ($row = mysqli_fetch_assoc($result)) : ?>
                                                     <tr>
                                                         <td><?php echo $no++; ?></td>
-                                                        <td><?php echo ucwords($row['nama_pelanggan']); ?></td>
-                                                        <td><?php echo $row['jumlah_transaksi']; ?></td>
-                                                        <td><?php echo 'Rp. ' . number_format($row['total_harga'], 0, ',', '.'); ?></td>
+                                                        <td><?php echo $row['no_transaksi']; ?></td>
+                                                        <td><?php echo $row['tanggal']; ?></td>
+                                                        <td><?php echo 'Rp. ' . number_format($row['kekurangan'], 0, ',', '.'); ?></td>
                                                         <td>
-                                                            <a href="detail_piutang.php?id=<?php echo $row['nama_pelanggan']; ?>" class="btn btn-primary">Detail</a>
+                                                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#bayarCicilanModal" data-id_transaksi="<?php echo $row['id_transaksi']; ?>">Bayar Cicilan</button>
                                                         </td>
                                                     </tr>
                                                 <?php endwhile; ?>
-
                                             </tbody>
                                         </table>
                                     </div>
@@ -100,10 +103,11 @@ $no = 1;
                             </button>
                         </div>
                         <div class="modal-body">
-                            <form action="proses_pembayaran_hutang.php" method="post">
+                            <form id="formBayarCicilan" action="proses_pembayaran_hutang.php" method="post">
                                 <div class="form-group">
                                     <label for="jumlah">Jumlah Pembayaran:</label>
-                                    <input style="display: none;" type="text" class="form-control" id="nama_pelanggan" name="nama_pelanggan" readonly>
+                                    <!-- Hidden input untuk ID transaksi -->
+                                    <input type="hidden" class="form-control" id="id_transaksi" name="id_transaksi">
                                     <input type="text" class="form-control" id="jumlah" name="jumlah" placeholder="Jumlah Cicilan (Rp)" required>
                                 </div>
                                 <button type="submit" class="btn btn-primary">Bayar Cicilan</button>
@@ -112,61 +116,47 @@ $no = 1;
                     </div>
                 </div>
             </div>
-            <!-- End Modal Bayar Cicilan -->
 
         </div>
 
         <?php include('layout/js.php'); ?>
 
-        <link href='https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css' rel='stylesheet' type='text/css'>
-        <link href='https://cdn.datatables.net/buttons/2.2.3/css/buttons.dataTables.min.css' rel='stylesheet' type='text/css'>
-
-        <!-- jQuery Library -->
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-
-        <!-- Datatable JS -->
-        <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
-        <script src="https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-        <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.html5.min.js"></script>
-
-
         <script>
             $(document).ready(function() {
                 // Tangkap nilai data saat tombol "Bayar Cicilan" diklik
-                $('.bayarCicilanBtn').click(function() {
-                    var namaPelanggan = $(this).data('pelanggan-nama');
-                    $('#nama_pelanggan').val(namaPelanggan); // Tampilkan nama pelanggan di dalam input
+                $('.btn-primary').click(function() {
+                    var idTransaksi = $(this).data('id_transaksi');
+                    $('#id_transaksi').val(idTransaksi); // Setel ID transaksi di dalam input tersembunyi
                 });
-            });
-        </script>
-        <!-- Script -->
-        <script>
-            $(document).ready(function() {
-                var empDataTable = $('#empTable').DataTable({
-                    dom: 'Blfrtip',
-                    buttons: [{
-                            extend: 'copy',
+
+                // Tangkap event submit formulir pembayaran hutang
+                $('#formBayarCicilan').submit(function(e) {
+                    e.preventDefault(); // Mencegah pengiriman formulir secara langsung
+
+                    var form = $(this);
+                    var url = form.attr('action');
+                    var formData = form.serialize(); // Serialize data formulir
+
+                    // Kirim data formulir menggunakan AJAX
+                    $.ajax({
+                        type: 'POST',
+                        url: url,
+                        data: formData,
+                        success: function(response) {
+                            // Tampilkan pesan sukses atau pesan kesalahan
+                            alert(response);
+                            // Alihkan ke halaman detail_hutang.php
+                            window.location.href = 'detail_hutang.php?id=<?php echo $id_pelanggan; ?>';
                         },
-                        {
-                            extend: 'pdf',
-                            exportOptions: {
-                                columns: [0, 1, 2, 3, 4] // Column index which needs to export
-                            }
-                        },
-                        {
-                            extend: 'csv',
-                        },
-                        {
-                            extend: 'excel',
+                        error: function(xhr, status, error) {
+                            // Tampilkan pesan kesalahan jika terjadi masalah saat mengirim data
+                            alert("Error: " + xhr.responseText);
                         }
-                    ]
+                    });
                 });
             });
         </script>
+
     </div>
 </body>
-
 </html>

@@ -114,16 +114,19 @@ $total_harga_bulan_ini = $row_total_harga['total_harga'];
                                         <div style="margin-bottom: 40px;">
                                             <p style="font-size: 20px;" class="font-weight-bold">Tampilkan Berdasarkan </p>
                                             <form id="searchForm">
-                                                <div class="row ml-0">
-                                                    <div class="pelanggan-container">
-                                                        <input type="text" class="form-control namaPelanggan" id="nama" name="nama" placeholder="Nama Pelanggan">
-                                                        <div class="result_pelanggan"></div>
+                                                <div class="row mb-3">
+                                                    <div class="col-3">
+
+                                                        <div class="pelanggan-container">
+                                                            <input type="text" class="form-control namaPelanggan" id="nama" name="nama" placeholder="Nama Pelanggan">
+                                                            <div class="result_pelanggan"></div>
+                                                        </div>
                                                     </div>
 
-                                                    <div class="col">
+                                                    <div class="col-3">
                                                         <input type="month" class="form-control" id="bulanTahun" name="bulanTahun">
                                                     </div>
-                                                    <div class="col">
+                                                    <div class="col-3">
                                                         <select id="sorting" class="form-control" name="sorting">
                                                             <option value="terlama">Terlama</option>
                                                             <option value="terbaru">Terbaru</option>
@@ -177,7 +180,7 @@ $total_harga_bulan_ini = $row_total_harga['total_harga'];
                                                                 } else {
                                                                     echo "Kekurangan : Rp " . number_format($row['kekurangan'], 0, ',', '.');
                                                                 }
-                                                                
+
 
                                                                 echo "<td>
                                                                 <!-- Tombol aksi -->
