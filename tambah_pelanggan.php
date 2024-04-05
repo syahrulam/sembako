@@ -7,14 +7,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $alamat = $_POST['alamat'];
     $nomor = $_POST['nomor'];
 
-    $query = "INSERT INTO pelanggan (nama, alamat, nomor) VALUES ('$nama', '$alamat', '$nomor')";
-    if ($koneksi->query($query) === TRUE) {
-        header("Location: pelanggan.php");
-        exit();
+    // Periksa apakah nama pelanggan sudah ada di database
+    $check_query = "SELECT * FROM pelanggan WHERE nama = '$nama'";
+    $result = $koneksi->query($check_query);
+
+    // Jika nama pelanggan sudah ada, tampilkan pesan error menggunakan alert JavaScript
+    if ($result->num_rows > 0) {
+        echo "<script>alert('Error: Nama pelanggan sudah ada.');</script>";
     } else {
-        echo "Error: " . $query . "<br>" . $koneksi->error;
+        // Jika nama pelanggan belum ada, lakukan operasi INSERT
+        $insert_query = "INSERT INTO pelanggan (nama, alamat, nomor) VALUES ('$nama', '$alamat', '$nomor')";
+        if ($koneksi->query($insert_query) === TRUE) {
+            header("Location: pelanggan.php");
+            exit();
+        } else {
+            echo "Error: " . $insert_query . "<br>" . $koneksi->error;
+        }
     }
 }
+
+$koneksi->close();
+?>
+
 
 $koneksi->close();
 ?>
@@ -64,15 +78,15 @@ $username = $_SESSION['username'];
                                         <form method="post" action="tambah_pelanggan.php">
                                             <div class="form-group">
                                                 <label for="nama">Nama</label>
-                                                <input type="text" class="form-control" id="nama" name="nama" required>
+                                                <input type="text" class="form-control" id="nama" name="nama" placeholder="Nama Pelanggan" required>
                                             </div>
                                             <div class="form-group">
                                                 <label for="alamat">Alamat</label>
-                                                <input type="text" class="form-control" id="alamat" name="alamat" required>
+                                                <input type="text" class="form-control" id="alamat" name="alamat" placeholder="Alamat" required>
                                             </div>
                                             <div class="form-group">
                                                 <label for="nomor">Nomor</label>
-                                                <input type="text" class="form-control" id="nomor" name="nomor" required>
+                                                <input type="text" class="form-control" id="nomor" name="nomor" placeholder="No Telepon/WA" required>
                                             </div>
                                             <button type="submit" class="btn btn-primary">Simpan</button>
                                             <a href="pelanggan.php" class="btn btn-secondary">Batal</a>

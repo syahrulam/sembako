@@ -15,7 +15,7 @@ $username = $_SESSION['username'];
 include('koneksi/config.php');
 
 // Query untuk mengambil data pelanggan dan total hutang
-$query = "SELECT * FROM transaksi WHERE tipe_pembayaran = 'Debit'";
+$query = "SELECT nama_pelanggan, SUM(kekurangan) AS total_hutang FROM transaksi WHERE tipe_pembayaran = 'Debit' AND kekurangan <> 0 GROUP BY nama_pelanggan";
 $result = mysqli_query($koneksi, $query);
 
 // Variabel untuk menyimpan nomor urut
@@ -44,9 +44,6 @@ $no = 1;
                                     <h4>Piutang</h4>
                                 </div>
                                 <div class="card-body">
-                                    <!-- Tombol Tambah Piutang -->
-                                    <a href="bayar_piutang.php" class="btn btn-primary mb-3">Bayar Cicilan</a>
-
                                     <div class="table-responsive">
                                         <table id="empTable" class="table mt-3">
                                             <thead>
@@ -54,6 +51,7 @@ $no = 1;
                                                     <th>No.</th>
                                                     <th>Nama Pelanggan</th>
                                                     <th>Total Hutang</th>
+                                                    <th>Aksi</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -61,7 +59,11 @@ $no = 1;
                                                     <tr>
                                                         <td><?php echo $no++; ?></td>
                                                         <td><?php echo ucwords($row['nama_pelanggan']); ?></td>
-                                                        <td><?php echo 'Rp. '.number_format($row['kekurangan'], 0, ',', '.') ?></td>
+                                                        <td><?php echo 'Rp. ' . number_format($row['total_hutang'], 0, ',', '.') ?></td>
+                                                        <td>
+
+                                                            <button type="button" class="btn btn-warning mb-3 bayarCicilanBtn" data-toggle="modal" data-target="#bayarCicilanModal" data-pelanggan-nama="<?php echo $row['nama_pelanggan']; ?>">Bayar Cicilan</button>
+                                                        </td>
                                                     </tr>
                                                 <?php endwhile; ?>
                                             </tbody>
@@ -76,6 +78,31 @@ $no = 1;
                 </section>
             </div>
             <!-- End Bagian Utama -->
+
+            <!-- Modal Bayar Cicilan -->
+            <div class="modal fade" id="bayarCicilanModal" tabindex="-1" role="dialog" aria-labelledby="bayarCicilanModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="bayarCicilanModalLabel">Bayar Cicilan</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form action="proses_pembayaran_hutang.php" method="post">
+                                <div class="form-group">
+                                    <label for="jumlah">Jumlah Pembayaran:</label>
+                                    <input style="display: none;" type="text" class="form-control" id="nama_pelanggan" name="nama_pelanggan" readonly>
+                                    <input type="text" class="form-control" id="jumlah" name="jumlah" placeholder="Jumlah Cicilan (Rp)" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Bayar Cicilan</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End Modal Bayar Cicilan -->
 
         </div>
 
@@ -95,6 +122,16 @@ $no = 1;
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
         <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.html5.min.js"></script>
 
+
+        <script>
+            $(document).ready(function() {
+                // Tangkap nilai data saat tombol "Bayar Cicilan" diklik
+                $('.bayarCicilanBtn').click(function() {
+                    var namaPelanggan = $(this).data('pelanggan-nama');
+                    $('#nama_pelanggan').val(namaPelanggan); // Tampilkan nama pelanggan di dalam input
+                });
+            });
+        </script>
         <!-- Script -->
         <script>
             $(document).ready(function() {
@@ -121,4 +158,5 @@ $no = 1;
         </script>
     </div>
 </body>
+
 </html>

@@ -378,6 +378,7 @@ include('koneksi/config.php');
                     success: function(response) {
                         var data = JSON.parse(response);
                         pelangganContainer.find(".nama").val(data.nama);
+                        pelangganContainer.find(".id_pelanggan").val(data.id);
                     }
                 });
 
