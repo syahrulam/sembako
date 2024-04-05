@@ -116,7 +116,7 @@ $total_harga_bulan_ini = $row_total_harga['total_harga'];
                                             <form id="searchForm">
                                                 <div class="row ml-0">
                                                     <div class="pelanggan-container">
-                                                        <input type="text" class="form-control namaPelanggan" id="namaPelanggan" name="namaPelanggan" placeholder="Nama Pelanggan">
+                                                        <input type="text" class="form-control namaPelanggan" id="nama" name="nama" placeholder="Nama Pelanggan">
                                                         <div class="result_pelanggan"></div>
                                                     </div>
 
@@ -168,7 +168,7 @@ $total_harga_bulan_ini = $row_total_harga['total_harga'];
                                                                 echo "<td>" . $row['no_transaksi'] . "</td>";
                                                                 echo "<td>" . date('d F Y', strtotime($row['tanggal'])) . "</td>";
                                                                 echo "<td>" . $row['tipe_pembayaran'] . "</td>";
-                                                                echo "<td>" . $row['nama_pelanggan'] . "</td>";
+                                                                echo "<td>" . ucwords($row['nama_pelanggan']) . "</td>";
                                                                 echo "<td>";
 
                                                                 if ($row['tipe_pembayaran'] == 'Cash') {
@@ -277,7 +277,7 @@ $total_harga_bulan_ini = $row_total_harga['total_harga'];
 
             <script>
                 function searchData() {
-                    var namaPelanggan = $('#namaPelanggan').val();
+                    var namaPelanggan = $('#nama').val();
                     var bulanTahun = $('#bulanTahun').val();
                     var sorting = $('#sorting').val();
 

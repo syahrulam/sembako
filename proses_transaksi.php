@@ -17,7 +17,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Query untuk menyimpan data transaksi ke dalam tabel transaksi
     $query_transaksi = "INSERT INTO transaksi (tanggal, no_transaksi, total_harga, nama_pelanggan, tipe_pembayaran, total_bayar, kembalian, kekurangan, sales)
                         VALUES ('$tgl_transaksi', '$no_transaksi', '$total_harga', '$nama_pelanggan', '$tipe_pembayaran', '$uang_diterima', '$kembalian', '$kurangan', '$nama_sales')";
-
+                        
     // Eksekusi query transaksi
     if (mysqli_query($koneksi, $query_transaksi)) {
         echo "Data transaksi berhasil disimpan.";

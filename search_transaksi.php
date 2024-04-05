@@ -1,6 +1,19 @@
 <?php
 include('koneksi/config.php');
 
+session_start();
+
+// Periksa apakah pengguna sudah login
+if (!isset($_SESSION['username'])) {
+    header("Location: login.php");
+    exit();
+}
+
+// Ambil username dari sesi
+$username = $_SESSION['username'];
+$role = $_SESSION['role'];
+
+
 // Pastikan elemen $_POST['bulanTahun'] terdefinisi sebelum mengaksesnya
 $bulanTahun = isset($_POST['bulanTahun']) ? $_POST['bulanTahun'] : '';
 
@@ -39,13 +52,26 @@ if ($result) {
             echo "<tr>";
             echo "<td>" . $row['no_transaksi'] . "</td>";
             echo "<td>" . date('d F Y', strtotime($row['tanggal'])) . "</td>";
+            echo "<td>" . $row['tipe_pembayaran'] . "</td>";
             echo "<td>" . $row['nama_pelanggan'] . "</td>";
+            echo "<td>";
+
+            if ($row['tipe_pembayaran'] == 'Cash') {
+                echo "Lunas";
+            } else {
+                echo "Kekurangan : Rp " . number_format($row['kekurangan'], 0, ',', '.');
+            }
+
             echo "<td>
-                    <!-- Tombol aksi -->
-                    <a class='btn btn-warning btn-sm px-4 mt-2' href='print_invoice_riwayat.php?id_transaksi=" . $row['id_transaksi'] . "'>Print</a>
-                    <a class='btn btn-danger btn-sm px-4 mt-2' href='hapus_transaksi.php?id_transaksi=" . $row['id_transaksi'] . "'>Hapus</a>
-                    <a class='btn btn-primary btn-sm px-4 mt-2' href='detail_transaksi.php?id_transaksi=" . $row['id_transaksi'] . "''>Detail</a>
-                  </td>";
+            <!-- Tombol aksi -->
+            <a class='btn btn-warning btn-sm px-4 mt-2' href='print_invoice.php?id_transaksi=" . $row['id_transaksi'] . "'>Print</a>";
+
+            if ($_SESSION['role'] === 'Admin') {
+                echo "<a class='btn btn-danger btn-sm px-4 mt-2' href='hapus_transaksi.php?id_transaksi=" . $row['id_transaksi'] . "' onclick='return confirmDelete()'>Hapus</a>";
+            }
+
+            echo "<a class='btn btn-primary btn-sm px-4 mt-2' href='detail_transaksi.php?id_transaksi=" . $row['id_transaksi'] . "'>Detail</a>";
+            echo "</td>";
             echo "</tr>";
         }
     } else {
