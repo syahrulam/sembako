@@ -82,7 +82,13 @@ if (isset($_GET['id_transaksi'])) {
             }
             $pdf->Cell(0, 10, 'Total Harga: Rp.' . number_format($row['total_harga'], 0, ',', '.'), 0, 1);
             $pdf->Cell(0, 10, 'Bayar: Rp.' . number_format($row['total_bayar'], 0, ',', '.'), 0, 1);
-            $pdf->Cell(0, 10, 'Kembalian: Rp.' . number_format($row['kembalian'], 0, ',', '.'), 0, 1);
+            if ($row['tipe_pembayaran'] == 'Cash') {
+                $pdf->Cell(0, 10, 'Kembalian: Rp.' . number_format($row['kembalian'], 0, ',', '.'), 0, 1);
+            } else {
+                $pdf->Cell(0, 10, "Kekurangan : Rp " . number_format($row['kekurangan'], 0, ',', '.'), 0, 1);
+            }
+            
+           
 
 
             // Output the PDF to the browser

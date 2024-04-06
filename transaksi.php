@@ -182,50 +182,51 @@ include('koneksi/config.php');
     <!-- JavaScript -->
     <script>
         var itemCounter = 1;
+
         function addNewItem() {
             itemCounter++;
 
             var newItemHtml = `
             <div class="row item-row item-container" id="item-${itemCounter}">
-    <div class="col-md-3">
-        <label for="nama_item_${itemCounter}" class="text-dark">Nama Item<span class='red'> *</span></label>
-        <input class="form-control nama_item" type="text" name="nama_item_${itemCounter}" required />
-        <input class="form-control id_item" type="text" name="id_item_${itemCounter}" required style="display:none;"/>
-        <!-- Result container for item search -->
-        <div class="result"></div>
-    </div>
-    <div class="col-md-2">
-        <div class="form-group">
-            <label for="jenis_satuan_${itemCounter}" class="text-dark">Jenis Satuan</label>
-            <select class="form-control jenis_satuan" name="jenis_satuan_${itemCounter}" id="jenis_satuan_${itemCounter}">
-            </select>
-        </div>
-    </div>
+                <div class="col-md-3">
+                    <label for="nama_item_${itemCounter}" class="text-dark">Nama Item<span class='red'> *</span></label>
+                    <input class="form-control nama_item" type="text" name="nama_item_${itemCounter}" required />
+                    <input class="form-control id_item" type="text" name="id_item_${itemCounter}" required style="display:none;"/>
+                    <!-- Result container for item search -->
+                    <div class="result"></div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label for="jenis_satuan_${itemCounter}" class="text-dark">Jenis Satuan</label>
+                        <select class="form-control jenis_satuan" name="jenis_satuan_${itemCounter}" id="jenis_satuan_${itemCounter}">
+                        </select>
+                    </div>
+                </div>
 
-    <div class="col-md-2">
-        <div class="form-group">
-            <label for="harga_satuan_${itemCounter}" class="text-dark">Harga Satuan (Rp.)</label>
-            <input class="form-control harga_satuan" type="text" name="harga_satuan_${itemCounter}" id="harga_satuan_${itemCounter}" readonly />
-        </div>
-    </div>
-    <div class="col-md-2">
-        <div class="form-group">
-            <label for="jumlah_${itemCounter}" class="text-dark">Jumlah</label>
-            <input type="number" class="form-control" name="jumlah_${itemCounter}" id="jumlah_${itemCounter}" min="1" onchange="updateTotal(${itemCounter})" required />
-        </div>
-    </div>
-    <div class="col-md-2">
-        <div class="form-group">
-            <label for="total_${itemCounter}" class="text-dark">Total Harga (Rp.)</label>
-            <input type="number" class="form-control" name="total_${itemCounter}" id="total_${itemCounter}" min="0" readonly />
-        </div>
-    </div>
-    <div class="col-md-1">
-        <div class="form-group" style="margin-top:30px;">
-            <button class="btn btn-danger remove-item" onclick="removeItem(${itemCounter})"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-    </div>
-</div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label for="harga_satuan_${itemCounter}" class="text-dark">Harga Satuan (Rp.)</label>
+                        <input class="form-control harga_satuan" type="text" name="harga_satuan_${itemCounter}" id="harga_satuan_${itemCounter}" readonly />
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label for="jumlah_${itemCounter}" class="text-dark">Jumlah</label>
+                        <input type="number" class="form-control jumlah" name="jumlah_${itemCounter}" id="jumlah_${itemCounter}" min="1" onchange="updateTotal(${itemCounter})" required />
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label for="total_${itemCounter}" class="text-dark">Total Harga (Rp.)</label>
+                        <input type="number" class="form-control" name="total_${itemCounter}" id="total_${itemCounter}" min="0" readonly />
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="form-group" style="margin-top:30px;">
+                        <button class="btn btn-danger remove-item" onclick="removeItem(${itemCounter})"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                </div>
+            </div>
 
 
 
@@ -401,84 +402,102 @@ include('koneksi/config.php');
         });
     </script>
 
+<script>
+    $(document).ready(function() {
+        $(document).on("input", ".nama_item", function() {
+            var searchTerm = $(this).val();
+            var resultContainer = $(this).parent().find(".result");
 
-    <script>
-        $(document).ready(function() {
-            function handleItemSearch(inputElement) {
-                var searchTerm = inputElement.val();
-                var resultContainer = inputElement.parent().find(".result");
-
-                if (searchTerm !== "") {
-                    $.ajax({
-                        type: "POST",
-                        url: "search_item.php",
-                        data: {
-                            searchTerm: searchTerm
-                        },
-                        success: function(data) {
-                            resultContainer.html(data);
-                        }
-                    });
-                } else {
-                    resultContainer.empty();
-                }
-            }
-            $(document).on("input", ".nama_item", function() {
-                handleItemSearch($(this));
-            });
-            $(document).on("click", ".result li", function() {
-                var selectedItem = $(this).text();
-                var itemContainer = $(this).closest(".item-container");
-                itemContainer.find(".nama_item").val(selectedItem);
+            if (searchTerm !== "") {
                 $.ajax({
                     type: "POST",
-                    url: "get_quantity.php",
-                    data: {
-                        selectedItem: selectedItem
-                    },
-                    success: function(response) {
-                        var data = JSON.parse(response);
-                        itemContainer.find(".id_item").val(data.id_item);
-                        var jenisSatuanSelect = itemContainer.find(".jenis_satuan");
-                        jenisSatuanSelect.empty();
-                        jenisSatuanSelect.append('<option value="Besar">' + data.jenis_satuan_besar + '</option>');
-                        jenisSatuanSelect.append('<option value="Kecil">' + data.jenis_satuan_kecil + '</option>');
-                        var hargaJualSatuanInput = itemContainer.find(".harga_satuan");
-
-                        hargaJualSatuanInput.val(data.harga_jual_satuan_besar);
-                        jenisSatuanSelect.on("change", function() {
-                            var selectedJenisSatuan = $(this).val();
-
-                            if (selectedJenisSatuan === "Besar") {
-                                hargaJualSatuanInput.val(data.harga_jual_satuan_besar);
-                            } else if (selectedJenisSatuan === "Kecil") {
-                                hargaJualSatuanInput.val(data.harga_jual_satuan_kecil);
-                            }
-                        });
+                    url: "search_item.php",
+                    data: { searchTerm: searchTerm },
+                    success: function(data) {
+                        resultContainer.html(data);
                     }
                 });
-                itemContainer.find(".result").empty();
-            });
+            } else {
+                resultContainer.empty();
+            }
+        });
 
-            $(document).on("click", ".remove-item", function() {
-                var itemContainer = $(this).closest(".item-container");
-                itemContainer.find(".jenis_satuan").empty();
-                itemContainer.find(".harga_satuan").val("");
-                itemContainer.find(".nama_item").val("");
-                itemContainer.find(".id_item").val(""); 
-                itemContainer.remove();
-            });
-            $(document).on("input", ".nama_item", function() {
-                var itemContainer = $(this).closest(".item-container");
-                var inputLength = $(this).val().length;
-                if (inputLength === 0) {
-                    itemContainer.find(".jenis_satuan").empty();
-                    itemContainer.find(".harga_satuan").val("");
-                    itemContainer.find(".id_item").val("");
+        $(document).on("click", ".result li", function() {
+            var selectedItem = $(this).text();
+            var itemContainer = $(this).closest(".item-container");
+
+            itemContainer.find(".nama_item").val(selectedItem);
+
+            $.ajax({
+                type: "POST",
+                url: "get_quantity.php",
+                data: { selectedItem: selectedItem },
+                success: function(response) {
+                    var data = JSON.parse(response);
+                    itemContainer.find(".id_item").val(data.id_item);
+                    var jenisSatuanSelect = itemContainer.find(".jenis_satuan");
+                    jenisSatuanSelect.empty();
+                    jenisSatuanSelect.append(`<option value="Besar">${data.jenis_satuan_besar}</option>`);
+                    jenisSatuanSelect.append(`<option value="Kecil">${data.jenis_satuan_kecil}</option>`);
+
+                    var hargaJualSatuanInput = itemContainer.find(".harga_satuan");
+                    hargaJualSatuanInput.val(data.harga_jual_satuan_besar);
+
+                    var jumlahItemInput = itemContainer.find(".jumlah");
+
+                    jenisSatuanSelect.on("change", function() {
+                        var selectedJenisSatuan = $(this).val();
+                        if (selectedJenisSatuan === "Besar") {
+                            hargaJualSatuanInput.val(data.harga_jual_satuan_besar);
+                        } else if (selectedJenisSatuan === "Kecil") {
+                            hargaJualSatuanInput.val(data.harga_jual_satuan_kecil);
+                        }
+                        
+                        var maxStok = selectedJenisSatuan === "Besar" ? data.jumlah_isi_satuan_besar : data.total_isi_satuan_kecil;
+                        jumlahItemInput.attr("max", maxStok);
+                    });
+
+                    jumlahItemInput.on("input", function() {
+                        var jumlahItem = parseInt($(this).val());
+                        var maxStok = parseInt($(this).attr("max"));
+
+                        if (jumlahItem > maxStok) {
+                            alert("Jumlah melebihi stok yang tersedia!");
+                            $(this).val(maxStok);
+                        }
+
+                        // Prevent input of 0 or negative numbers
+                        if (jumlahItem <= 0) {
+                            $(this).val(1);
+                        }
+                    });
                 }
             });
+            itemContainer.find(".result").empty();
         });
-    </script>
+
+        $(document).on("click", ".remove-item", function() {
+            var itemContainer = $(this).closest(".item-container");
+            itemContainer.find(".jenis_satuan").empty();
+            itemContainer.find(".harga_satuan").val("");
+            itemContainer.find(".nama_item").val(""); 
+            itemContainer.find(".id_item").val(""); 
+            itemContainer.remove();
+        });
+
+        $(document).on("input", ".nama_item", function() {
+            var itemContainer = $(this).closest(".item-container");
+            var inputLength = $(this).val().length;
+            if (inputLength === 0) {
+                itemContainer.find(".jenis_satuan").empty();
+                itemContainer.find(".harga_satuan").val("");
+                itemContainer.find(".id_item").val("");
+            }
+        });
+    });
+</script>
+
+
 
 </body>
 

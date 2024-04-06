@@ -23,7 +23,7 @@ $query = "SELECT id_transaksi,
                  tanggal,
                  kekurangan
           FROM transaksi 
-          WHERE nama_pelanggan = ? AND tipe_pembayaran = 'Debit'";
+          WHERE nama_pelanggan = ? AND tipe_pembayaran = 'Debit' AND kekurangan <> 0";
 
 $stmt = mysqli_prepare($koneksi, $query);
 mysqli_stmt_bind_param($stmt, "s", $id_pelanggan);
@@ -72,10 +72,10 @@ $no = 1;
                                                     <tr>
                                                         <td><?php echo $no++; ?></td>
                                                         <td><?php echo $row['no_transaksi']; ?></td>
-                                                        <td><?php echo $row['tanggal']; ?></td>
+                                                        <td><?php echo  date('d F Y', strtotime($row['tanggal'])) ?></td>
                                                         <td><?php echo 'Rp. ' . number_format($row['kekurangan'], 0, ',', '.'); ?></td>
                                                         <td>
-                                                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#bayarCicilanModal" data-id_transaksi="<?php echo $row['id_transaksi']; ?>">Bayar Cicilan</button>
+                                                            <button type="button" class="btn btn-primary btn-bayar-cicilan" data-toggle="modal" data-target="#bayarCicilanModal" data-id="<?php echo $row['id_transaksi']; ?>">Bayar Cicilan</button>
                                                         </td>
                                                     </tr>
                                                 <?php endwhile; ?>
@@ -107,7 +107,7 @@ $no = 1;
                                 <div class="form-group">
                                     <label for="jumlah">Jumlah Pembayaran:</label>
                                     <!-- Hidden input untuk ID transaksi -->
-                                    <input type="hidden" class="form-control" id="id_transaksi" name="id_transaksi">
+                                    <input style="display: none;" class="form-control" id="id_transaksi" name="id_transaksi">
                                     <input type="text" class="form-control" id="jumlah" name="jumlah" placeholder="Jumlah Cicilan (Rp)" required>
                                 </div>
                                 <button type="submit" class="btn btn-primary">Bayar Cicilan</button>
@@ -123,40 +123,15 @@ $no = 1;
 
         <script>
             $(document).ready(function() {
-                // Tangkap nilai data saat tombol "Bayar Cicilan" diklik
-                $('.btn-primary').click(function() {
-                    var idTransaksi = $(this).data('id_transaksi');
-                    $('#id_transaksi').val(idTransaksi); // Setel ID transaksi di dalam input tersembunyi
-                });
-
-                // Tangkap event submit formulir pembayaran hutang
-                $('#formBayarCicilan').submit(function(e) {
-                    e.preventDefault(); // Mencegah pengiriman formulir secara langsung
-
-                    var form = $(this);
-                    var url = form.attr('action');
-                    var formData = form.serialize(); // Serialize data formulir
-
-                    // Kirim data formulir menggunakan AJAX
-                    $.ajax({
-                        type: 'POST',
-                        url: url,
-                        data: formData,
-                        success: function(response) {
-                            // Tampilkan pesan sukses atau pesan kesalahan
-                            alert(response);
-                            // Alihkan ke halaman detail_hutang.php
-                            window.location.href = 'detail_hutang.php?id=<?php echo $id_pelanggan; ?>';
-                        },
-                        error: function(xhr, status, error) {
-                            // Tampilkan pesan kesalahan jika terjadi masalah saat mengirim data
-                            alert("Error: " + xhr.responseText);
-                        }
-                    });
+                $('.btn-bayar-cicilan').click(function() {
+                    var id_transaksi = $(this).data('id');
+                    $('#id_transaksi').val(id_transaksi);
                 });
             });
         </script>
 
+
     </div>
 </body>
+
 </html>

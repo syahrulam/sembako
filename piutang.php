@@ -19,9 +19,10 @@ $query = "SELECT nama_pelanggan,
                  COUNT(id_transaksi) AS jumlah_transaksi, 
                  SUM(total_harga) AS total_harga, 
                  SUM(total_bayar) AS total_bayar, 
-                 SUM(kembalian) AS total_kembalian 
+                 SUM(kembalian) AS total_kembalian,
+                 SUM(kekurangan) AS total_hutang 
           FROM transaksi 
-          WHERE tipe_pembayaran = 'Debit' 
+          WHERE tipe_pembayaran = 'Debit' AND kekurangan <> 0
           GROUP BY nama_pelanggan";
 
 $result = mysqli_query($koneksi, $query);
@@ -53,7 +54,7 @@ $no = 1;
                                 </div>
                                 <div class="card-body">
                                     <div class="table-responsive">
-                                        <table id="transaksiTable" class="table mt-3">
+                                        <table id="empTable" class="table mt-3">
                                             <thead>
                                                 <tr>
                                                     <th>No.</th>
@@ -69,9 +70,9 @@ $no = 1;
                                                         <td><?php echo $no++; ?></td>
                                                         <td><?php echo ucwords($row['nama_pelanggan']); ?></td>
                                                         <td><?php echo $row['jumlah_transaksi']; ?></td>
-                                                        <td><?php echo 'Rp. ' . number_format($row['total_harga'], 0, ',', '.'); ?></td>
+                                                        <td><?php echo 'Rp. ' . number_format($row['total_hutang'], 0, ',', '.'); ?></td>
                                                         <td>
-                                                            <a href="detail_piutang.php?id=<?php echo $row['nama_pelanggan']; ?>" class="btn btn-primary">Detail</a>
+                                                            <a href="detail_piutang.php?id=<?php echo $row['nama_pelanggan']; ?>" class="btn btn-warning">Detail</a>
                                                         </td>
                                                     </tr>
                                                 <?php endwhile; ?>
@@ -153,7 +154,7 @@ $no = 1;
                         {
                             extend: 'pdf',
                             exportOptions: {
-                                columns: [0, 1, 2, 3, 4] // Column index which needs to export
+                                columns: [0, 1, 2, 3] // Column index which needs to export
                             }
                         },
                         {

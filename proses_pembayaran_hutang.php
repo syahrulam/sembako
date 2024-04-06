@@ -37,7 +37,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $result_update = mysqli_stmt_execute($stmt);
 
         if ($result_update) {
-            echo "Pembayaran hutang berhasil.";
+            // Pesan alert
+            echo "<script>alert('Pembayaran hutang berhasil.')</script>";
+            // Redirect ke halaman sebelumnya
+            echo "<script>window.history.go(-1);</script>";
+            exit(); // Keluar dari skrip PHP
         } else {
             echo "Terjadi kesalahan dalam memperbarui nilai kekurangan.";
         }
@@ -47,3 +51,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 } else {
     echo "Akses tidak sah.";
 }
+?>
