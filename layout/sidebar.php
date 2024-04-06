@@ -23,7 +23,11 @@
       <li class="menu-header">Master Opname</li>
       <li><a class="nav-link" href="inventory.php"><i class="fa-solid fa-warehouse"></i><span>Inventory</span></a></li>
       <li><a class="nav-link" href="opname.php"><i class="fa-solid fa-arrow-trend-up"></i><span>Stock Opname</span></a></li>
+    <?php endif; ?>
+    <?php if ($_SESSION['role'] === 'Admin') : ?>
+      <li class="menu-header">Master Piutang</li>
       <li><a class="nav-link" href="piutang.php"><i class="fa-solid fa-scroll"></i><span>Piutang</span></a></li>
+      <li><a class="nav-link" href="riwayat_piutang.php"><i class="fa-solid fa-scroll"></i><span>Riwayat Piutang</span></a></li>
     <?php endif; ?>
     <li class="menu-header">Master</li>
     <!-- <li><a class="nav-link" href="member.php"><i class="fas fa-wallet"></i><span>Member</span></a></li> -->

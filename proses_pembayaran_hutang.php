@@ -30,6 +30,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Hitung kekurangan terbaru setelah pembayaran
         $kekurangan_terbaru = $kekurangan_sekarang - $jumlah_pembayaran;
 
+        // Periksa apakah setelah pembayaran kekurangan menjadi 0 atau negatif
+        if ($kekurangan_terbaru <= 0) {
+            // Jika kekurangan kurang dari atau sama dengan 0, maka piutang dianggap lunas
+            $status_piutang = 'Lunas';
+        } else {
+            // Jika kekurangan masih lebih dari 0, maka piutang belum lunas
+            $status_piutang = 'Belum Lunas';
+        }
+
         // Perbarui nilai kekurangan di database
         $query_update = "UPDATE transaksi SET kekurangan = ? WHERE id_transaksi = ?";
         $stmt = mysqli_prepare($koneksi, $query_update);
@@ -37,18 +46,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $result_update = mysqli_stmt_execute($stmt);
 
         if ($result_update) {
-            // Pesan alert
-            echo "<script>alert('Pembayaran hutang berhasil.')</script>";
-            // Redirect ke halaman sebelumnya
-            echo "<script>window.history.go(-1);</script>";
-            exit(); // Keluar dari skrip PHP
+            // Pernyataan SQL untuk menyimpan informasi pembayaran ke dalam tabel Piutang
+            $query_insert_piutang = "INSERT INTO Piutang (id_transaksi, tanggal, status) VALUES (?, NOW(), ?)";
+            $stmt_piutang = mysqli_prepare($koneksi, $query_insert_piutang);
+            mysqli_stmt_bind_param($stmt_piutang, "is", $id_transaksi, $status_piutang);
+            $result_insert_piutang = mysqli_stmt_execute($stmt_piutang);
+
+            if ($result_insert_piutang) {
+                // Pesan alert
+                echo "<script>alert('Pembayaran hutang berhasil.')</script>";
+                // Redirect ke halaman sebelumnya
+                echo "<script>window.history.go(-1);</script>";
+                exit(); // Keluar dari skrip PHP
+            } else {
+                echo "Terjadi kesalahan dalam menyimpan informasi pembayaran ke dalam tabel Piutang.";
+            }
         } else {
             echo "Terjadi kesalahan dalam memperbarui nilai kekurangan.";
         }
+
     } else {
         echo "ID transaksi tidak ditemukan atau tipe pembayarannya bukan 'Debit'.";
     }
 } else {
     echo "Akses tidak sah.";
 }
-?>
