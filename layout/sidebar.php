@@ -26,8 +26,8 @@
     <?php endif; ?>
     <?php if ($_SESSION['role'] === 'Admin') : ?>
       <li class="menu-header">Master Piutang</li>
-      <li><a class="nav-link" href="piutang.php"><i class="fa-solid fa-scroll"></i><span>Piutang</span></a></li>
-      <li><a class="nav-link" href="riwayat_piutang.php"><i class="fa-solid fa-scroll"></i><span>Riwayat Piutang</span></a></li>
+      <li><a class="nav-link" href="piutang.php"><i class="fa-solid fa-receipt"></i><span>Piutang</span></a></li>
+      <li><a class="nav-link" href="riwayat_piutang.php"><i class="fa-solid fa-history"></i><span>Riwayat Piutang</span></a></li>
     <?php endif; ?>
     <li class="menu-header">Master</li>
     <!-- <li><a class="nav-link" href="member.php"><i class="fas fa-wallet"></i><span>Member</span></a></li> -->

@@ -140,19 +140,19 @@ function unformatRupiah($str)
                                         <div class="form-group row">
                                             <div class="col-md-3">
                                                 <label for="harga_jual_satuan_besar">Harga Jual PerSatuan Besar:</label>
-                                                <input type="text" class="form-control" id="harga_jual_satuan_besar" name="harga_jual_satuan_besar" required>
+                                                <input type="text" class="form-control" id="harga_jual_satuan_besar" name="harga_jual_satuan_besar" required onchange="formatCurrency(this)">
                                             </div>
                                             <div class="col-md-3">
                                                 <label for="harga_jual_satuan_kecil">Harga Jual PerSatuan Kecil:</label>
-                                                <input type="text" class="form-control" id="harga_jual_satuan_kecil" name="harga_jual_satuan_kecil" required>
+                                                <input type="text" class="form-control" id="harga_jual_satuan_kecil" name="harga_jual_satuan_kecil" required onchange="formatCurrency(this)">
                                             </div>
                                             <div class="col-md-3">
                                                 <label for="harga_satuan_kulak">Harga Satuan Kulak:</label>
-                                                <input type="text" class="form-control" id="harga_satuan_kulak" name="harga_satuan_kulak" placeholder="Misal 1 Dusnya Rp. 50.000" required>
+                                                <input type="text" class="form-control" id="harga_satuan_kulak" name="harga_satuan_kulak" placeholder="Misal 1 Dusnya Rp. 50.000" required onchange="formatCurrency(this)">
                                             </div>
                                             <div class="col-md-3">
                                                 <label for="total_harga_kulak">Total Harga Kulak:</label>
-                                                <input type="text" class="form-control" id="total_harga_kulak" name="total_harga_kulak" required>
+                                                <input type="text" class="form-control" id="total_harga_kulak" name="total_harga_kulak" required onchange="formatCurrency(this)">
                                             </div>
                                         </div>
                                         <!-- Tambahkan bagian lain sesuai kebutuhan -->
@@ -176,6 +176,19 @@ function unformatRupiah($str)
     </div>
 
     <script>
+        // Function untuk mengatur format mata uang pada input field
+        function formatCurrency(input) {
+            // Hapus karakter yang bukan angka
+            var value = input.value.replace(/\D/g, '');
+            // Format angka dengan tanda koma dan simbol 'Rp'
+            input.value = 'Rp. ' + formatNumber(value);
+        }
+
+        // Function untuk memformat angka dengan tanda koma
+        function formatNumber(number) {
+            return new Intl.NumberFormat('id-ID').format(number);
+        }
+
         document.addEventListener("DOMContentLoaded", function() {
             var jumlahSatuanBesarInput = document.getElementById('jumlah_satuan_besar');
             var jumlahIsiSatuanBesarInput = document.getElementById('jumlah_isi_satuan_besar');

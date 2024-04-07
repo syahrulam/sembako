@@ -57,6 +57,7 @@ $username = $_SESSION['username'];
                                                     <tr>
                                                         <th>No</th>
                                                         <th>Nama Item</th>
+                                                        <th>Total Kulak Satuan Besar</th>
                                                         <th>Jumlah Fisik Item Besar</th>
                                                         <th>Jumlah Data Item Besar</th>
                                                         <th>Jumlah Item Kecil</th>
@@ -75,6 +76,7 @@ $username = $_SESSION['username'];
                                                             echo "<tr>";
                                                             echo "<td>" . $no++ . "</td>";
                                                             echo "<td>" . $row['nama_item'] . "</td>";
+                                                            echo "<td>" . $row['total_kulak'] . "</td>";
                                                             echo "<td>" . ceil(floatval($row['jumlah_satuan_besar'])) . " / " . $row['jenis_satuan_besar'] . "</td>";
                                                             echo "<td>" . floatval($row['jumlah_satuan_besar']) . " / " . $row['jenis_satuan_besar'] . "</td>";
                                                             echo "<td>" . $row['total_isi_satuan_kecil'] . " / " . $row['jenis_satuan_kecil'] . "</td>";
