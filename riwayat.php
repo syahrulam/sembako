@@ -55,60 +55,62 @@ $total_harga_bulan_ini = $row_total_harga['total_harga'];
                                         <h4>Riwayat Pembayaran</h4>
                                     </div>
                                     <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-12">
+                                        <?php if ($_SESSION['role'] === 'Admin') : ?>
 
-                                                <div class="alert alert-success" role="alert">
-                                                    <p style="font-size: 25px;" class="font-weight-bold">Pendapatan Perbulan (<?php echo date('F Y'); ?>)</p>
-                                                    <p style="font-size: 20px;" class="mt-2"><?php echo 'Rp.' . number_format($total_harga_bulan_ini, 0, ',', '.'); ?></p>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <p style="font-size: 20px;" class="font-weight-bold">Cetak Berdasarkan Sales </p>
-                                        <form action="export_excel_sales.php" method="POST">
-                                            <div class="row mb-3">
-                                                <div class="col-3">
-                                                    <div class="sales-container">
-                                                        <input type="text" class="form-control namaSales" id="namaSales" name="namaSales" placeholder="Nama Sales">
-                                                        <div class="result_sales"></div>
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <div class="alert alert-success" role="alert">
+                                                        <p style="font-size: 25px;" class="font-weight-bold">Pendapatan Perbulan (<?php echo date('F Y'); ?>)</p>
+                                                        <p style="font-size: 20px;" class="mt-2"><?php echo 'Rp.' . number_format($total_harga_bulan_ini, 0, ',', '.'); ?></p>
                                                     </div>
-
-                                                </div>
-                                                <div class="col-3">
-                                                    <input type="month" class="form-control" id="bulanTahunMulai" name="bulanTahunMulai" placeholder="Mulai Bulan Tahun" required>
-                                                </div>
-                                                <div class="col-3">
-                                                    <input type="month" class="form-control" id="bulanTahunAkhir" name="bulanTahunAkhir" placeholder="Akhir Bulan Tahun" required>
-                                                </div>
-                                                <div class="col">
-                                                    <button type="submit" class="btn btn-success" name="export">Export Excel</button>
                                                 </div>
                                             </div>
-                                        </form>
 
-                                        <p style="font-size: 20px;" class="font-weight-bold">Cetak Berdasarkan Nama Pelanggan </p>
-                                        <form action="export_excel.php" method="POST">
-                                            <div class="row mb-3">
-                                                <div class="col-3">
-                                                    <div class="pelanggan-container">
-                                                        <input type="text" class="form-control namaPelanggan" id="namaPelanggan" name="namaPelanggan" placeholder="Nama Pelanggan">
-                                                        <div class="result_pelanggan"></div>
+                                            <p style="font-size: 20px;" class="font-weight-bold">Cetak Berdasarkan Sales </p>
+                                            <form action="export_excel_sales.php" method="POST">
+                                                <div class="row mb-3">
+                                                    <div class="col-3">
+                                                        <div class="sales-container">
+                                                            <input type="text" class="form-control namaSales" id="namaSales" name="namaSales" placeholder="Nama Sales">
+                                                            <div class="result_sales"></div>
+                                                        </div>
                                                     </div>
+                                                    <div class="col-3">
+                                                        <input type="month" class="form-control" id="bulanTahunMulai" name="bulanTahunMulai" placeholder="Mulai Bulan Tahun" required>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        <input type="month" class="form-control" id="bulanTahunAkhir" name="bulanTahunAkhir" placeholder="Akhir Bulan Tahun" required>
+                                                    </div>
+                                                    <div class="col">
+                                                        <button type="submit" class="btn btn-success" name="export">Export Excel</button>
+                                                    </div>
+                                                </div>
+                                            </form>
 
-                                                </div>
-                                                <div class="col-3">
-                                                    <input type="month" class="form-control" id="bulanTahunMulai" name="bulanTahunMulai" placeholder="Mulai Bulan Tahun" required>
-                                                </div>
-                                                <div class="col-3">
-                                                    <input type="month" class="form-control" id="bulanTahunAkhir" name="bulanTahunAkhir" placeholder="Akhir Bulan Tahun" required>
-                                                </div>
-                                                <div class="col">
-                                                    <button type="submit" class="btn btn-success" name="export">Export Excel</button>
-                                                </div>
-                                            </div>
-                                        </form>
 
+                                            <p style="font-size: 20px;" class="font-weight-bold">Cetak Berdasarkan Nama Pelanggan </p>
+                                            <form action="export_excel.php" method="POST">
+                                                <div class="row mb-3">
+                                                    <div class="col-3">
+                                                        <div class="pelanggan-container">
+                                                            <input type="text" class="form-control namaPelanggan" id="namaPelanggan" name="namaPelanggan" placeholder="Nama Pelanggan">
+                                                            <div class="result_pelanggan"></div>
+                                                        </div>
+
+                                                    </div>
+                                                    <div class="col-3">
+                                                        <input type="month" class="form-control" id="bulanTahunMulai" name="bulanTahunMulai" placeholder="Mulai Bulan Tahun" required>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        <input type="month" class="form-control" id="bulanTahunAkhir" name="bulanTahunAkhir" placeholder="Akhir Bulan Tahun" required>
+                                                    </div>
+                                                    <div class="col">
+                                                        <button type="submit" class="btn btn-success" name="export">Export Excel</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+
+                                        <?php endif; ?>
 
 
                                         <div style="margin-bottom: 40px;">

@@ -3,7 +3,7 @@
     <a href="index.php">Toko Sumber Jaya</a>
   </div>
   <div class="sidebar-brand sidebar-brand-sm">
-    <a href="index.php">Toko Sumber Jaya</a>
+    <a href="index.php"></a>
   </div>
   <ul class="sidebar-menu" style="overflow-y: auto;">
     <li class="menu-header">Dashboard</li>

@@ -20,8 +20,8 @@ $username = $_SESSION['username'];
                 <?php include('layout/navbar.php'); ?>
             </nav>
             <div class="main-sidebar sidebar-style-2" style="overflow-y: auto;">
-    <?php include('layout/sidebar.php'); ?>
-</div>
+                <?php include('layout/sidebar.php'); ?>
+            </div>
 
 
             <div id="app">
@@ -90,14 +90,12 @@ $username = $_SESSION['username'];
                 $(document).ready(function() {
                     var empDataTable = $('#empTable').DataTable({
                         dom: 'Blfrtip',
-                        buttons: [
-                            {
-                                extend: 'pdf',
-                                exportOptions: {
-                                    columns: [0, 1, 2] // Column index which needs to export
-                                }
-                            },
-                        ]
+                        buttons: [{
+                            extend: 'pdf',
+                            exportOptions: {
+                                columns: [0, 1, 2] // Column index which needs to export
+                            }
+                        }, ]
 
                     });
 
