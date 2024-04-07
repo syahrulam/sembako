@@ -81,11 +81,11 @@ include('koneksi/config.php');
                                                         <label for="nama" class="text-dark">Nama Pelanggan<span class='red'> *</span></label>
                                                         <div class="pelanggan-container">
                                                             <div class="row">
-                                                                <div class="col-5">
+                                                                <div class="col-7">
                                                                     <input class="form-control nama" type="text" name="nama" placeholder="Nama Pelanggan" required />
                                                                     <div class="result_pelanggan"></div>
                                                                 </div>
-                                                                <div class="col">
+                                                                <div class="col-2 m-0 p-0">
                                                                     <a href="tambah_pelanggan.php" class="btn btn-warning p-2">Tambah Pelanggan</a>
                                                                 </div>
                                                             </div>
@@ -402,100 +402,103 @@ include('koneksi/config.php');
         });
     </script>
 
-<script>
-    $(document).ready(function() {
-        $(document).on("input", ".nama_item", function() {
-            var searchTerm = $(this).val();
-            var resultContainer = $(this).parent().find(".result");
+    <script>
+        $(document).ready(function() {
+            $(document).on("input", ".nama_item", function() {
+                var searchTerm = $(this).val();
+                var resultContainer = $(this).parent().find(".result");
 
-            if (searchTerm !== "") {
-                $.ajax({
-                    type: "POST",
-                    url: "search_item.php",
-                    data: { searchTerm: searchTerm },
-                    success: function(data) {
-                        resultContainer.html(data);
-                    }
-                });
-            } else {
-                resultContainer.empty();
-            }
-        });
-
-        $(document).on("click", ".result li", function() {
-            var selectedItem = $(this).text();
-            var itemContainer = $(this).closest(".item-container");
-
-            itemContainer.find(".nama_item").val(selectedItem);
-
-            $.ajax({
-                type: "POST",
-                url: "get_quantity.php",
-                data: { selectedItem: selectedItem },
-                success: function(response) {
-                    var data = JSON.parse(response);
-                    itemContainer.find(".id_item").val(data.id_item);
-                    var jenisSatuanSelect = itemContainer.find(".jenis_satuan");
-                    jenisSatuanSelect.empty();
-                    jenisSatuanSelect.append(`<option value="Besar">${data.jenis_satuan_besar}</option>`);
-                    jenisSatuanSelect.append(`<option value="Kecil">${data.jenis_satuan_kecil}</option>`);
-
-                    var hargaJualSatuanInput = itemContainer.find(".harga_satuan");
-                    hargaJualSatuanInput.val(data.harga_jual_satuan_besar);
-
-                    var jumlahItemInput = itemContainer.find(".jumlah");
-
-                    jenisSatuanSelect.on("change", function() {
-                        var selectedJenisSatuan = $(this).val();
-                        if (selectedJenisSatuan === "Besar") {
-                            hargaJualSatuanInput.val(data.harga_jual_satuan_besar);
-                        } else if (selectedJenisSatuan === "Kecil") {
-                            hargaJualSatuanInput.val(data.harga_jual_satuan_kecil);
-                        }
-                        
-                        var maxStok = selectedJenisSatuan === "Besar" ? data.jumlah_isi_satuan_besar : data.total_isi_satuan_kecil;
-                        jumlahItemInput.attr("max", maxStok);
-                    });
-
-                    jumlahItemInput.on("input", function() {
-                        var jumlahItem = parseInt($(this).val());
-                        var maxStok = parseInt($(this).attr("max"));
-
-                        if (jumlahItem > maxStok) {
-                            alert("Jumlah melebihi stok yang tersedia!");
-                            $(this).val(maxStok);
-                        }
-
-                        // Prevent input of 0 or negative numbers
-                        if (jumlahItem <= 0) {
-                            $(this).val(1);
+                if (searchTerm !== "") {
+                    $.ajax({
+                        type: "POST",
+                        url: "search_item.php",
+                        data: {
+                            searchTerm: searchTerm
+                        },
+                        success: function(data) {
+                            resultContainer.html(data);
                         }
                     });
+                } else {
+                    resultContainer.empty();
                 }
             });
-            itemContainer.find(".result").empty();
-        });
 
-        $(document).on("click", ".remove-item", function() {
-            var itemContainer = $(this).closest(".item-container");
-            itemContainer.find(".jenis_satuan").empty();
-            itemContainer.find(".harga_satuan").val("");
-            itemContainer.find(".nama_item").val(""); 
-            itemContainer.find(".id_item").val(""); 
-            itemContainer.remove();
-        });
+            $(document).on("click", ".result li", function() {
+                var selectedItem = $(this).text();
+                var itemContainer = $(this).closest(".item-container");
 
-        $(document).on("input", ".nama_item", function() {
-            var itemContainer = $(this).closest(".item-container");
-            var inputLength = $(this).val().length;
-            if (inputLength === 0) {
+                itemContainer.find(".nama_item").val(selectedItem);
+
+                $.ajax({
+                    type: "POST",
+                    url: "get_quantity.php",
+                    data: {
+                        selectedItem: selectedItem
+                    },
+                    success: function(response) {
+                        var data = JSON.parse(response);
+                        itemContainer.find(".id_item").val(data.id_item);
+                        var jenisSatuanSelect = itemContainer.find(".jenis_satuan");
+                        jenisSatuanSelect.empty();
+                        jenisSatuanSelect.append(`<option value="Besar">${data.jenis_satuan_besar}</option>`);
+                        jenisSatuanSelect.append(`<option value="Kecil">${data.jenis_satuan_kecil}</option>`);
+
+                        var hargaJualSatuanInput = itemContainer.find(".harga_satuan");
+                        var jumlahItemInput = itemContainer.find(".jumlah");
+                        var maxStok = data.jumlah_satuan_besar;
+
+                        jenisSatuanSelect.on("change", function() {
+                            var selectedJenisSatuan = $(this).val();
+                            if (selectedJenisSatuan === "Besar") {
+                                hargaJualSatuanInput.val(data.harga_jual_satuan_besar);
+                                maxStok = data.jumlah_satuan_besar;
+                            } else if (selectedJenisSatuan === "Kecil") {
+                                hargaJualSatuanInput.val(data.harga_jual_satuan_kecil);
+                                maxStok = data.total_isi_satuan_kecil;
+                            }
+                            jumlahItemInput.attr("max", maxStok);
+                        }).change(); 
+                    }
+                });
+                itemContainer.find(".result").empty();
+            });
+
+            $(document).on("click", ".remove-item", function() {
+                var itemContainer = $(this).closest(".item-container");
                 itemContainer.find(".jenis_satuan").empty();
                 itemContainer.find(".harga_satuan").val("");
+                itemContainer.find(".nama_item").val("");
                 itemContainer.find(".id_item").val("");
-            }
+                itemContainer.remove();
+            });
+
+            $(document).on("input", ".nama_item", function() {
+                var itemContainer = $(this).closest(".item-container");
+                var inputLength = $(this).val().length;
+                if (inputLength === 0) {
+                    itemContainer.find(".jenis_satuan").empty();
+                    itemContainer.find(".harga_satuan").val("");
+                    itemContainer.find(".id_item").val("");
+                }
+            });
+
+            $(document).on("input", ".jumlah", function() {
+                var jumlahItem = parseInt($(this).val());
+                var maxStok = parseInt($(this).attr("max"));
+
+                if (jumlahItem > maxStok) {
+                    alert("Jumlah melebihi stok yang tersedia!");
+                    $(this).val(maxStok);
+                }
+
+                if (jumlahItem <= 0) {
+                    $(this).val(1);
+                }
+            });
         });
-    });
-</script>
+    </script>
+
 
 
 

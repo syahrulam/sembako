@@ -24,7 +24,8 @@
             <label for="jumlah_item" class="text-dark">Jumlah Item<span class='red'> *</span></label>
             <input class="form-control jumlah" type="number" name="jumlah" min="1" required />
 
-            <div class="result"></div>
+            <div class="result"></div> <!-- Container for messages -->
+
         </div>
     </div>
 </div>
@@ -68,36 +69,20 @@
                     jenisSatuanSelect.append(`<option value="Kecil">${data.jenis_satuan_kecil}</option>`);
 
                     var hargaJualSatuanInput = itemContainer.find(".harga_satuan");
-                    hargaJualSatuanInput.val(data.harga_jual_satuan_besar);
-
                     var jumlahItemInput = itemContainer.find(".jumlah");
+                    var maxStok = data.jumlah_satuan_besar;
 
                     jenisSatuanSelect.on("change", function() {
                         var selectedJenisSatuan = $(this).val();
                         if (selectedJenisSatuan === "Besar") {
                             hargaJualSatuanInput.val(data.harga_jual_satuan_besar);
+                            maxStok = data.jumlah_satuan_besar;
                         } else if (selectedJenisSatuan === "Kecil") {
                             hargaJualSatuanInput.val(data.harga_jual_satuan_kecil);
+                            maxStok = data.total_isi_satuan_kecil;
                         }
-                        
-                        var maxStok = selectedJenisSatuan === "Besar" ? data.jumlah_isi_satuan_besar : data.total_isi_satuan_kecil;
                         jumlahItemInput.attr("max", maxStok);
-                    });
-
-                    jumlahItemInput.on("input", function() {
-                        var jumlahItem = parseInt($(this).val());
-                        var maxStok = parseInt($(this).attr("max"));
-
-                        if (jumlahItem > maxStok) {
-                            alert("Jumlah melebihi stok yang tersedia!");
-                            $(this).val(maxStok);
-                        }
-
-                        // Prevent input of 0 or negative numbers
-                        if (jumlahItem <= 0) {
-                            $(this).val(1);
-                        }
-                    });
+                    }).change(); // Trigger change event to set initial values
                 }
             });
             itemContainer.find(".result").empty();
@@ -119,6 +104,21 @@
                 itemContainer.find(".jenis_satuan").empty();
                 itemContainer.find(".harga_satuan").val("");
                 itemContainer.find(".id_item").val("");
+            }
+        });
+
+        $(document).on("input", ".jumlah", function() {
+            var jumlahItem = parseInt($(this).val());
+            var maxStok = parseInt($(this).attr("max"));
+
+            if (jumlahItem > maxStok) {
+                alert("Jumlah melebihi stok yang tersedia!");
+                $(this).val(maxStok);
+            }
+
+            // Prevent input of 0 or negative numbers
+            if (jumlahItem <= 0) {
+                $(this).val(1);
             }
         });
     });
