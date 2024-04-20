@@ -252,15 +252,14 @@ include('koneksi/config.php');
 
             // Memanggil fungsi updateItemDetails untuk menginisialisasi nilai jenis satuan dan harga satuan
             updateItemDetails(itemCounter);
-
-
-
         }
+
 
         function removeItem(itemId) {
-            $('#item-' + itemId).remove();
-            updateTotal();
-        }
+    $('#item-' + itemId).remove();
+    updateTotalHarga(); // Call the function to update the total price
+}
+
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -270,18 +269,20 @@ include('koneksi/config.php');
                 updateTotalHarga();
             });
 
-            // Event listener untuk setiap perubahan pada input tipe pembayaran
+            $(document).on("change", ".harga_satuan", function() {
+                updateTotalHarga();
+            });
+
             $('select[name="tipe_pembayaran"]').change(function() {
                 toggleFields();
                 updatePembayaran();
             });
 
-            // Event listener untuk setiap perubahan pada input bayar
             $('input[name="uang_diterima"]').keyup(function() {
                 updatePembayaran();
             });
 
-            // Fungsi untuk menghitung total harga
+
             function updateTotalHarga() {
                 var totalHarga = 0;
 
@@ -290,18 +291,11 @@ include('koneksi/config.php');
                     var itemIndex = $(this).attr('id').split('-')[1];
                     var hargaSatuan = parseFloat($('#harga_satuan_' + itemIndex).val());
                     var jumlah = parseInt($('#jumlah_' + itemIndex).val());
-
-                    // Hitung total harga untuk item saat ini
                     var totalItemHarga = hargaSatuan * jumlah;
-
-                    // Tambahkan total harga item saat ini ke total harga keseluruhan
                     totalHarga += totalItemHarga;
-
-                    // Perbarui total harga untuk item saat ini
                     $('#total_' + itemIndex).val(totalItemHarga);
                 });
 
-                // Perbarui nilai total harga yang harus dibayar
                 $('#total_harus_dibayar').val(totalHarga);
             }
 
@@ -482,13 +476,8 @@ include('koneksi/config.php');
                         }).change();
 
                         function updateOptions(option1, option2, option3) {
-                            // Clear existing options
                             hargaJualSatuanInput.empty();
-
-                            // Add default option
                             hargaJualSatuanInput.append(`<option value="${option1}">${option1}</option>`);
-
-                            // Add additional options if available
                             if (option2) {
                                 hargaJualSatuanInput.append(`<option value="${option2}">${option2}</option>`);
                             }
