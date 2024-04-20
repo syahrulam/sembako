@@ -179,6 +179,22 @@ include('koneksi/config.php');
     <?php include('layout/js.php'); ?>
     <!-- JavaScript -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // Ketika dokumen selesai dimuat
+        $(document).ready(function() {
+            // Memeriksa apakah input nama pelanggan sudah diisi saat halaman dimuat
+            checkNamaPelanggan();
+
+            // Fungsi untuk memeriksa apakah input nama pelanggan sudah diisi
+            function checkNamaPelanggan() {
+                var namaPelanggan = $('input[name="nama"]').val(); // Mendapatkan nilai input nama pelanggan
+                if (namaPelanggan === '') { // Jika input nama pelanggan kosong
+                    alert('Isi nama pelanggan terlebih dahulu!');
+                }
+            }
+        });
+    </script>
+
     <!-- JavaScript -->
     <script>
         var itemCounter = 1;
@@ -206,7 +222,7 @@ include('koneksi/config.php');
                 <div class="col-md-2">
                     <div class="form-group">
                         <label for="harga_satuan_${itemCounter}" class="text-dark">Harga Satuan (Rp.)</label>
-                        <input class="form-control harga_satuan" type="text" name="harga_satuan_${itemCounter}" id="harga_satuan_${itemCounter}" readonly />
+                        <select class="form-control harga_satuan" name="harga_satuan_${itemCounter}" id="harga_satuan_${itemCounter}"></select>
                     </div>
                 </div>
                 <div class="col-md-2">
@@ -451,14 +467,37 @@ include('koneksi/config.php');
                         jenisSatuanSelect.on("change", function() {
                             var selectedJenisSatuan = $(this).val();
                             if (selectedJenisSatuan === "Besar") {
-                                hargaJualSatuanInput.val(data.harga_jual_satuan_besar);
+                                hargaJualSatuanInput.val(data.harga_jual_satuan_besar1);
                                 maxStok = data.jumlah_satuan_besar;
+                                // Update options for "Besar"
+                                updateOptions(data.harga_jual_satuan_besar1, data.harga_jual_satuan_besar2, data.harga_jual_satuan_besar3);
                             } else if (selectedJenisSatuan === "Kecil") {
-                                hargaJualSatuanInput.val(data.harga_jual_satuan_kecil);
+                                hargaJualSatuanInput.val(data.harga_jual_satuan_kecil1);
                                 maxStok = data.total_isi_satuan_kecil;
+                                // Update options for "Kecil"
+                                updateOptions(data.harga_jual_satuan_kecil1, data.harga_jual_satuan_kecil2, data.harga_jual_satuan_kecil3);
                             }
+
                             jumlahItemInput.attr("max", maxStok);
-                        }).change(); 
+                        }).change();
+
+                        function updateOptions(option1, option2, option3) {
+                            // Clear existing options
+                            hargaJualSatuanInput.empty();
+
+                            // Add default option
+                            hargaJualSatuanInput.append(`<option value="${option1}">${option1}</option>`);
+
+                            // Add additional options if available
+                            if (option2) {
+                                hargaJualSatuanInput.append(`<option value="${option2}">${option2}</option>`);
+                            }
+                            if (option3) {
+                                hargaJualSatuanInput.append(`<option value="${option3}">${option3}</option>`);
+                            }
+                        }
+
+
                     }
                 });
                 itemContainer.find(".result").empty();
