@@ -243,9 +243,6 @@ include('koneksi/config.php');
                     </div>
                 </div>
             </div>
-
-
-
         `;
 
             $('#items-container').append(newItemHtml);
@@ -254,15 +251,20 @@ include('koneksi/config.php');
             updateItemDetails(itemCounter);
         }
 
-
         function removeItem(itemId) {
-    $('#item-' + itemId).remove();
-    updateTotalHarga(); // Call the function to update the total price
-}
+            var removedItemTotal = parseFloat($('#total_' + itemId).val()); 
+            $('#item-' + itemId).remove(); 
 
+            var currentTotal = parseFloat($('#total_harus_dibayar').val()); 
+            var newTotal = currentTotal - removedItemTotal; 
+            $('#total_harus_dibayar').val(newTotal); 
+            var uangDiterima = parseFloat($('input[name="uang_diterima"]').val());
+            var kekurangan = newTotal - uangDiterima;
+            $('#kurangan').val(kekurangan.toFixed(0));
 
+            updatePembayaran(); 
+        }
 
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         $(document).ready(function() {
             // Event listener untuk setiap perubahan pada input item, jenis satuan, harga satuan, dan jumlah
             $('body').on('change', 'select[name^="item_"], select[name^="jenis_satuan_"], input[name^="harga_satuan_"], input[name^="jumlah_"]', function() {
@@ -286,7 +288,6 @@ include('koneksi/config.php');
             function updateTotalHarga() {
                 var totalHarga = 0;
 
-                // Loop melalui setiap item
                 $('div[id^="item-"]').each(function() {
                     var itemIndex = $(this).attr('id').split('-')[1];
                     var hargaSatuan = parseFloat($('#harga_satuan_' + itemIndex).val());
@@ -297,9 +298,10 @@ include('koneksi/config.php');
                 });
 
                 $('#total_harus_dibayar').val(totalHarga);
+                updatePembayaran();
             }
 
-            // Fungsi untuk mengupdate pembayaran (kembalian atau kurangan)
+
             function updatePembayaran() {
                 var tipePembayaran = $('select[name="tipe_pembayaran"]').val();
                 var bayar = parseFloat($('input[name="uang_diterima"]').val());
@@ -309,24 +311,25 @@ include('koneksi/config.php');
                 if (tipePembayaran === 'Cash') {
                     if (!isNaN(bayar) && bayar >= harusDibayar) {
                         var kembalian = bayar - harusDibayar;
-                        $('input[name="kembalian"]').val(kembalian);
+                        $('input[name="kembalian"]').val(kembalian.toFixed(2));
                         $('input[name="kurangan"]').val(0); // Reset nilai kurangan menjadi 0
                     } else {
                         $('input[name="kembalian"]').val(0); // Reset nilai kembalian menjadi 0 jika nilai bayar tidak valid
+                        var kekurangan = harusDibayar - bayar;
+                        $('#kurangan').val(kekurangan.toFixed(2));
                     }
                 }
                 // Jika jenis pembayaran adalah "Debit"
                 else if (tipePembayaran === 'Debit') {
                     if (!isNaN(bayar) && bayar < harusDibayar) {
                         var kurangan = harusDibayar - bayar;
-                        $('input[name="kurangan"]').val(kurangan);
+                        $('input[name="kurangan"]').val(kurangan.toFixed(0));
                         $('input[name="kembalian"]').val(0); // Reset nilai kembalian menjadi 0
                     } else {
                         $('input[name="kurangan"]').val(0); // Reset nilai kurangan menjadi 0 jika nilai bayar tidak valid
                     }
                 }
             }
-
             // Fungsi untuk menyembunyikan atau menampilkan field kurangan atau kembalian berdasarkan tipe pembayaran
             function toggleFields() {
                 var tipePembayaran = $('select[name="tipe_pembayaran"]').val();
