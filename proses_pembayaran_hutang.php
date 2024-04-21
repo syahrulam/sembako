@@ -47,9 +47,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         if ($result_update) {
             // Pernyataan SQL untuk menyimpan informasi pembayaran ke dalam tabel Piutang
-            $query_insert_piutang = "INSERT INTO Piutang (id_transaksi, tanggal, status) VALUES (?, NOW(), ?)";
+            $query_insert_piutang = "INSERT INTO Piutang (id_transaksi, tanggal, status, nominal) VALUES (?, NOW(), ?, ?)";
             $stmt_piutang = mysqli_prepare($koneksi, $query_insert_piutang);
-            mysqli_stmt_bind_param($stmt_piutang, "is", $id_transaksi, $status_piutang);
+            mysqli_stmt_bind_param($stmt_piutang, "iss", $id_transaksi, $status_piutang, $jumlah_pembayaran);
             $result_insert_piutang = mysqli_stmt_execute($stmt_piutang);
 
             if ($result_insert_piutang) {
@@ -64,7 +64,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } else {
             echo "Terjadi kesalahan dalam memperbarui nilai kekurangan.";
         }
-
     } else {
         echo "ID transaksi tidak ditemukan atau tipe pembayarannya bukan 'Debit'.";
     }

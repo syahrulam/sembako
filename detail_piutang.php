@@ -51,7 +51,10 @@ $no = 1;
                     <div class="row">
                         <div class="col-lg-12 col-md-12 col-sm-12">
                             <!-- Tabel Piutang -->
-                            <div class="card mt-4">
+                            <div class="card mt-4"><br>
+                                <div class="col-12">
+                                    <a href="javascript:history.go(-1)" class="btn btn-primary">Kembali</a>
+                                </div>
                                 <div class="card-header">
                                     <h4>Piutang</h4>
                                 </div>

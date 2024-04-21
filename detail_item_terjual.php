@@ -15,22 +15,48 @@ $username = $_SESSION['username'];
 // include koneksi database
 include('koneksi/config.php');
 
-// Query untuk mengambil jumlah total dari setiap jenis satuan untuk setiap pelanggan dengan nama yang sama
-$sql = "SELECT 
-            trans.nama_pelanggan,
-            item.nama_item,
-            SUM(CASE WHEN det.jenis_satuan = 'Besar' THEN det.jumlah_satuan ELSE 0 END) AS total_besar,
-            SUM(CASE WHEN det.jenis_satuan = 'Kecil' THEN det.jumlah_satuan ELSE 0 END) AS total_kecil
-        FROM 
-            detail_transaksi AS det
-        INNER JOIN 
-            transaksi AS trans ON det.id_transaksi = trans.id_transaksi
-        INNER JOIN 
-            item ON det.id_item = item.id_item
-        GROUP BY 
-            trans.nama_pelanggan, item.nama_item";
+// Periksa apakah ada parameter nama_pelanggan di URL
+if (isset($_GET['nama_pelanggan'])) {
+    $nama_pelanggan = $_GET['nama_pelanggan'];
 
-$result = $koneksi->query($sql);
+    // Query untuk mengambil jumlah total dari setiap jenis satuan untuk setiap pelanggan dengan nama yang sama
+    $sql = "SELECT 
+                trans.nama_pelanggan,
+                item.nama_item,
+                SUM(CASE WHEN det.jenis_satuan = 'Besar' THEN det.jumlah_satuan ELSE 0 END) AS total_besar,
+                SUM(CASE WHEN det.jenis_satuan = 'Kecil' THEN det.jumlah_satuan ELSE 0 END) AS total_kecil,
+                SUM(det.jumlah_satuan * item.jumlah_isi_satuan_besar) + SUM(CASE WHEN det.jenis_satuan = 'Kecil' THEN det.jumlah_satuan ELSE 0 END) AS total_akumulasi_kecil
+            FROM 
+                detail_transaksi AS det
+            INNER JOIN 
+                transaksi AS trans ON det.id_transaksi = trans.id_transaksi
+            INNER JOIN 
+                item ON det.id_item = item.id_item
+            WHERE 
+                trans.nama_pelanggan = '$nama_pelanggan'
+            GROUP BY 
+                trans.nama_pelanggan, item.nama_item";
+
+    $result = $koneksi->query($sql);
+} else {
+    // Jika parameter nama_pelanggan tidak ada di URL, tampilkan semua data
+    $sql = "SELECT 
+                trans.nama_pelanggan,
+                item.nama_item,
+                SUM(CASE WHEN det.jenis_satuan = 'Besar' THEN det.jumlah_satuan ELSE 0 END) AS total_besar,
+                SUM(CASE WHEN det.jenis_satuan = 'Kecil' THEN det.jumlah_satuan ELSE 0 END) AS total_kecil,
+                SUM(det.jumlah_satuan * item.jumlah_isi_satuan_besar) + SUM(CASE WHEN det.jenis_satuan = 'Kecil' THEN det.jumlah_satuan ELSE 0 END) AS total_akumulasi_kecil
+            FROM 
+                detail_transaksi AS det
+            INNER JOIN 
+                transaksi AS trans ON det.id_transaksi = trans.id_transaksi
+            INNER JOIN 
+                item ON det.id_item = item.id_item
+            GROUP BY 
+                trans.nama_pelanggan, item.nama_item";
+
+    $result = $koneksi->query($sql);
+}
 ?>
 
 <body>
@@ -82,7 +108,7 @@ $result = $koneksi->query($sql);
                                                             echo "<td>" . $row['nama_item'] . "</td>";
                                                             echo "<td>" . $row['total_besar'] . "</td>";
                                                             echo "<td>" . $row['total_kecil'] . "</td>";
-                                                            echo "<td>" . ($row['total_besar'] * $row['total_kecil']) . "</td>";
+                                                            echo "<td>" . $row['total_akumulasi_kecil'] . "</td>";
                                                             echo "</tr>";
                                                         }
                                                     } else {

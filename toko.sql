@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 20 Apr 2024 pada 14.54
+-- Waktu pembuatan: 21 Apr 2024 pada 05.06
 -- Versi server: 10.4.32-MariaDB
 -- Versi PHP: 8.2.12
 
@@ -45,7 +45,13 @@ INSERT INTO `detail_transaksi` (`id_detail_transaksi`, `id_transaksi`, `id_item`
 (27, '35', 11, 'Besar', 55000, 1, 55000),
 (28, '35', 12, 'Kecil', 5000, 24, 120000),
 (29, '36', 11, 'Kecil', 5200, 2, 10400),
-(30, '36', 12, 'Besar', 25000, 1, 25000);
+(30, '36', 12, 'Besar', 25000, 1, 25000),
+(31, '37', 12, 'Besar', 24000, 2, 48000),
+(32, '38', 11, 'Besar', 60000, 2, 120000),
+(33, '38', 12, 'Kecil', 5100, 2, 10200),
+(34, '39', 12, 'Kecil', 5000, 5, 25000),
+(35, '40', 12, 'Kecil', 5000, 4, 20000),
+(36, '41', 12, 'Besar', 24000, 1, 24000);
 
 -- --------------------------------------------------------
 
@@ -79,8 +85,8 @@ CREATE TABLE `item` (
 --
 
 INSERT INTO `item` (`id_item`, `kategori_id`, `nama_item`, `jenis_satuan_besar`, `jenis_satuan_kecil`, `jumlah_satuan_besar`, `jumlah_isi_satuan_besar`, `total_isi_satuan_kecil`, `harga_satuan_kulak`, `total_harga_kulak`, `harga_jual_satuan_besar1`, `harga_jual_satuan_besar2`, `harga_jual_satuan_besar3`, `harga_jual_satuan_kecil1`, `harga_jual_satuan_kecil2`, `harga_jual_satuan_kecil3`, `total_kulak`, `tanggal`) VALUES
-(11, 11, 'Teh Pucuk', 'Dus', 'Botol', 3.80, 10, 38, 50000, 250000, 55000, 57000, 60000, 5000, 5200, 5500, 5, '2024-04-19'),
-(12, 11, 'Lee Mineral ', 'Dus', 'Botol', 8.00, 24, 192, 100000, 1000000, 24000, 25000, 26000, 5000, 5100, 5200, 10, '2024-04-19');
+(11, 11, 'Teh Pucuk', 'Dus', 'Botol', 1.80, 10, 18, 50000, 250000, 55000, 57000, 60000, 5000, 5200, 5500, 5, '2024-04-19'),
+(12, 11, 'Lee Mineral ', 'Dus', 'Botol', 4.54, 24, 109, 100000, 1000000, 24000, 25000, 26000, 5000, 5100, 5200, 10, '2024-04-19');
 
 -- --------------------------------------------------------
 
@@ -147,6 +153,7 @@ INSERT INTO `pelanggan` (`id`, `nama`, `alamat`, `nomor`) VALUES
 CREATE TABLE `piutang` (
   `id_piutang` int(11) NOT NULL,
   `id_transaksi` int(11) NOT NULL,
+  `nominal` int(11) NOT NULL,
   `tanggal` date DEFAULT NULL,
   `status` varchar(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -155,10 +162,11 @@ CREATE TABLE `piutang` (
 -- Dumping data untuk tabel `piutang`
 --
 
-INSERT INTO `piutang` (`id_piutang`, `id_transaksi`, `tanggal`, `status`) VALUES
-(6583, 35, '2024-04-21', 'Belum Lunas'),
-(6584, 35, '2024-04-22', 'Belum Lunas'),
-(6585, 35, '2024-04-23', 'Belum Lunas');
+INSERT INTO `piutang` (`id_piutang`, `id_transaksi`, `nominal`, `tanggal`, `status`) VALUES
+(6591, 38, 200, '2024-04-21', 'Belum Lunas'),
+(6592, 38, 50000, '2024-04-21', 'Belum Lunas'),
+(6593, 39, 10000, '2024-04-21', 'Belum Lunas'),
+(6594, 40, 5000, '2024-04-21', 'Belum Lunas');
 
 -- --------------------------------------------------------
 
@@ -204,8 +212,13 @@ CREATE TABLE `transaksi` (
 --
 
 INSERT INTO `transaksi` (`id_transaksi`, `no_transaksi`, `tanggal`, `nama_pelanggan`, `total_harga`, `total_bayar`, `kembalian`, `tipe_pembayaran`, `kekurangan`, `sales`) VALUES
-(35, 'TR11551693', '2024-04-10', 'azky', 175000, 5000, 0, 'Debit', '155000', 'Sales A'),
-(36, 'TR59372966', '2024-04-20', 'azky', 35400, 70000, 34600, 'Cash', '0', 'Sales A');
+(35, 'TR11551693', '2024-04-10', 'azky', 175000, 5000, 0, 'Debit', '0', 'Sales A'),
+(36, 'TR59372966', '2024-04-20', 'azky', 35400, 70000, 34600, 'Cash', '0', 'Sales A'),
+(37, 'TR16748858', '2024-04-04', 'azky', 48000, 1000, 0, 'Debit', '0', 'Sales A'),
+(38, 'TR14229159', '2024-04-21', 'azky', 130200, 10000, 0, 'Debit', '70000', 'Sales A'),
+(39, 'TR73163707', '2024-04-21', 'azky', 25000, 5000, 0, 'Debit', '10000', 'Sales A'),
+(40, 'TR10905585', '2024-04-21', 'Anwar', 20000, 5000, 0, 'Debit', '10000', 'Sales A'),
+(41, 'TR10382460', '2024-04-21', 'adi', 24000, 25000, 1000, 'Cash', '0', 'Sales A');
 
 -- --------------------------------------------------------
 
@@ -296,7 +309,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT untuk tabel `detail_transaksi`
 --
 ALTER TABLE `detail_transaksi`
-  MODIFY `id_detail_transaksi` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `id_detail_transaksi` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- AUTO_INCREMENT untuk tabel `item`
@@ -326,7 +339,7 @@ ALTER TABLE `pelanggan`
 -- AUTO_INCREMENT untuk tabel `piutang`
 --
 ALTER TABLE `piutang`
-  MODIFY `id_piutang` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6586;
+  MODIFY `id_piutang` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6595;
 
 --
 -- AUTO_INCREMENT untuk tabel `sales`
@@ -338,7 +351,7 @@ ALTER TABLE `sales`
 -- AUTO_INCREMENT untuk tabel `transaksi`
 --
 ALTER TABLE `transaksi`
-  MODIFY `id_transaksi` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
+  MODIFY `id_transaksi` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
 
 --
 -- AUTO_INCREMENT untuk tabel `users`
