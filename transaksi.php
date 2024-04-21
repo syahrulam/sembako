@@ -45,6 +45,24 @@ include('koneksi/config.php');
                                         <div class="card-body">
                                             <div id="items-container">
                                                 <div class="row">
+                                                    <div class="col-md">
+                                                        <div class="form-group">
+                                                            <div class="pelanggan-container">
+                                                                <label for="nama" class="text-dark">Nama Pelanggan<span class='red'> *</span></label>
+                                                                <div class="row">
+                                                                    <div class="col-7">
+                                                                        <input class="form-control nama" type="text" name="nama" placeholder="Nama Pelanggan" required />
+                                                                        <div class="result_pelanggan"></div>
+                                                                    </div>
+                                                                    <div class="col-2 m-0 p-0">
+                                                                        <button type="button" class="btn btn-warning p-2 btn-bayar-cicilan" data-toggle="modal" data-target="#PelangganModal">Tambah Pelanggan</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
                                                     <div class="col-md-6">
                                                         <div class="form-group">
                                                             <label for="tgl_transaksi" class="text-dark">Tanggal
@@ -62,106 +80,95 @@ include('koneksi/config.php');
                                                         </div>
                                                     </div>
                                                 </div>
+                                            </div>
+
+                                            <div class="hidden-form" style="display: none;">
                                                 <div class="row">
                                                     <div class="col-md-12 mb-4">
                                                         <button type="button" class="btn btn-success" id="btnTambahItem" onclick="addNewItem()">Transkasi Baru</button>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-4 offset-md-8">
-                                                    <div class="form-group">
-                                                        <label for="total_harus_dibayar" class="text-dark">Harus Dibayar
-                                                            (Rp.)<span class='red'> *</span></label>
-                                                        <input type="text" id="total_harus_dibayar" class="form-control" name="total_harga" value="Rp. 0" readonly />
+
+                                                <div class="row">
+                                                    <div class="col-md-4 offset-md-8">
+                                                        <div class="form-group">
+                                                            <label for="total_harus_dibayar" class="text-dark" style="font-weight: bold;">Harus Dibayar
+                                                                (Rp.)<span class='red'> *</span></label>
+                                                            <input type="text" id="total_harus_dibayar" class="form-control"  style="font-weight: bold;" name="total_harga" value="Rp. 0" readonly />
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="col-md-4 offset-md-8">
-                                                    <div class="form-group">
-                                                        <label for="nama" class="text-dark">Nama Pelanggan<span class='red'> *</span></label>
-                                                        <div class="pelanggan-container">
-                                                            <div class="row">
-                                                                <div class="col-7">
-                                                                    <input class="form-control nama" type="text" name="nama" placeholder="Nama Pelanggan" required />
-                                                                    <div class="result_pelanggan"></div>
-                                                                </div>
-                                                                <div class="col-2 m-0 p-0">
-                                                                    <a href="tambah_pelanggan.php" class="btn btn-warning p-2">Tambah Pelanggan</a>
+                                                    <div class="col-md-4 offset-md-8">
+                                                        <div class="form-group">
+                                                            <label for="tipe_pembayaran" class="text-dark">Tipe
+                                                                Pembayaran<span class='red'> *</span></label>
+                                                            <select class="form-control" name="tipe_pembayaran" id="tipe_pembayaran" required>
+                                                                <option value="">Metode Pembayaran</option>
+                                                                <option value="Cash">Cash</option>
+                                                                <option value="Debit">Debit</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4 offset-md-8">
+                                                        <div class="form-group">
+                                                            <label for="uang_diterima" id="label_uang_diterima" class="text-dark">Bayar (Rp.)<span class='red'>
+                                                                    *</span></label>
+                                                            <input class="form-control" type="text" name="uang_diterima" id="uang_diterima" required />
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-md-4 offset-md-8">
+                                                        <div class="form-group">
+                                                            <label for="kembalian" id="label_kembalian" class="text-dark">Kembalian (Rp.)<span class='red'>
+                                                                    *</span></label>
+                                                            <input class="form-control" type="text" name="kembalian" id="kembalian" readonly />
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-md-4 offset-md-8">
+                                                        <div class="form-group">
+                                                            <label for="kurangan" id="label_kurangan" class="text-dark">Kurangan (Rp.)<span class='red'>
+                                                                    *</span></label>
+                                                            <input class="form-control" type="text" name="kurangan" id="kurangan" readonly />
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4 offset-md-8">
+                                                        <div class="form-group">
+                                                            <label for="nama_sales" class="text-dark">Nama Sales<span class='red'> *</span></label>
+                                                            <div class="sales-container">
+                                                                <div class="row">
+                                                                    <div class="col-12">
+                                                                        <select class="form-control" id="namaSales" name="nama_sales" required>
+                                                                            <option value="">Pilih Sales</option>
+                                                                            <?php
+                                                                            // Ambil daftar sales dari tabel sales
+                                                                            $sqlSales = "SELECT * FROM sales";
+                                                                            $resultSales = mysqli_query($koneksi, $sqlSales);
+
+                                                                            // Tampilkan opsi untuk setiap sales
+                                                                            while ($rowSales = mysqli_fetch_assoc($resultSales)) {
+                                                                                echo "<option value='" . $rowSales['nama'] . "'>" . $rowSales['nama'] . "</option>";
+                                                                            }
+                                                                            ?>
+                                                                        </select>
+                                                                        <div class="result_sales"></div>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <div class="col-md-4 offset-md-8">
-                                                    <div class="form-group">
-                                                        <label for="tipe_pembayaran" class="text-dark">Tipe
-                                                            Pembayaran<span class='red'> *</span></label>
-                                                        <select class="form-control" name="tipe_pembayaran" id="tipe_pembayaran" required>
-                                                            <option value="">Metode Pembayaran</option>
-                                                            <option value="Cash">Cash</option>
-                                                            <option value="Debit">Debit</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4 offset-md-8">
-                                                    <div class="form-group">
-                                                        <label for="uang_diterima" id="label_uang_diterima" class="text-dark">Bayar (Rp.)<span class='red'>
-                                                                *</span></label>
-                                                        <input class="form-control" type="text" name="uang_diterima" id="uang_diterima" required />
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-md-4 offset-md-8">
-                                                    <div class="form-group">
-                                                        <label for="kembalian" id="label_kembalian" class="text-dark">Kembalian (Rp.)<span class='red'>
-                                                                *</span></label>
-                                                        <input class="form-control" type="text" name="kembalian" id="kembalian" readonly />
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-md-4 offset-md-8">
-                                                    <div class="form-group">
-                                                        <label for="kurangan" id="label_kurangan" class="text-dark">Kurangan (Rp.)<span class='red'>
-                                                                *</span></label>
-                                                        <input class="form-control" type="text" name="kurangan" id="kurangan" readonly />
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4 offset-md-8">
-                                                    <div class="form-group">
-                                                        <label for="nama_sales" class="text-dark">Nama Sales<span class='red'> *</span></label>
-                                                        <div class="sales-container">
-                                                            <div class="row">
-                                                                <div class="col-12">
-                                                                    <select class="form-control" id="namaSales" name="nama_sales" required>
-                                                                        <option value="">Pilih Sales</option>
-                                                                        <?php
-                                                                        // Ambil daftar sales dari tabel sales
-                                                                        $sqlSales = "SELECT * FROM sales";
-                                                                        $resultSales = mysqli_query($koneksi, $sqlSales);
-
-                                                                        // Tampilkan opsi untuk setiap sales
-                                                                        while ($rowSales = mysqli_fetch_assoc($resultSales)) {
-                                                                            echo "<option value='" . $rowSales['nama'] . "'>" . $rowSales['nama'] . "</option>";
-                                                                        }
-                                                                        ?>
-                                                                    </select>
-                                                                    <div class="result_sales"></div>
-                                                                </div>
-                                                            </div>
+                                                    <div class="col-md-12">
+                                                        <div class="form-actions float-right">
+                                                            <button type="reset" name="Reset" class="btn btn-danger">
+                                                                <i class="fa fa-times"></i> Batal
+                                                            </button>
+                                                            <button type="submit" id="btnSubmit" name="btnSubmit" class="btn btn-primary px-4" title="Save">
+                                                                <i class="fa fa-check"></i> Bayar
+                                                            </button>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-12">
-                                                    <div class="form-actions float-right">
-                                                        <button type="reset" name="Reset" class="btn btn-danger">
-                                                            <i class="fa fa-times"></i> Batal
-                                                        </button>
-                                                        <button type="submit" id="btnSubmit" name="btnSubmit" class="btn btn-primary" title="Save">
-                                                            <i class="fa fa-check"></i> Bayar
-                                                        </button>
-                                                    </div>
-                                                </div>
                                             </div>
+
                                         </div>
                                     </form>
                                 </div>
@@ -174,11 +181,45 @@ include('koneksi/config.php');
             <footer class="main-footer">
                 <?php include('layout/footer.php'); ?>
             </footer>
+
+            <div class="modal fade" id="PelangganModal" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="bayarCicilanModalLabel">Tambah Pelanggan</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form method="post" action="simpan_pelanggan.php">
+                                <div class="form-group">
+                                    <label for="nama">Nama</label>
+                                    <input type="text" class="form-control" id="nama" name="nama" placeholder="Nama Pelanggan" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="alamat">Alamat</label>
+                                    <input type="text" class="form-control" id="alamat" name="alamat" placeholder="Alamat" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="nomor">Nomor</label>
+                                    <input type="text" class="form-control" id="nomor" name="nomor" placeholder="No Telepon/WA" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Simpan</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
         </div>
     </div>
     <?php include('layout/js.php'); ?>
     <!-- JavaScript -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
     <script>
         // Ketika dokumen selesai dimuat
         $(document).ready(function() {
@@ -378,7 +419,15 @@ include('koneksi/config.php');
             }
 
             $(document).on("input", ".nama", function() {
-                handleItemSearch($(this));
+                var inputNamaPelanggan = $(this).val();
+
+                if (inputNamaPelanggan === '') {
+                    // Jika input nama pelanggan kosong, sembunyikan list pelanggan dan komponen form tersembunyi
+                    $('.result_pelanggan').empty();
+                    $('.hidden-form').hide();
+                } else {
+                    handleItemSearch($(this)); // Lakukan pencarian
+                }
             });
 
             $(document).on("click", ".result_pelanggan li", function() {
@@ -396,11 +445,19 @@ include('koneksi/config.php');
                         var data = JSON.parse(response);
                         pelangganContainer.find(".nama").val(data.nama);
                         pelangganContainer.find(".id_pelanggan").val(data.id);
+
+                        // Menampilkan komponen form tersembunyi jika data pelanggan ditemukan
+                        $('.hidden-form').show();
+                    },
+                    error: function() {
+                        // Menyembunyikan komponen form tersembunyi jika data pelanggan tidak ditemukan
+                        $('.hidden-form').hide();
                     }
                 });
 
                 pelangganContainer.find(".result_pelanggan").empty(); // Mengganti itemContainer menjadi pelangganContainer
             });
+
         });
     </script>
 

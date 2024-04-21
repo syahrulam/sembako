@@ -30,8 +30,6 @@ $koneksi->close();
 ?>
 
 
-$koneksi->close();
-?>
 
 <?php include('layout/head.php'); ?>
 
