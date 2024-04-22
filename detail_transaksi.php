@@ -113,31 +113,31 @@ $result = $koneksi->query($query);
                         </div>
 
                         <!-- Additional Payment Information -->
-                        <div class="mb-4 px-4">
-                            <div class="row">
-                                <div class="col-1"><strong>Harga Total</strong></div>
-                                <div class="col-1">: Rp. <?php echo number_format($row_transaksi['total_harga'], 0, ',', '.'); ?></div>
+                        <div class="mb-4">
+                            <div class="row mb-2">
+                                <div class="col-2"><strong>Harga Total</strong></div>
+                                <div class="col-3">: Rp. <?php echo number_format($row_transaksi['total_harga'], 0, ',', '.'); ?></div>
                             </div>
 
-                            <div class="row">
-                                <div class="col-1"><strong>Pembayaran</strong></div>
-                                <div class="col-1">: <?php echo $row_transaksi['tipe_pembayaran']; ?></div>
+                            <div class="row mb-2">
+                                <div class="col-2"><strong>Pembayaran</strong></div>
+                                <div class="col-3">: <?php echo $row_transaksi['tipe_pembayaran']; ?></div>
                             </div>
 
-                            <div class="row">
-                                <div class="col-1"><strong>Uang diterima</strong></div>
-                                <div class="col-1">: Rp. <?php echo number_format($row_transaksi['total_bayar'], 0, ',', '.'); ?></div>
+                            <div class="row mb-2">
+                                <div class="col-2"><strong>Uang diterima</strong></div>
+                                <div class="col-3">: Rp. <?php echo number_format($row_transaksi['total_bayar'], 0, ',', '.'); ?></div>
                             </div>
 
-                            <div class="row">
+                            <div class="row mb-2">
                                 <?php
                                 if ($row_transaksi['tipe_pembayaran'] === 'Cash') {
-                                    echo "<div class='col-1'><strong>Kembalian</strong></div>";
+                                    echo "<div class='col-2'><strong>Kembalian</strong></div>";
                                 } elseif ($row_transaksi['tipe_pembayaran'] === 'Debit') {
-                                    echo "<div class='col-1'><strong>Kekurangan</strong></div>";
+                                    echo "<div class='col-2'><strong>Kekurangan</strong></div>";
                                 }
                                 ?>
-                                <div class="col-6">: Rp. <?php echo number_format(($row_transaksi['tipe_pembayaran'] === 'Cash') ? $row_transaksi['kembalian'] : $row_transaksi['kekurangan'], 0, ',', '.'); ?></div>
+                                <div class="col-3">: Rp. <?php echo number_format(($row_transaksi['tipe_pembayaran'] === 'Cash') ? $row_transaksi['kembalian'] : $row_transaksi['kekurangan'], 0, ',', '.'); ?></div>
                             </div>
                         </div>
                     </div>

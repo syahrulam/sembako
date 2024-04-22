@@ -20,10 +20,11 @@ $id_pelanggan = $_GET['id'];
 // Query untuk mengambil transaksi berdasarkan ID pelanggan
 // Menggunakan ORDER BY untuk mendapatkan data terbaru
 $query = "SELECT
+            t.nama_pelanggan,
             t.id_transaksi,
             t.no_transaksi,
             t.tanggal,
-            p.kurangan_hutang
+            COALESCE(SUM(p.kurangan_hutang), 0) AS hutang_sekarang
           FROM
             transaksi t
             JOIN piutang p ON t.id_transaksi = p.id_transaksi
@@ -73,8 +74,7 @@ $no = 1;
                                             <thead>
                                                 <tr>
                                                     <th>No.</th>
-                                                    <th>No. Transaksi</th>
-                                                    <th>Tanggal</th>
+                                                   
                                                     <th>Hutang</th>
                                                     <th>Aksi</th>
                                                 </tr>
@@ -83,11 +83,10 @@ $no = 1;
                                                 <?php while ($row = mysqli_fetch_assoc($result)) : ?>
                                                     <tr>
                                                         <td><?php echo $no++; ?></td>
-                                                        <td><?php echo $row['no_transaksi']; ?></td>
-                                                        <td><?php echo  date('d F Y', strtotime($row['tanggal'])) ?></td>
-                                                        <td><?php echo 'Rp. ' . number_format($row['kurangan_hutang'], 0, ',', '.'); ?></td> <!-- Ambil data dari kurangan_hutang -->
+                                                        
+                                                        <td><?php echo 'Rp. ' . number_format($row['hutang_sekarang'], 0, ',', '.'); ?></td> <!-- Ambil data dari kurangan_hutang -->
                                                         <td>
-                                                            <button type="button" class="btn btn-primary btn-bayar-cicilan" data-toggle="modal" data-target="#bayarCicilanModal" data-id="<?php echo $row['id_transaksi']; ?>">Bayar Cicilan</button>
+                                                            <button type="button" class="btn btn-primary btn-bayar-cicilan" data-toggle="modal" data-target="#bayarCicilanModal" data-id="<?php echo $row['nama_pelanggan']; ?>">Bayar Cicilan</button>
                                                         </td>
                                                     </tr>
                                                 <?php endwhile; ?>
@@ -119,8 +118,8 @@ $no = 1;
                                 <div class="form-group">
                                     <label for="jumlah">Jumlah Pembayaran:</label>
                                     <!-- Hidden input untuk ID transaksi -->
-                                    <input style="display: none;" class="form-control" id="id_transaksi" name="id_transaksi">
-                                    <input type="text" class="form-control" id="jumlah" name="jumlah" placeholder="Jumlah Cicilan (Rp)" required>
+                                    <input class="form-control" id="nama_pelanggan" name="nama_pelanggan">
+                                    <input type="text" class="form-control" id="cicilan" name="cicilan" placeholder="Jumlah Cicilan (Rp)" required>
                                 </div>
                                 <button type="submit" class="btn btn-primary">Bayar Cicilan</button>
                             </form>
@@ -136,8 +135,8 @@ $no = 1;
         <script>
             $(document).ready(function() {
                 $('.btn-bayar-cicilan').click(function() {
-                    var id_transaksi = $(this).data('id');
-                    $('#id_transaksi').val(id_transaksi);
+                    var nama_pelanggan = $(this).data('id');
+                    $('#nama_pelanggan').val(nama_pelanggan);
                 });
             });
         </script>

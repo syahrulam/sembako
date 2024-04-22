@@ -32,8 +32,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // Simpan ke dalam tabel piutang jika ada kekurangan
         if ($kurangan > 0) {
-            $query_piutang = "INSERT INTO piutang (id_transaksi, nominal, kurangan_hutang, tanggal, status)
-                  VALUES ('$id_transaksi', '$nominal', '$kurangan', '$tgl_transaksi', 'Belum Lunas')";
+            $query_piutang = "INSERT INTO piutang (id_transaksi, bayar, kurangan_hutang, tanggal, status)
+                  VALUES ('$id_transaksi', '$uang_diterima', '$kurangan', '$tgl_transaksi', 'Belum Lunas')";
             if (!mysqli_query($koneksi, $query_piutang)) {
                 echo "Error: " . $query_piutang . "<br>" . mysqli_error($koneksi);
             }

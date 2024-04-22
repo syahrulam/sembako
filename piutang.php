@@ -26,7 +26,7 @@ $query = "SELECT
              transaksi t
              LEFT JOIN piutang p ON t.id_transaksi = p.id_transaksi
          WHERE
-             t.tipe_pembayaran = 'Debit' AND t.kekurangan <> 0
+             t.tipe_pembayaran = 'Debit' AND t.kekurangan <> 0 
          GROUP BY
              t.nama_pelanggan";
 
@@ -72,17 +72,17 @@ $no = 1;
                                                 </tr>
                                             </thead>
                                             <tbody>
-    <?php while ($row = mysqli_fetch_assoc($result)) : ?>
-        <tr>
-            <td><?php echo $no++; ?></td>
-            <td><?php echo ucwords($row['nama_pelanggan']); ?></td>
-            <td><?php echo $row['jumlah_transaksi']; ?></td>
-            <td><?php echo 'Rp. ' . number_format($row['total_hutang'], 0, ',', '.'); ?></td>
-            <td><?php echo 'Rp. ' . number_format($row['hutang_sekarang'], 0, ',', '.'); ?></td> <!-- Baris ini untuk data Hutang Sekarang -->
-            <td>
-                <a href="detail_piutang.php?id=<?php echo $row['nama_pelanggan']; ?>" class="btn btn-warning">Detail</a>
-            </td>
-        </tr>
+                                                <?php while ($row = mysqli_fetch_assoc($result)) : ?>
+                                                    <tr>
+                                                        <td><?php echo $no++; ?></td>
+                                                        <td><?php echo ucwords($row['nama_pelanggan']); ?></td>
+                                                        <td><?php echo $row['jumlah_transaksi']; ?></td>
+                                                        <td><?php echo 'Rp. ' . number_format($row['total_hutang'], 0, ',', '.'); ?></td>
+                                                        <td><?php echo 'Rp. ' . number_format($row['hutang_sekarang'], 0, ',', '.'); ?></td> <!-- Baris ini untuk data Hutang Sekarang -->
+                                                        <td>
+                                                            <a href="detail_piutang.php?id=<?php echo $row['nama_pelanggan']; ?>" class="btn btn-warning">Detail</a>
+                                                        </td>
+                                                    </tr>
                                                 <?php endwhile; ?>
 
                                             </tbody>

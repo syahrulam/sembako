@@ -11,41 +11,33 @@ if (!isset($_SESSION['username'])) {
 // Menggunakan tanda == untuk perbandingan dalam query SQL
 include('koneksi/config.php');
 
-// Periksa apakah nomor transaksi ada dalam URL
-if (isset($_GET['id_transaksi'])) {
-    // Ambil nomor transaksi dari URL
-    $no_transaksi = $_GET['id_transaksi'];
+// Periksa apakah nama pelanggan ada dalam URL
+if (isset($_GET['nama_pelanggan'])) {
+    // Ambil nama pelanggan dari URL
+    $nama_pelanggan = $_GET['nama_pelanggan'];
 
-    // Ambil data piutang berdasarkan nomor transaksi dari tabel Piutang dan informasi transaksi dari tabel Transaksi
-    $query_data = "SELECT Piutang.id_piutang, Transaksi.no_transaksi, Transaksi.nama_pelanggan, Piutang.tanggal AS tanggal, Piutang.bayar, Piutang.status 
-                   FROM Piutang 
-                   INNER JOIN Transaksi ON Piutang.id_transaksi = Transaksi.id_transaksi 
-                   WHERE Transaksi.no_transaksi = ?";
+    // Ambil data cicilan berdasarkan nama pelanggan dari tabel Cicilan_Piutang dan informasi transaksi dari tabel Piutang
+    $query_data = "SELECT cicilan_piutang.tanggal, cicilan_piutang.cicilan 
+                   FROM cicilan_piutang 
+                   INNER JOIN piutang ON cicilan_piutang.id_transaksi = piutang.id_transaksi 
+                   INNER JOIN transaksi ON piutang.id_transaksi = transaksi.id_transaksi 
+                   WHERE transaksi.nama_pelanggan = ?";
 
     $stmt = mysqli_prepare($koneksi, $query_data);
-    mysqli_stmt_bind_param($stmt, "s", $no_transaksi);
+    mysqli_stmt_bind_param($stmt, "s", $nama_pelanggan);
     mysqli_stmt_execute($stmt);
     $result_data = mysqli_stmt_get_result($stmt);
 
     // Ambil informasi sisa hutang dari tabel Transaksi
-    $query_kekurangan = "SELECT kekurangan FROM Transaksi WHERE no_transaksi = ?";
-    $stmt_kekurangan = mysqli_prepare($koneksi, $query_kekurangan);
-    mysqli_stmt_bind_param($stmt_kekurangan, "s", $no_transaksi);
-    mysqli_stmt_execute($stmt_kekurangan);
-    $result_kekurangan = mysqli_stmt_get_result($stmt_kekurangan);
-    $row_kekurangan = mysqli_fetch_assoc($result_kekurangan);
-    $sisa_hutang = $row_kekurangan['kekurangan'];
+    $query_sisa_hutang = "SELECT SUM(kurangan_hutang) AS sisa_hutang FROM piutang INNER JOIN transaksi ON piutang.id_transaksi = transaksi.id_transaksi WHERE transaksi.nama_pelanggan = ?";
+    $stmt_sisa_hutang = mysqli_prepare($koneksi, $query_sisa_hutang);
+    mysqli_stmt_bind_param($stmt_sisa_hutang, "s", $nama_pelanggan);
+    mysqli_stmt_execute($stmt_sisa_hutang);
+    $result_sisa_hutang = mysqli_stmt_get_result($stmt_sisa_hutang);
+    $row_sisa_hutang = mysqli_fetch_assoc($result_sisa_hutang);
+    $sisa_hutang = $row_sisa_hutang['sisa_hutang'];
 
-    // Ambil nama pelanggan untuk ditampilkan di luar tabel
-    $query_nama_pelanggan = "SELECT nama_pelanggan FROM Transaksi WHERE no_transaksi = ?";
-    $stmt_nama_pelanggan = mysqli_prepare($koneksi, $query_nama_pelanggan);
-    mysqli_stmt_bind_param($stmt_nama_pelanggan, "s", $no_transaksi);
-    mysqli_stmt_execute($stmt_nama_pelanggan);
-    $result_nama_pelanggan = mysqli_stmt_get_result($stmt_nama_pelanggan);
-    $row_nama_pelanggan = mysqli_fetch_assoc($result_nama_pelanggan);
-    $nama_pelanggan = $row_nama_pelanggan['nama_pelanggan'];
 } else {
-    // Jika nomor transaksi tidak ada dalam URL, tampilkan pesan error
     echo "Nomor transaksi tidak ditemukan dalam parameter URL.";
     exit();
 }
@@ -74,7 +66,8 @@ if (isset($_GET['id_transaksi'])) {
                                             <a href="javascript:history.go(-1)" class="btn btn-primary">Kembali</a>
                                         </div>
                                         <div class="col">
-                                            <h4 class="mt-4">Riwayat Piutang <?php echo $no_transaksi; ?> Atas nama <?php echo $nama_pelanggan; ?> Sisa Hutang: Rp. <?php echo number_format($sisa_hutang, 0, ',', '.'); ?></h4>
+                                            <h4 class="mt-4">Riwayat Piutang</h4>
+                                            <p>Nama : <?php echo $nama_pelanggan; ?> | Sisa Hutang: Rp. <?php echo number_format($sisa_hutang, 0, ',', '.'); ?></p>
                                         </div>
                                     </div>
                                 </div>
@@ -85,9 +78,8 @@ if (isset($_GET['id_transaksi'])) {
                                             <thead>
                                                 <tr>
                                                     <th>No.</th>
-                                                    <th>Tanggal Pelunasan</th>
-                                                    <th>Bayar</th>
-                                                    <th>Status</th>
+                                                    <th>Tanggal Pembayaran Cicilan</th>
+                                                    <th>Cicilan Terbayar</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -98,9 +90,7 @@ if (isset($_GET['id_transaksi'])) {
                                                         echo "<tr>";
                                                         echo "<td>" . $no . "</td>";
                                                         echo "<td>" . date('d F Y', strtotime($row['tanggal'])) . "</td>";
-                                                        echo "<td>" . $row['bayar'] . "</td>";
-                                                        echo "<td>" . $row['status'] . "</td>";
-
+                                                        echo "<td>" . 'Rp.'. number_format($row['cicilan'], 0, ',', '.'). "</td>";
                                                         echo "</tr>";
                                                         $no++;
                                                     }

@@ -15,9 +15,12 @@ $username = $_SESSION['username'];
 include('koneksi/config.php');
 
 // Ambil data piutang dari tabel Piutang dan informasi transaksi dari tabel Transaksi
-$query_data = "SELECT Transaksi.no_transaksi, Transaksi.nama_pelanggan, Piutang.tanggal AS tanggal, MAX(Piutang.status) AS status FROM Piutang INNER JOIN Transaksi ON Piutang.id_transaksi = Transaksi.id_transaksi GROUP BY Transaksi.id_transaksi";
+$query_data = "SELECT Transaksi.nama_pelanggan, MAX(Piutang.tanggal) AS tanggal, MAX(Piutang.status) AS status FROM Piutang INNER JOIN Transaksi ON Piutang.id_transaksi = Transaksi.id_transaksi GROUP BY Transaksi.nama_pelanggan";
 $result_data = mysqli_query($koneksi, $query_data);
 ?>
+
+
+
 
 <body>
     <div id="app">
@@ -45,7 +48,6 @@ $result_data = mysqli_query($koneksi, $query_data);
                                             <thead>
                                                 <tr>
                                                     <th>No.</th>
-                                                    <th>No. Transaksi</th>
                                                     <th>Nama Pelanggan</th>
                                                     <th>Status</th>
                                                     <th>Detail Cicilan</th>
@@ -58,11 +60,9 @@ $result_data = mysqli_query($koneksi, $query_data);
                                                     while ($row = mysqli_fetch_assoc($result_data)) {
                                                         echo "<tr>";
                                                         echo "<td>" . $no . "</td>";
-                                                        echo "<td>" . $row['no_transaksi'] . "</td>";
                                                         echo "<td>" . $row['nama_pelanggan'] . "</td>";
                                                         echo "<td>" . $row['status'] . "</td>";
-                                                        echo "<td><a href='detail_cicilan.php?id_transaksi=" . $row['no_transaksi'] . "' class='btn btn-info btn-sm'>Detail Cicilan</a></td>";
-
+                                                        echo "<td><a href='detail_cicilan.php?nama_pelanggan=" . $row['nama_pelanggan'] . "' class='btn btn-info btn-sm'>Detail Cicilan</a></td>";
                                                         echo "</tr>";
                                                         $no++;
                                                     }

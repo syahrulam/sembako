@@ -1,51 +1,67 @@
 <?php
-session_start(); // Memulai sesi
+session_start(); // Mulai sesi
 
-// Periksa apakah pengguna sudah login
+// Periksa apakah pengguna telah masuk
 if (!isset($_SESSION['username'])) {
     header("Location: login.php");
     exit();
 }
 
-include('koneksi/config.php'); // Koneksi ke database
+include('koneksi/config.php'); // Koneksi database
 
-// Pastikan bahwa permintaan POST diterima
+// Periksa apakah permintaan adalah POST
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Ambil data dari form
-    $id_transaksi = $_POST['id_transaksi'];
-    $jumlah_pembayaran = $_POST['jumlah']; // Jumlah yang dibayarkan
+    $nama_pelanggan = $_POST['nama_pelanggan'];
+    $cicilan = $_POST['cicilan']; 
 
-    // Dapatkan data piutang terakhir berdasarkan ID transaksi untuk mendapatkan sisa hutang
-    $query_kurangan = "SELECT kurangan_hutang FROM piutang WHERE id_transaksi = ? ORDER BY tanggal DESC LIMIT 1";
+    // Ambil jumlah hutang saat ini untuk pelanggan
+    $query_kurangan = "SELECT p.id_transaksi, p.kurangan_hutang 
+                       FROM piutang p 
+                       INNER JOIN transaksi t ON p.id_transaksi = t.id_transaksi
+                       WHERE t.nama_pelanggan = ? 
+                       ORDER BY t.tanggal DESC 
+                       LIMIT 1";
     $stmt = mysqli_prepare($koneksi, $query_kurangan);
-    mysqli_stmt_bind_param($stmt, "i", $id_transaksi);
+    mysqli_stmt_bind_param($stmt, "s", $nama_pelanggan);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
     $row = mysqli_fetch_assoc($result);
 
-    // Jika data ditemukan, hitung kurangan terbaru setelah pembayaran
     if ($row) {
+        $id_transaksi = $row['id_transaksi'];
         $kurangan_hutang_sekarang = $row['kurangan_hutang'];
-        $kurangan_hutang_terbaru = $kurangan_hutang_sekarang - $jumlah_pembayaran;
 
-        // Tentukan status piutang berdasarkan kekurangan terbaru
+        // Hitung jumlah hutang baru setelah pembayaran
+        $kurangan_hutang_terbaru = $kurangan_hutang_sekarang - $cicilan;
+
+        // Perbarui tabel hutang dengan jumlah hutang baru
         $status_piutang = $kurangan_hutang_terbaru <= 0 ? 'Lunas' : 'Belum Lunas';
+        $query_update_piutang = "UPDATE piutang SET kurangan_hutang = ?, status = ? WHERE id_transaksi = ?";
+        $stmt_update = mysqli_prepare($koneksi, $query_update_piutang);
+        mysqli_stmt_bind_param($stmt_update, "dss", $kurangan_hutang_terbaru, $status_piutang, $id_transaksi);
+        $result_update = mysqli_stmt_execute($stmt_update);
 
-        // Simpan informasi pembayaran ke dalam tabel piutang
-        $query_insert_piutang = "INSERT INTO piutang (id_transaksi, bayar, kurangan_hutang, tanggal, status) VALUES (?, ?, ?, NOW(), ?)";
-        $stmt_insert = mysqli_prepare($koneksi, $query_insert_piutang);
-        mysqli_stmt_bind_param($stmt_insert, "iiis", $id_transaksi, $jumlah_pembayaran, $kurangan_hutang_terbaru, $status_piutang);
-        $result_insert = mysqli_stmt_execute($stmt_insert);
+        // Masukkan detail pembayaran ke dalam tabel pembayaran hutang
+        if ($result_update) {
+            $query_insert_cicilan = "INSERT INTO cicilan_piutang (id_transaksi, cicilan) VALUES (?, ?)";
+            $stmt_insert = mysqli_prepare($koneksi, $query_insert_cicilan);
+            mysqli_stmt_bind_param($stmt_insert, "id", $id_transaksi, $cicilan);
+            $result_insert = mysqli_stmt_execute($stmt_insert);
 
-        if ($result_insert) {
-            echo "<script>alert('Pembayaran berhasil disimpan.');</script>";
-            echo "<script>window.history.go(-1);</script>"; // Redirect ke halaman sebelumnya
+            if ($result_insert) {
+                // Pengalihan setelah logika PHP selesai
+                header("Location: piutang.php");
+                exit();
+            } else {
+                echo "Terjadi kesalahan saat menyimspan pembayaran ke dalam tabel cicilan piutang.";
+            }
         } else {
-            echo "Terjadi kesalahan saat menyimpan pembayaran ke dalam tabel piutang.";
+            echo "Terjadi kesalahan saat memperbarui data piutang.";
         }
     } else {
-        echo "Tidak ditemukan data piutang untuk ID transaksi ini.";
+        echo "Tidak ditemukan data piutang untuk pelanggan ini.";
     }
 } else {
     echo "Akses tidak sah.";
 }
+?>
