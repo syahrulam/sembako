@@ -252,17 +252,17 @@ include('koneksi/config.php');
         }
 
         function removeItem(itemId) {
-            var removedItemTotal = parseFloat($('#total_' + itemId).val()); 
-            $('#item-' + itemId).remove(); 
+            var removedItemTotal = parseFloat($('#total_' + itemId).val());
+            $('#item-' + itemId).remove();
 
-            var currentTotal = parseFloat($('#total_harus_dibayar').val()); 
-            var newTotal = currentTotal - removedItemTotal; 
-            $('#total_harus_dibayar').val(newTotal); 
+            var currentTotal = parseFloat($('#total_harus_dibayar').val());
+            var newTotal = currentTotal - removedItemTotal;
+            $('#total_harus_dibayar').val(newTotal);
             var uangDiterima = parseFloat($('input[name="uang_diterima"]').val());
             var kekurangan = newTotal - uangDiterima;
             $('#kurangan').val(kekurangan.toFixed(0));
 
-            updatePembayaran(); 
+            updatePembayaran();
         }
 
         $(document).ready(function() {
@@ -311,25 +311,28 @@ include('koneksi/config.php');
                 if (tipePembayaran === 'Cash') {
                     if (!isNaN(bayar) && bayar >= harusDibayar) {
                         var kembalian = bayar - harusDibayar;
-                        $('input[name="kembalian"]').val(kembalian.toFixed(2));
+                        $('input[name="kembalian"]').val(parseInt(kembalian)); // Menghapus angka di belakang koma
                         $('input[name="kurangan"]').val(0); // Reset nilai kurangan menjadi 0
                     } else {
-                        $('input[name="kembalian"]').val(0); // Reset nilai kembalian menjadi 0 jika nilai bayar tidak valid
+                        $('input[name="kembalian"]').val("Uang Kurang");
                         var kekurangan = harusDibayar - bayar;
-                        $('#kurangan').val(kekurangan.toFixed(2));
+                        $('input[name="kurangan"]').val(parseInt(kekurangan)); // Menghapus angka di belakang koma dan tampilkan kekurangan
                     }
                 }
                 // Jika jenis pembayaran adalah "Debit"
                 else if (tipePembayaran === 'Debit') {
                     if (!isNaN(bayar) && bayar < harusDibayar) {
                         var kurangan = harusDibayar - bayar;
-                        $('input[name="kurangan"]').val(kurangan.toFixed(0));
+                        $('input[name="kurangan"]').val(parseInt(kurangan)); // Menghapus angka di belakang koma dan tampilkan kekurangan
                         $('input[name="kembalian"]').val(0); // Reset nilai kembalian menjadi 0
                     } else {
-                        $('input[name="kurangan"]').val(0); // Reset nilai kurangan menjadi 0 jika nilai bayar tidak valid
+                        $('input[name="kurangan"]').val("Uang Lebih"); // Tampilkan Uang Lebih
+                        $('input[name="kembalian"]').val(0); // Reset nilai kembalian menjadi 0
                     }
                 }
             }
+
+
             // Fungsi untuk menyembunyikan atau menampilkan field kurangan atau kembalian berdasarkan tipe pembayaran
             function toggleFields() {
                 var tipePembayaran = $('select[name="tipe_pembayaran"]').val();
