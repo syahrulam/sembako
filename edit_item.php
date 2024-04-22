@@ -1,6 +1,12 @@
 <?php
 include('koneksi/config.php');
 
+// Fungsi untuk menghapus format Rupiah
+function unformatRupiah($rupiah)
+{
+    return preg_replace("/[^0-9]/", "", $rupiah);
+}
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Ambil data dari form
     $id_item = $_POST['id_item'];
@@ -11,8 +17,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $jumlah_satuan_besar = $_POST['jumlah_satuan_besar'];
     $jumlah_isi_satuan_besar = $_POST['jumlah_isi_satuan_besar'];
     $harga_satuan_kulak = $_POST['harga_satuan_kulak'];
-    $harga_jual_satuan_besar = $_POST['harga_jual_satuan_besar'];
-    $harga_jual_satuan_kecil = $_POST['harga_jual_satuan_kecil'];
+    $harga_jual_satuan_besar1 = intval(unformatRupiah($_POST['harga_jual_satuan_besar1']));
+    $harga_jual_satuan_besar2 = intval(unformatRupiah($_POST['harga_jual_satuan_besar2']));
+    $harga_jual_satuan_besar3 = intval(unformatRupiah($_POST['harga_jual_satuan_besar3']));
+    $harga_jual_satuan_kecil1 = intval(unformatRupiah($_POST['harga_jual_satuan_kecil1']));
+    $harga_jual_satuan_kecil2 = intval(unformatRupiah($_POST['harga_jual_satuan_kecil2']));
+    $harga_jual_satuan_kecil3 = intval(unformatRupiah($_POST['harga_jual_satuan_kecil3']));
     $tanggal = $_POST['tanggal'];
 
     // Hitung total harga kulak
@@ -23,7 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $result_check_kategori = $koneksi->query($check_kategori);
     if ($result_check_kategori->num_rows > 0) {
         // Jika kategori_id valid, jalankan pernyataan SQL untuk memperbarui data
-        $query = "UPDATE item SET kategori_id='$kategori_id', nama_item='$nama_item', jenis_satuan_besar='$jenis_satuan_besar', jenis_satuan_kecil='$jenis_satuan_kecil', jumlah_satuan_besar='$jumlah_satuan_besar', jumlah_isi_satuan_besar='$jumlah_isi_satuan_besar', harga_satuan_kulak='$harga_satuan_kulak', harga_jual_satuan_besar='$harga_jual_satuan_besar', harga_jual_satuan_kecil='$harga_jual_satuan_kecil', total_kulak='$total_kulak', total_harga_kulak='$total_harga_kulak', tanggal='$tanggal' WHERE id_item='$id_item'";
+        $query = "UPDATE item SET kategori_id='$kategori_id', nama_item='$nama_item', jenis_satuan_besar='$jenis_satuan_besar', jenis_satuan_kecil='$jenis_satuan_kecil', jumlah_satuan_besar='$jumlah_satuan_besar', jumlah_isi_satuan_besar='$jumlah_isi_satuan_besar', harga_satuan_kulak='$harga_satuan_kulak', harga_jual_satuan_besar1='$harga_jual_satuan_besar1', harga_jual_satuan_besar2='$harga_jual_satuan_besar2', harga_jual_satuan_besar3='$harga_jual_satuan_besar3', harga_jual_satuan_kecil1='$harga_jual_satuan_kecil1', harga_jual_satuan_kecil2='$harga_jual_satuan_kecil2', harga_jual_satuan_kecil3='$harga_jual_satuan_kecil3', total_kulak='$total_kulak', total_harga_kulak='$total_harga_kulak', tanggal='$tanggal' WHERE id_item='$id_item'";
         if ($koneksi->query($query) === TRUE) {
             header("Location: item.php");
             exit();
@@ -135,14 +145,32 @@ $username = $_SESSION['username'];
                                                     <input type="text" class="form-control" id="harga_satuan_kulak" name="harga_satuan_kulak" value="<?php echo $row['harga_satuan_kulak']; ?>" required>
                                                 </div>
                                                 <div class="form-group col-3">
-                                                    <label for="harga_jual_satuan_besar">Harga Jual Satuan Besar:</label>
-                                                    <input type="text" class="form-control" id="harga_jual_satuan_besar" name="harga_jual_satuan_besar" value="<?php echo $row['harga_jual_satuan_besar']; ?>" required>
+                                                    <label for="harga_jual_satuan_besar1">Harga Jual Per Satuan Besar 1:</label>
+                                                    <input type="text" class="form-control" id="harga_jual_satuan_besar1" name="harga_jual_satuan_besar1" value="<?php echo $row['harga_jual_satuan_besar1']; ?>" required onchange="formatCurrency(this)">
                                                 </div>
                                             </div>
                                             <div class="form-row">
                                                 <div class="form-group col-3">
-                                                    <label for="harga_jual_satuan_kecil">Harga Jual Satuan Kecil:</label>
-                                                    <input type="text" class="form-control" id="harga_jual_satuan_kecil" name="harga_jual_satuan_kecil" value="<?php echo $row['harga_jual_satuan_kecil']; ?>" required>
+                                                    <label for="harga_jual_satuan_besar2">Harga Jual Per Satuan Besar 2:</label>
+                                                    <input type="text" class="form-control" id="harga_jual_satuan_besar2" name="harga_jual_satuan_besar2" value="<?php echo $row['harga_jual_satuan_besar2']; ?>" required onchange="formatCurrency(this)">
+                                                </div>
+                                                <div class="form-group col-3">
+                                                    <label for="harga_jual_satuan_besar3">Harga Jual Per Satuan Besar 3:</label>
+                                                    <input type="text" class="form-control" id="harga_jual_satuan_besar3" name="harga_jual_satuan_besar3" value="<?php echo $row['harga_jual_satuan_besar3']; ?>" required onchange="formatCurrency(this)">
+                                                </div>
+                                                <div class="form-group col-3">
+                                                    <label for="harga_jual_satuan_kecil1">Harga Jual Per Satuan Kecil 1:</label>
+                                                    <input type="text" class="form-control" id="harga_jual_satuan_kecil1" name="harga_jual_satuan_kecil1" value="<?php echo $row['harga_jual_satuan_kecil1']; ?>" required onchange="formatCurrency(this)">
+                                                </div>
+                                                <div class="form-group col-3">
+                                                    <label for="harga_jual_satuan_kecil2">Harga Jual Per Satuan Kecil 2:</label>
+                                                    <input type="text" class="form-control" id="harga_jual_satuan_kecil2" name="harga_jual_satuan_kecil2" value="<?php echo $row['harga_jual_satuan_kecil2']; ?>" required onchange="formatCurrency(this)">
+                                                </div>
+                                            </div>
+                                            <div class="form-row">
+                                                <div class="form-group col-3">
+                                                    <label for="harga_jual_satuan_kecil3">Harga Jual Per Satuan Kecil 3:</label>
+                                                    <input type="text" class="form-control" id="harga_jual_satuan_kecil3" name="harga_jual_satuan_kecil3" value="<?php echo $row['harga_jual_satuan_kecil3']; ?>" required onchange="formatCurrency(this)">
                                                 </div>
                                                 <div class="form-group col-3">
                                                     <label for="tanggal">Tanggal:</label>
@@ -152,6 +180,7 @@ $username = $_SESSION['username'];
                                             <button type="submit" class="btn btn-primary">Simpan</button>
                                             <a href="item.php" class="btn btn-secondary">Batal</a>
                                         </form>
+
                                     </div>
                                 </div>
                                 <!-- End Form Edit Item -->

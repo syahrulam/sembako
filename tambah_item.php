@@ -25,8 +25,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $jumlah_satuan_besar = $_POST['jumlah_satuan_besar'];
     $jumlah_isi_satuan_besar = $_POST['jumlah_isi_satuan_besar'];
     $harga_satuan_kulak = intval(unformatRupiah($_POST['harga_satuan_kulak']));
-    $harga_jual_satuan_besar = intval(unformatRupiah($_POST['harga_jual_satuan_besar']));
-    $harga_jual_satuan_kecil = intval(unformatRupiah($_POST['harga_jual_satuan_kecil']));
+    $harga_jual_satuan_besar1 = intval(unformatRupiah($_POST['harga_jual_satuan_besar1']));
+    $harga_jual_satuan_besar2 = intval(unformatRupiah($_POST['harga_jual_satuan_besar2']));
+    $harga_jual_satuan_besar3 = intval(unformatRupiah($_POST['harga_jual_satuan_besar3']));
+    $harga_jual_satuan_kecil1 = intval(unformatRupiah($_POST['harga_jual_satuan_kecil1']));
+    $harga_jual_satuan_kecil2 = intval(unformatRupiah($_POST['harga_jual_satuan_kecil2']));
+    $harga_jual_satuan_kecil3 = intval(unformatRupiah($_POST['harga_jual_satuan_kecil3']));
     $tanggal = $_POST['tanggal'];
     $total_harga_kulak = intval(unformatRupiah($_POST['total_harga_kulak']));
 
@@ -34,8 +38,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $total_isi_satuan_kecil = $jumlah_satuan_besar * $jumlah_isi_satuan_besar;
 
     // Query untuk menyimpan data ke database
-    $query = "INSERT INTO item (kategori_id, nama_item, jenis_satuan_besar, jenis_satuan_kecil, jumlah_satuan_besar, jumlah_isi_satuan_besar, total_isi_satuan_kecil, harga_satuan_kulak, total_harga_kulak, harga_jual_satuan_besar, harga_jual_satuan_kecil, tanggal, total_kulak) 
-              VALUES ('$kategori_id', '$nama_item', '$jenis_satuan_besar', '$jenis_satuan_kecil', '$jumlah_satuan_besar', '$jumlah_isi_satuan_besar', '$total_isi_satuan_kecil', '$harga_satuan_kulak', '$total_harga_kulak', '$harga_jual_satuan_besar', '$harga_jual_satuan_kecil', '$tanggal', '$jumlah_satuan_besar')";
+    $query = "INSERT INTO item (kategori_id, nama_item, jenis_satuan_besar, jenis_satuan_kecil, jumlah_satuan_besar, jumlah_isi_satuan_besar, total_isi_satuan_kecil, harga_satuan_kulak, total_harga_kulak, harga_jual_satuan_besar1, harga_jual_satuan_besar2, harga_jual_satuan_besar3, harga_jual_satuan_kecil1, harga_jual_satuan_kecil2, harga_jual_satuan_kecil3, tanggal, total_kulak) 
+              VALUES ('$kategori_id', '$nama_item', '$jenis_satuan_besar', '$jenis_satuan_kecil', '$jumlah_satuan_besar', '$jumlah_isi_satuan_besar', '$total_isi_satuan_kecil', '$harga_satuan_kulak', '$total_harga_kulak', '$harga_jual_satuan_besar1', '$harga_jual_satuan_besar2', '$harga_jual_satuan_besar3', '$harga_jual_satuan_kecil1', '$harga_jual_satuan_kecil2', '$harga_jual_satuan_kecil3', '$tanggal', '$jumlah_satuan_besar')";
     if ($koneksi->query($query) === TRUE) {
         header("Location: item.php");
         exit();
@@ -85,7 +89,6 @@ function unformatRupiah($str)
                                                 <input type="date" class="form-control" id="tanggal" name="tanggal" required>
                                             </div>
                                             <div class="col-md-6">
-
                                                 <label for="kategori_id">Kategori:</label>
                                                 <select class="form-control" id="kategori_id" name="kategori_id" required>
                                                     <option value="">Pilih Kategori</option>
@@ -107,7 +110,6 @@ function unformatRupiah($str)
                                                 </select>
                                             </div>
                                         </div>
-
                                         <div class="form-group row">
                                             <div class="col-md-4">
                                                 <label for="nama_item">Nama Item:</label>
@@ -136,21 +138,40 @@ function unformatRupiah($str)
                                                 <input type="number" class="form-control" id="total_isi_satuan_kecil" name="total_isi_satuan_kecil" required readonly>
                                             </div>
                                         </div>
-
                                         <div class="form-group row">
-                                            <div class="col-md-3">
-                                                <label for="harga_jual_satuan_besar">Harga Jual PerSatuan Besar:</label>
-                                                <input type="text" class="form-control" id="harga_jual_satuan_besar" name="harga_jual_satuan_besar" required onchange="formatCurrency(this)">
+                                            <div class="col-md-4">
+                                                <label for="harga_jual_satuan_besar1">Harga Jual Per Satuan Besar 1:</label>
+                                                <input type="text" class="form-control" id="harga_jual_satuan_besar1" name="harga_jual_satuan_besar1" required onchange="formatCurrency(this)">
                                             </div>
-                                            <div class="col-md-3">
-                                                <label for="harga_jual_satuan_kecil">Harga Jual PerSatuan Kecil:</label>
-                                                <input type="text" class="form-control" id="harga_jual_satuan_kecil" name="harga_jual_satuan_kecil" required onchange="formatCurrency(this)">
+                                            <div class="col-md-4">
+                                                <label for="harga_jual_satuan_besar2">Harga Jual Per Satuan Besar 2:</label>
+                                                <input type="text" class="form-control" id="harga_jual_satuan_besar2" name="harga_jual_satuan_besar2" required onchange="formatCurrency(this)">
                                             </div>
-                                            <div class="col-md-3">
+                                            <div class="col-md-4">
+                                                <label for="harga_jual_satuan_besar3">Harga Jual Per Satuan Besar 3:</label>
+                                                <input type="text" class="form-control" id="harga_jual_satuan_besar3" name="harga_jual_satuan_besar3" required onchange="formatCurrency(this)">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col-md-4">
+                                                <label for="harga_jual_satuan_kecil1">Harga Jual Per Satuan Kecil 1:</label>
+                                                <input type="text" class="form-control" id="harga_jual_satuan_kecil1" name="harga_jual_satuan_kecil1" required onchange="formatCurrency(this)">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="harga_jual_satuan_kecil2">Harga Jual Per Satuan Kecil 2:</label>
+                                                <input type="text" class="form-control" id="harga_jual_satuan_kecil2" name="harga_jual_satuan_kecil2" required onchange="formatCurrency(this)">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="harga_jual_satuan_kecil3">Harga Jual Per Satuan Kecil 3:</label>
+                                                <input type="text" class="form-control" id="harga_jual_satuan_kecil3" name="harga_jual_satuan_kecil3" required onchange="formatCurrency(this)">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col-md-4">
                                                 <label for="harga_satuan_kulak">Harga Satuan Kulak:</label>
                                                 <input type="text" class="form-control" id="harga_satuan_kulak" name="harga_satuan_kulak" placeholder="Misal 1 Dusnya Rp. 50.000" required onchange="formatCurrency(this)">
                                             </div>
-                                            <div class="col-md-3">
+                                            <div class="col-md-4">
                                                 <label for="total_harga_kulak">Total Harga Kulak:</label>
                                                 <input type="text" class="form-control" id="total_harga_kulak" name="total_harga_kulak" required onchange="formatCurrency(this)">
                                             </div>
@@ -162,8 +183,8 @@ function unformatRupiah($str)
                                                 <a href="item.php" class="btn btn-secondary">Batal</a>
                                             </div>
                                         </div>
-
                                     </form>
+
                                 </div>
                             </div>
                             <!-- End Form Tambah Item -->

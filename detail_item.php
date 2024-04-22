@@ -101,14 +101,30 @@ $username = $_SESSION['username'];
                                                                 <td>Rp. <?php echo number_format($row['total_harga_kulak'], 0, ',', '.'); ?></td>
                                                             </tr>
                                                             <tr>
-                                                                <th>Harga Jual PerSatuan Besar</th>
-                                                                <td>Rp. <?php echo number_format($row['harga_jual_satuan_besar'], 0, ',', '.'); ?></td>
+                                                                <th>Harga Jual PerSatuan Besar 1</th>
+                                                                <td>Rp. <?php echo number_format($row['harga_jual_satuan_besar1'], 0, ',', '.'); ?></td>
                                                             </tr>
                                                             <tr>
-                                                                <th>Harga Jual PerSatuan Kecil</th>
-                                                                <td>Rp. <?php echo number_format($row['harga_jual_satuan_kecil'], 0, ',', '.'); ?></td>
+                                                                <th>Harga Jual PerSatuan Besar 2</th>
+                                                                <td>Rp. <?php echo number_format($row['harga_jual_satuan_besar2'], 0, ',', '.'); ?></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th>Harga Jual PerSatuan Besar 3</th>
+                                                                <td>Rp. <?php echo number_format($row['harga_jual_satuan_besar3'], 0, ',', '.'); ?></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th>Harga Jual PerSatuan Kecil 1</th>
+                                                                <td>Rp. <?php echo number_format($row['harga_jual_satuan_kecil1'], 0, ',', '.'); ?></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th>Harga Jual PerSatuan Kecil 2</th>
+                                                                <td>Rp. <?php echo number_format($row['harga_jual_satuan_kecil2'], 0, ',', '.'); ?></td>
                                                             </tr>
 
+                                                            <tr>
+                                                                <th>Harga Jual PerSatuan Kecil 3</th>
+                                                                <td>Rp. <?php echo number_format($row['harga_jual_satuan_kecil3'], 0, ',', '.'); ?></td>
+                                                            </tr>
                                                             <tr>
                                                                 <th>Tanggal</th>
                                                                 <td><?php echo $row['tanggal']; ?></td>
