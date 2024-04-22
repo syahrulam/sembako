@@ -18,12 +18,21 @@ include('koneksi/config.php');
 $id_pelanggan = $_GET['id'];
 
 // Query untuk mengambil transaksi berdasarkan ID pelanggan
-$query = "SELECT id_transaksi,
-                 no_transaksi,
-                 tanggal,
-                 kekurangan
-          FROM transaksi 
-          WHERE nama_pelanggan = ? AND tipe_pembayaran = 'Debit' AND kekurangan <> 0";
+// Menggunakan ORDER BY untuk mendapatkan data terbaru
+$query = "SELECT
+            t.id_transaksi,
+            t.no_transaksi,
+            t.tanggal,
+            p.kurangan_hutang
+          FROM
+            transaksi t
+            JOIN piutang p ON t.id_transaksi = p.id_transaksi
+          WHERE
+            t.nama_pelanggan = ?
+          ORDER BY
+            p.tanggal DESC
+          LIMIT 1"; // Hanya mengambil data piutang terbaru
+
 
 $stmt = mysqli_prepare($koneksi, $query);
 mysqli_stmt_bind_param($stmt, "s", $id_pelanggan);
@@ -76,7 +85,7 @@ $no = 1;
                                                         <td><?php echo $no++; ?></td>
                                                         <td><?php echo $row['no_transaksi']; ?></td>
                                                         <td><?php echo  date('d F Y', strtotime($row['tanggal'])) ?></td>
-                                                        <td><?php echo 'Rp. ' . number_format($row['kekurangan'], 0, ',', '.'); ?></td>
+                                                        <td><?php echo 'Rp. ' . number_format($row['kurangan_hutang'], 0, ',', '.'); ?></td> <!-- Ambil data dari kurangan_hutang -->
                                                         <td>
                                                             <button type="button" class="btn btn-primary btn-bayar-cicilan" data-toggle="modal" data-target="#bayarCicilanModal" data-id="<?php echo $row['id_transaksi']; ?>">Bayar Cicilan</button>
                                                         </td>

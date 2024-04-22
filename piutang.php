@@ -15,15 +15,21 @@ $username = $_SESSION['username'];
 include('koneksi/config.php');
 
 // Query untuk mengambil beberapa transaksi per masing-masing nama pelanggan yang tipe pembayarannya adalah Debit
-$query = "SELECT nama_pelanggan, 
-                 COUNT(id_transaksi) AS jumlah_transaksi, 
-                 SUM(total_harga) AS total_harga, 
-                 SUM(total_bayar) AS total_bayar, 
-                 SUM(kembalian) AS total_kembalian,
-                 SUM(kekurangan) AS total_hutang 
-          FROM transaksi 
-          WHERE tipe_pembayaran = 'Debit' AND kekurangan <> 0
-          GROUP BY nama_pelanggan";
+$query = "SELECT
+             t.nama_pelanggan,
+             COUNT(t.id_transaksi) AS jumlah_transaksi,
+             SUM(t.total_harga) AS total_harga,
+             SUM(t.total_bayar) AS total_bayar,
+             SUM(t.kekurangan) AS total_hutang,
+             COALESCE(SUM(p.kurangan_hutang), 0) AS hutang_sekarang
+         FROM
+             transaksi t
+             LEFT JOIN piutang p ON t.id_transaksi = p.id_transaksi
+         WHERE
+             t.tipe_pembayaran = 'Debit' AND t.kekurangan <> 0
+         GROUP BY
+             t.nama_pelanggan";
+
 
 $result = mysqli_query($koneksi, $query);
 
@@ -60,21 +66,23 @@ $no = 1;
                                                     <th>No.</th>
                                                     <th>Nama Pelanggan</th>
                                                     <th>Jumlah Transaksi</th>
+                                                    <th>Riwayat Total</th>
                                                     <th>Hutang Sekarang</th>
                                                     <th>Detail</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <?php while ($row = mysqli_fetch_assoc($result)) : ?>
-                                                    <tr>
-                                                        <td><?php echo $no++; ?></td>
-                                                        <td><?php echo ucwords($row['nama_pelanggan']); ?></td>
-                                                        <td><?php echo $row['jumlah_transaksi']; ?></td>
-                                                        <td><?php echo 'Rp. ' . number_format($row['total_hutang'], 0, ',', '.'); ?></td>
-                                                        <td>
-                                                            <a href="detail_piutang.php?id=<?php echo $row['nama_pelanggan']; ?>" class="btn btn-warning">Detail</a>
-                                                        </td>
-                                                    </tr>
+    <?php while ($row = mysqli_fetch_assoc($result)) : ?>
+        <tr>
+            <td><?php echo $no++; ?></td>
+            <td><?php echo ucwords($row['nama_pelanggan']); ?></td>
+            <td><?php echo $row['jumlah_transaksi']; ?></td>
+            <td><?php echo 'Rp. ' . number_format($row['total_hutang'], 0, ',', '.'); ?></td>
+            <td><?php echo 'Rp. ' . number_format($row['hutang_sekarang'], 0, ',', '.'); ?></td> <!-- Baris ini untuk data Hutang Sekarang -->
+            <td>
+                <a href="detail_piutang.php?id=<?php echo $row['nama_pelanggan']; ?>" class="btn btn-warning">Detail</a>
+            </td>
+        </tr>
                                                 <?php endwhile; ?>
 
                                             </tbody>
