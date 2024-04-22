@@ -104,7 +104,7 @@ include('koneksi/config.php');
                                                             <select class="form-control" name="tipe_pembayaran" id="tipe_pembayaran" required>
                                                                 <option value="">Metode Pembayaran</option>
                                                                 <option value="Cash">Cash</option>
-                                                                <option value="Debit">Debit</option>
+                                                                <option value="Debit">Kredit</option>
                                                             </select>
                                                         </div>
                                                     </div>
