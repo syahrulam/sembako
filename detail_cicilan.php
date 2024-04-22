@@ -17,7 +17,7 @@ if (isset($_GET['id_transaksi'])) {
     $no_transaksi = $_GET['id_transaksi'];
 
     // Ambil data piutang berdasarkan nomor transaksi dari tabel Piutang dan informasi transaksi dari tabel Transaksi
-    $query_data = "SELECT Piutang.id_piutang, Transaksi.no_transaksi, Transaksi.nama_pelanggan, Piutang.tanggal AS tanggal, Piutang.nominal, Piutang.status 
+    $query_data = "SELECT Piutang.id_piutang, Transaksi.no_transaksi, Transaksi.nama_pelanggan, Piutang.tanggal AS tanggal, Piutang.bayar, Piutang.status 
                    FROM Piutang 
                    INNER JOIN Transaksi ON Piutang.id_transaksi = Transaksi.id_transaksi 
                    WHERE Transaksi.no_transaksi = ?";
@@ -98,7 +98,7 @@ if (isset($_GET['id_transaksi'])) {
                                                         echo "<tr>";
                                                         echo "<td>" . $no . "</td>";
                                                         echo "<td>" . date('d F Y', strtotime($row['tanggal'])) . "</td>";
-                                                        echo "<td>" . $row['nominal'] . "</td>";
+                                                        echo "<td>" . $row['bayar'] . "</td>";
                                                         echo "<td>" . $row['status'] . "</td>";
 
                                                         echo "</tr>";
