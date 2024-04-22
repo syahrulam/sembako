@@ -51,7 +51,7 @@ $username = $_SESSION['username'];
                                                     <tr>
                                                         <th>No</th>
                                                         <th>Nama Item</th>
-                                                        <th>Jumlah Kulak</th>
+                                                        <th>Jumlah</th>
                                                         <th>Sisa Satuan Besar</th>
                                                         <th>Sisa Satuan Kecil</th>
                                                     </tr>
