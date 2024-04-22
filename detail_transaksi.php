@@ -1,199 +1,153 @@
-<?php include('layout/head.php'); ?>
-
-<?php include('layout/head.php'); ?>
-
 <?php
+// Include necessary files and start session
+include('layout/head.php');
+include('koneksi/config.php');
 session_start();
 
-// Periksa apakah pengguna sudah login
+// Ensure user is logged in
 if (!isset($_SESSION['username'])) {
     header("Location: login.php");
     exit();
 }
 
-// Ambil username dari sesi
-$username = $_SESSION['username'];
-?>
-
-<link href='https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css' rel='stylesheet' type='text/css'>
-<link href='https://cdn.datatables.net/buttons/2.2.3/css/buttons.dataTables.min.css' rel='stylesheet' type='text/css'>
-
-
-<?php
-include('koneksi/config.php');
+// Retrieve transaction ID from GET parameters
 $id_transaksi = $_GET['id_transaksi'];
-$sql = "SELECT * FROM transaksi WHERE id_transaksi='$id_transaksi'";
-$result = $koneksi->query($sql);
-$row = $result->fetch_assoc();
-$koneksi->close();
-?>
 
+// Fetch transaction information
+$query_transaksi = "SELECT * FROM transaksi WHERE id_transaksi = '$id_transaksi'";
+$result_transaksi = $koneksi->query($query_transaksi);
+
+if ($result_transaksi->num_rows == 0) {
+    die("Transaksi tidak ditemukan.");
+}
+
+$row_transaksi = $result_transaksi->fetch_assoc();
+
+// Fetch detailed transaction information along with related items
+$query = "
+    SELECT 
+        detail_transaksi.*, 
+        item.*, 
+        detail_transaksi.jumlah_satuan AS jumlah,
+        item.jenis_satuan_besar,
+        item.jenis_satuan_kecil
+    FROM 
+        detail_transaksi
+    INNER JOIN 
+        item 
+    ON 
+        detail_transaksi.id_item = item.id_item
+    WHERE 
+        detail_transaksi.id_transaksi = '$id_transaksi'
+";
+
+$result = $koneksi->query($query);
+?>
 
 <body>
-    <div id="app">
-        <div class="main-wrapper main-wrapper-1">
-            <div class="navbar-bg"></div>
-            <nav class="navbar navbar-expand-lg main-navbar">
-                <?php include('layout/navbar.php'); ?>
-            </nav>
-            <div class="main-sidebar sidebar-style-2" style="overflow-y: auto;">
-                <?php include('layout/sidebar.php'); ?>
-            </div>
+<div id="app">
+    <div class="main-wrapper main-wrapper-1">
+        <div class="navbar-bg"></div>
+        <nav class="navbar navbar-expand-lg main-navbar">
+            <?php include('layout/navbar.php'); ?>
+        </nav>
+        <div class="main-sidebar sidebar-style-2">
+            <?php include('layout/sidebar.php'); ?>
+        </div>
 
-            <div id="app">
-                <div class="main-content">
-                    <section class="section">
+        <div class="main-content">
+            <section class="section">
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h4>Detail Transaksi</h4>
+                    </div>
+                    <div class="card-body">
+                        <!-- Transaction Header Information -->
                         <div class="row">
-                            <div class="col-lg-12 col-md-12 col-sm-12">
-                                <div class="card mt-4">
-                                    <div class="card-header">
-                                        <h4>Detail Transaksi</h4>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-2">
-                                                No Transaksi
-                                            </div>
-                                            <div class="col-3">
-                                                <p class="font-weight-bold">: <?php echo $row['no_transaksi']; ?></p>
-                                            </div>
-                                            <div class="col-2">
-                                                Nama Pelanggan
-                                            </div>
-                                            <div class="col-5">
-                                                <p style="text-transform: capitalize;">: <?php echo $row['nama_pelanggan']; ?></p>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-2">
-                                                Tanggal
-                                            </div>
-                                            <div class="col-3">
-                                                <p>: <?php echo date('d F Y', strtotime($row['tanggal'])); ?></p>
-                                            </div>
-                                            <div class="col-2">
-                                                Sales
-                                            </div>
-                                            <div class="col-5">
-                                                <p>: <?php echo $row['sales']; ?></p>
-                                            </div>
-                                        </div>
-                                        <div class="row mt-2">
-                                            <table class="table">
-                                                <thead class="table-warning">
-                                                    <tr>
-                                                        <th scope="col">Nama Item</th>
-                                                        <th scope="col">Jenis Satuan</th>
-                                                        <th scope="col">Jumlah Satuan</th>
-                                                        <th scope="col">Harga Satuan</th>
-                                                        <th scope="col">Total Per/satuan</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <?php
-                                                    include('koneksi/config.php');
-                                                    $id_transaksi = $_GET['id_transaksi'];
-                                                    $query = "SELECT detail_transaksi.*, item.*, detail_transaksi.jumlah_satuan as jumlah
-                                                    FROM detail_transaksi
-                                                    INNER JOIN item ON detail_transaksi.id_item = item.id_item
-                                                    WHERE detail_transaksi.id_transaksi = $id_transaksi";
-                                                    $result = $koneksi->query($query);
+                            <div class="col-2"><strong>No Transaksi</strong></div>
+                            <div class="col-3">: <?php echo $row_transaksi['no_transaksi']; ?></div>
+                            <div class="col-2"><strong>Nama Pelanggan</strong></div>
+                            <div class="col-5">: <?php echo $row_transaksi['nama_pelanggan']; ?></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-2"><strong>Tanggal</strong></div>
+                            <div class="col-3">: <?php echo date('d F Y', strtotime($row_transaksi['tanggal'])); ?></div>
+                            <div class="col-2"><strong>Sales</strong></div>
+                            <div class="col-5">: <?php echo $row_transaksi['sales']; ?></div>
+                        </div>
 
-                                                    // Memeriksa apakah query berhasil dieksekusi
-                                                    if ($result) {
-                                                        if ($result->num_rows > 0) {
-                                                            $no = 1;
-                                                            // Output data dari setiap baris
-                                                            while ($data = $result->fetch_assoc()) {
-                                                                echo "<tr>";
-                                                                echo "<td>" . $data['nama_item'] . "</td>";
-                                                                echo "<td>" . $data['jenis_satuan'] . "</td>";
-                                                                echo "<td>" . $data['jumlah'] . "</td>";
-                                                                echo "<td> Rp." . number_format($data['harga_satuan'], 0, ',', '.') . "</td>";
-                                                                echo "<td> Rp." .  number_format($data['total'], 0, ',', '.') . "</td>";
+                        <!-- Transaction Detail Table -->
+                        <div class="row mt-2">
+                            <table class="table">
+                                <thead class="table-warning">
+                                    <tr>
+                                        <th>Nama Item</th>
+                                        <th>Jenis Satuan</th>
+                                        <th>Jumlah Satuan</th>
+                                        <th>Harga Satuan</th>
+                                        <th>Total Per Satuan</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php
+                                    if ($result->num_rows > 0) {
+                                        while ($data = $result->fetch_assoc()) {
+                                            echo "<tr>";
+                                            echo "<td>{$data['nama_item']}</td>";
+                                            
+                                            // Display correct unit type
+                                            $jenis_satuan = ($data['jenis_satuan'] === 'Besar') ? $data['jenis_satuan_besar'] : $data['jenis_satuan_kecil'];
+                                            echo "<td>{$jenis_satuan}</td>";
+                                            
+                                            echo "<td>{$data['jumlah']}</td>";
+                                            echo "<td>Rp." . number_format($data['harga_satuan'], 0, ',', '.') . "</td>";
+                                            echo "<td>Rp." . number_format($data['total'], 0, ',', '.') . "</td>";
+                                            echo "</tr>";
+                                        }
+                                    } else {
+                                        echo "<tr><td colspan='5'>Tidak ada detail transaksi.</td></tr>";
+                                    }
+                                    ?>
+                                </tbody>
+                            </table>
+                        </div>
 
+                        <!-- Additional Payment Information -->
+                        <div class="mb-4 px-4">
+                            <div class="row">
+                                <div class="col-1"><strong>Harga Total</strong></div>
+                                <div class="col-1">: Rp. <?php echo number_format($row_transaksi['total_harga'], 0, ',', '.'); ?></div>
+                            </div>
 
-                                                                echo "</tr>";
-                                                            }
-                                                        } else {
-                                                            echo "<tr><td colspan='6'>Tidak ada data member.</td></tr>";
-                                                        }
-                                                    } else {
-                                                        echo "<tr><td colspan='6'>Error: " . $koneksi->error . "</td></tr>";
-                                                    }
+                            <div class="row">
+                                <div class="col-1"><strong>Pembayaran</strong></div>
+                                <div class="col-1">: <?php echo $row_transaksi['tipe_pembayaran']; ?></div>
+                            </div>
 
-                                                    // Menutup koneksi database
-                                                    $koneksi->close();
-                                                    ?>
-                                                </tbody>
-                                            </table>
-                                            <div class="mb-4 px-4">
-                                                <div class="row">
-                                                    <div class="co-6">
-                                                        <p><strong>Harga Total</strong></p>
-                                                    </div>
-                                                    <div class="col">
-                                                        <p class="font-weight-bold"> : Rp. <?php echo number_format($row['total_harga'], 0, ',', '.'); ?> </p>
-                                                    </div>
-                                                </div>
+                            <div class="row">
+                                <div class="col-1"><strong>Uang diterima</strong></div>
+                                <div class="col-1">: Rp. <?php echo number_format($row_transaksi['total_bayar'], 0, ',', '.'); ?></div>
+                            </div>
 
-                                                <div class="row">
-                                                    <div class="co-6">
-                                                        <p><strong>Tipe Pembayaran</strong></p>
-                                                    </div>
-                                                    <div class="col">
-                                                        <p class="font-weight-bold"> : <?php echo ($row['tipe_pembayaran']); ?> </p>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="co-6">
-                                                        <p><strong>Uang diterima</strong></p>
-                                                    </div>
-                                                    <div class="col">
-                                                        <p class="font-weight-bold"> : Rp. <?php echo number_format($row['total_bayar'], 0, ',', '.'); ?> </p>
-                                                    </div>
-                                                </div>
-
-
-                                                <div class="row">
-
-
-                                                    <?php
-                                                    if ($row['tipe_pembayaran'] == 'Cash') {
-                                                        echo "Kembalian";
-                                                    } elseif ($row['tipe_pembayaran'] == 'Debit') {
-                                                        echo "Kekurangan";
-                                                    } else {
-                                                        echo "Metode pembayaran tidak valid";
-                                                    }
-                                                    ?>
-                                                    </strong></p>
-
-                                                    <div class="col">
-                                                        <p class="font-weight-bold">: Rp. <?php echo number_format($row['tipe_pembayaran'] == 'Cash' ? $row['kembalian'] : $row['kekurangan'], 0, ',', '.'); ?></p>
-                                                    </div>
-                                                </div>
-
-
-
-
-
-                                            </div>
-
-                                        </div>
-
-
-
-                                    </div>
-                                </div>
+                            <div class="row">
+                                <?php
+                                if ($row_transaksi['tipe_pembayaran'] === 'Cash') {
+                                    echo "<div class='col-1'><strong>Kembalian</strong></div>";
+                                } elseif ($row_transaksi['tipe_pembayaran'] === 'Debit') {
+                                    echo "<div class='col-1'><strong>Kekurangan</strong></div>";
+                                }
+                                ?>
+                                <div class="col-6">: Rp. <?php echo number_format(($row_transaksi['tipe_pembayaran'] === 'Cash') ? $row_transaksi['kembalian'] : $row_transaksi['kekurangan'], 0, ',', '.'); ?></div>
                             </div>
                         </div>
-                    </section>
+                    </div>
                 </div>
-            </div>
+            </section>
+        </div>
 
-            <?php include('layout/js.php'); ?>
-
+        <!-- JavaScript Includes -->
+        <?php include('layout/js.php'); ?>
+    </div>
+</div>
 </body>
-
 </html>
