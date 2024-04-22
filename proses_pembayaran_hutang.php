@@ -11,24 +11,20 @@ include('koneksi/config.php'); // Koneksi database
 
 // Periksa apakah permintaan adalah POST
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $nama_pelanggan = $_POST['nama_pelanggan'];
-    $cicilan = $_POST['cicilan']; 
+    $id_transaksi = $_POST['id_transaksi'];
+    $cicilan = $_POST['cicilan'];
 
-    // Ambil jumlah hutang saat ini untuk pelanggan
-    $query_kurangan = "SELECT p.id_transaksi, p.kurangan_hutang 
-                       FROM piutang p 
-                       INNER JOIN transaksi t ON p.id_transaksi = t.id_transaksi
-                       WHERE t.nama_pelanggan = ? 
-                       ORDER BY t.tanggal DESC 
-                       LIMIT 1";
+    // Ambil jumlah hutang saat ini untuk transaksi
+    $query_kurangan = "SELECT id_transaksi, kurangan_hutang 
+                       FROM piutang
+                       WHERE id_transaksi = ?";
     $stmt = mysqli_prepare($koneksi, $query_kurangan);
-    mysqli_stmt_bind_param($stmt, "s", $nama_pelanggan);
+    mysqli_stmt_bind_param($stmt, "i", $id_transaksi);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
     $row = mysqli_fetch_assoc($result);
 
     if ($row) {
-        $id_transaksi = $row['id_transaksi'];
         $kurangan_hutang_sekarang = $row['kurangan_hutang'];
 
         // Hitung jumlah hutang baru setelah pembayaran
@@ -59,9 +55,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             echo "Terjadi kesalahan saat memperbarui data piutang.";
         }
     } else {
-        echo "Tidak ditemukan data piutang untuk pelanggan ini.";
+        echo "Tidak ditemukan data piutang untuk transaksi ini.";
     }
 } else {
     echo "Akses tidak sah.";
 }
-?>

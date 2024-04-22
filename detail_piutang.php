@@ -8,9 +8,6 @@ if (!isset($_SESSION['username'])) {
     exit();
 }
 
-// Ambil username dari sesi
-$username = $_SESSION['username'];
-
 // Menggunakan tanda == untuk perbandingan dalam query SQL
 include('koneksi/config.php');
 
@@ -20,20 +17,18 @@ $id_pelanggan = $_GET['id'];
 // Query untuk mengambil transaksi berdasarkan ID pelanggan
 // Menggunakan ORDER BY untuk mendapatkan data terbaru
 $query = "SELECT
-            t.nama_pelanggan,
             t.id_transaksi,
             t.no_transaksi,
             t.tanggal,
-            COALESCE(SUM(p.kurangan_hutang), 0) AS hutang_sekarang
+            t.total_bayar,
+            t.kekurangan,
+            p.kurangan_hutang
           FROM
             transaksi t
             JOIN piutang p ON t.id_transaksi = p.id_transaksi
           WHERE
             t.nama_pelanggan = ?
-          ORDER BY
-            p.tanggal DESC
-          LIMIT 1"; // Hanya mengambil data piutang terbaru
-
+            AND t.kekurangan > 0"; // Hanya mengambil data transaksi dengan kekurangan
 
 $stmt = mysqli_prepare($koneksi, $query);
 mysqli_stmt_bind_param($stmt, "s", $id_pelanggan);
@@ -60,13 +55,13 @@ $no = 1;
                 <section class="section">
                     <div class="row">
                         <div class="col-lg-12 col-md-12 col-sm-12">
-                            <!-- Tabel Piutang -->
+                            <!-- Tabel Detail Piutang -->
                             <div class="card mt-4"><br>
                                 <div class="col-12">
                                     <a href="javascript:history.go(-1)" class="btn btn-primary">Kembali</a>
                                 </div>
                                 <div class="card-header">
-                                    <h4>Piutang</h4>
+                                    <h4>Detail Piutang = <?php echo $id_pelanggan; ?>
                                 </div>
                                 <div class="card-body">
                                     <div class="table-responsive">
@@ -74,8 +69,9 @@ $no = 1;
                                             <thead>
                                                 <tr>
                                                     <th>No.</th>
-                                                   
-                                                    <th>Hutang</th>
+                                                    <th>No Transaksi</th>
+                                                    <th>Tanggal</th>
+                                                    <th>Kurangan Hutang</th>
                                                     <th>Aksi</th>
                                                 </tr>
                                             </thead>
@@ -83,19 +79,21 @@ $no = 1;
                                                 <?php while ($row = mysqli_fetch_assoc($result)) : ?>
                                                     <tr>
                                                         <td><?php echo $no++; ?></td>
-                                                        
-                                                        <td><?php echo 'Rp. ' . number_format($row['hutang_sekarang'], 0, ',', '.'); ?></td> <!-- Ambil data dari kurangan_hutang -->
+                                                        <td><?php echo $row['no_transaksi']; ?></td>
+                                                        <td><?php echo $row['tanggal']; ?></td>
+                                                        <td><?php echo 'Rp. ' . number_format($row['kurangan_hutang'], 0, ',', '.'); ?></td>
                                                         <td>
-                                                            <button type="button" class="btn btn-primary btn-bayar-cicilan" data-toggle="modal" data-target="#bayarCicilanModal" data-id="<?php echo $row['nama_pelanggan']; ?>">Bayar Cicilan</button>
+                                                            <button type="button" class="btn btn-primary btn-bayar-cicilan" data-toggle="modal" data-target="#bayarCicilanModal" data-id="<?php echo $row['id_transaksi']; ?>">Bayar Cicilan</button>
                                                         </td>
                                                     </tr>
                                                 <?php endwhile; ?>
                                             </tbody>
                                         </table>
+
                                     </div>
                                 </div>
                             </div>
-                            <!-- End Tabel Piutang -->
+                            <!-- End Tabel Detail Piutang -->
 
                         </div>
                     </div>
@@ -116,13 +114,14 @@ $no = 1;
                         <div class="modal-body">
                             <form id="formBayarCicilan" action="proses_pembayaran_hutang.php" method="post">
                                 <div class="form-group">
-                                    <label for="jumlah">Jumlah Pembayaran:</label>
+                                    <label for="cicilan">Jumlah Pembayaran:</label>
                                     <!-- Hidden input untuk ID transaksi -->
-                                    <input class="form-control" id="nama_pelanggan" name="nama_pelanggan">
+                                    <input type="hidden" class="form-control" id="id_transaksi" name="id_transaksi">
                                     <input type="text" class="form-control" id="cicilan" name="cicilan" placeholder="Jumlah Cicilan (Rp)" required>
                                 </div>
                                 <button type="submit" class="btn btn-primary">Bayar Cicilan</button>
                             </form>
+
                         </div>
                     </div>
                 </div>
@@ -135,8 +134,8 @@ $no = 1;
         <script>
             $(document).ready(function() {
                 $('.btn-bayar-cicilan').click(function() {
-                    var nama_pelanggan = $(this).data('id');
-                    $('#nama_pelanggan').val(nama_pelanggan);
+                    var id_transaksi = $(this).data('id');
+                    $('#id_transaksi').val(id_transaksi);
                 });
             });
         </script>

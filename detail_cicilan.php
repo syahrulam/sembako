@@ -17,11 +17,22 @@ if (isset($_GET['nama_pelanggan'])) {
     $nama_pelanggan = $_GET['nama_pelanggan'];
 
     // Ambil data cicilan berdasarkan nama pelanggan dari tabel Cicilan_Piutang dan informasi transaksi dari tabel Piutang
-    $query_data = "SELECT cicilan_piutang.tanggal, cicilan_piutang.cicilan 
-                   FROM cicilan_piutang 
-                   INNER JOIN piutang ON cicilan_piutang.id_transaksi = piutang.id_transaksi 
-                   INNER JOIN transaksi ON piutang.id_transaksi = transaksi.id_transaksi 
-                   WHERE transaksi.nama_pelanggan = ?";
+    $query_data = "SELECT 
+                        transaksi.no_transaksi, 
+                        piutang.kurangan_hutang, 
+                        cicilan_piutang.cicilan, 
+                        cicilan_piutang.tanggal 
+                    FROM 
+                        cicilan_piutang 
+                    INNER JOIN 
+                        piutang ON cicilan_piutang.id_transaksi = piutang.id_transaksi 
+                    INNER JOIN 
+                        transaksi ON piutang.id_transaksi = transaksi.id_transaksi 
+                    WHERE 
+                        transaksi.nama_pelanggan = ?
+                    ORDER BY 
+                        transaksi.no_transaksi ASC, 
+                        cicilan_piutang.id_cicilan ASC"; // Menambahkan ORDER BY
 
     $stmt = mysqli_prepare($koneksi, $query_data);
     mysqli_stmt_bind_param($stmt, "s", $nama_pelanggan);
@@ -36,9 +47,8 @@ if (isset($_GET['nama_pelanggan'])) {
     $result_sisa_hutang = mysqli_stmt_get_result($stmt_sisa_hutang);
     $row_sisa_hutang = mysqli_fetch_assoc($result_sisa_hutang);
     $sisa_hutang = $row_sisa_hutang['sisa_hutang'];
-
 } else {
-    echo "Nomor transaksi tidak ditemukan dalam parameter URL.";
+    echo "Nama pelanggan tidak ditemukan dalam parameter URL.";
     exit();
 }
 ?>
@@ -78,24 +88,39 @@ if (isset($_GET['nama_pelanggan'])) {
                                             <thead>
                                                 <tr>
                                                     <th>No.</th>
-                                                    <th>Tanggal Pembayaran Cicilan</th>
-                                                    <th>Cicilan Terbayar</th>
+                                                    <th>Nomor Transaksi</th>
+                                                    <th>Kurangan Hutang</th>
+                                                    <th>Terbayar</th>
+                                                    <th>Tanggal Pembayaran</th>
+                                                    <th></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <?php
+                                                $no = 1;
+                                                $previous_transaction = null;
+                                                $previous_debt = null;
                                                 if (mysqli_num_rows($result_data) > 0) {
-                                                    $no = 1;
                                                     while ($row = mysqli_fetch_assoc($result_data)) {
-                                                        echo "<tr>";
-                                                        echo "<td>" . $no . "</td>";
+                                                        if ($row['no_transaksi'] !== $previous_transaction || $row['kurangan_hutang'] !== $previous_debt) {
+                                                            echo "<tr>";
+                                                            echo "<td>" . $no . "</td>";
+                                                            echo "<td>" . $row['no_transaksi'] . "</td>"; // Menampilkan nomor transaksi
+                                                            echo "<td>" . 'Rp.' . number_format($row['kurangan_hutang'], 0, ',', '.') . "</td>"; // Menampilkan kurangan hutang
+                                                            $previous_transaction = $row['no_transaksi'];
+                                                            $previous_debt = $row['kurangan_hutang'];
+                                                        } else {
+                                                            echo "<td></td>";
+                                                            echo "<td></td>"; // Karena data sama, kita tidak menampilkan nomor atau jumlah hutang
+                                                            echo "<td></td>";
+                                                        }
+                                                        echo "<td>" . 'Rp.' . number_format($row['cicilan'], 0, ',', '.') . "</td>";
                                                         echo "<td>" . date('d F Y', strtotime($row['tanggal'])) . "</td>";
-                                                        echo "<td>" . 'Rp.'. number_format($row['cicilan'], 0, ',', '.'). "</td>";
                                                         echo "</tr>";
                                                         $no++;
                                                     }
                                                 } else {
-                                                    echo "<tr><td colspan='7'>Tidak ada data piutang untuk nomor transaksi ini</td></tr>";
+                                                    echo "<tr><td colspan='7'>Tidak ada data piutang untuk nama pelanggan ini</td></tr>";
                                                 }
                                                 ?>
                                             </tbody>
