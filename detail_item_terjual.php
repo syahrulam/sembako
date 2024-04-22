@@ -9,53 +9,49 @@ if (!isset($_SESSION['username'])) {
     exit();
 }
 
-// Ambil username dari sesi
-$username = $_SESSION['username'];
-
 // include koneksi database
 include('koneksi/config.php');
 
-// Periksa apakah ada parameter nama_pelanggan di URL
-if (isset($_GET['nama_pelanggan'])) {
-    $nama_pelanggan = $_GET['nama_pelanggan'];
+// Query untuk mendapatkan data detail transaksi dan menghitung total akumulasi satuan kecil
+$sql = "SELECT
+            trans.nama_pelanggan,
+            item.nama_item,
+            det.jenis_satuan,
+            det.jumlah_satuan,
+            item.jumlah_isi_satuan_besar
+        FROM 
+            detail_transaksi AS det
+        INNER JOIN 
+            transaksi AS trans ON det.id_transaksi = trans.id_transaksi
+        INNER JOIN 
+            item ON det.id_item = item.id_item";
 
-    // Query untuk mengambil jumlah total dari setiap jenis satuan untuk setiap pelanggan dengan nama yang sama
-    $sql = "SELECT 
-                trans.nama_pelanggan,
-                item.nama_item,
-                SUM(CASE WHEN det.jenis_satuan = 'Besar' THEN det.jumlah_satuan ELSE 0 END) AS total_besar,
-                SUM(CASE WHEN det.jenis_satuan = 'Kecil' THEN det.jumlah_satuan ELSE 0 END) AS total_kecil,
-                SUM(det.jumlah_satuan * item.jumlah_isi_satuan_besar) + SUM(CASE WHEN det.jenis_satuan = 'Kecil' THEN det.jumlah_satuan ELSE 0 END) AS total_akumulasi_kecil
-            FROM 
-                detail_transaksi AS det
-            INNER JOIN 
-                transaksi AS trans ON det.id_transaksi = trans.id_transaksi
-            INNER JOIN 
-                item ON det.id_item = item.id_item
-            WHERE 
-                trans.nama_pelanggan = '$nama_pelanggan'
-            GROUP BY 
-                trans.nama_pelanggan, item.nama_item";
+$result = $koneksi->query($sql);
 
-    $result = $koneksi->query($sql);
-} else {
-    // Jika parameter nama_pelanggan tidak ada di URL, tampilkan semua data
-    $sql = "SELECT 
-                trans.nama_pelanggan,
-                item.nama_item,
-                SUM(CASE WHEN det.jenis_satuan = 'Besar' THEN det.jumlah_satuan ELSE 0 END) AS total_besar,
-                SUM(CASE WHEN det.jenis_satuan = 'Kecil' THEN det.jumlah_satuan ELSE 0 END) AS total_kecil,
-                SUM(det.jumlah_satuan * item.jumlah_isi_satuan_besar) + SUM(CASE WHEN det.jenis_satuan = 'Kecil' THEN det.jumlah_satuan ELSE 0 END) AS total_akumulasi_kecil
-            FROM 
-                detail_transaksi AS det
-            INNER JOIN 
-                transaksi AS trans ON det.id_transaksi = trans.id_transaksi
-            INNER JOIN 
-                item ON det.id_item = item.id_item
-            GROUP BY 
-                trans.nama_pelanggan, item.nama_item";
+// Array untuk menyimpan informasi akumulasi dengan key gabungan nama pelanggan dan nama item
+$details = [];
 
-    $result = $koneksi->query($sql);
+// Loop untuk mengelompokkan data berdasarkan nama pelanggan dan nama item
+while ($row = $result->fetch_assoc()) {
+    $key = $row['nama_pelanggan'] . '_' . $row['nama_item'];
+
+    if (!isset($details[$key])) {
+        $details[$key] = [
+            'nama_pelanggan' => $row['nama_pelanggan'],
+            'nama_item' => $row['nama_item'],
+            'total_besar' => 0,
+            'total_kecil' => 0,
+            'total_akumulasi_kecil' => 0
+        ];
+    }
+
+    if ($row['jenis_satuan'] == 'Besar') {
+        $details[$key]['total_besar'] += $row['jumlah_satuan'];
+        $details[$key]['total_akumulasi_kecil'] += $row['jumlah_satuan'] * $row['jumlah_isi_satuan_besar'];
+    } else {
+        $details[$key]['total_kecil'] += $row['jumlah_satuan'];
+        $details[$key]['total_akumulasi_kecil'] += $row['jumlah_satuan'];
+    }
 }
 ?>
 
@@ -92,27 +88,24 @@ if (isset($_GET['nama_pelanggan'])) {
                                                         <th>Nama Item</th>
                                                         <th>Beli Dalam Satuan Besar</th>
                                                         <th>Beli Dalam Satuan Kecil</th>
-                                                        <th>Total Akumulasi /Satuan Kecil</th>
+                                                        <th>Total Akumulasi dalam Satuan Kecil</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     <?php
-                                                    // Cek apakah ada data yang ditemukan
-                                                    if ($result->num_rows > 0) {
-                                                        // Looping data dan tampilkan dalam tabel
+                                                    if (count($details) > 0) {
                                                         $no = 1;
-                                                        while ($row = $result->fetch_assoc()) {
+                                                        foreach ($details as $detail) {
                                                             echo "<tr>";
                                                             echo "<td>" . $no++ . "</td>";
-                                                            echo "<td>" . $row['nama_pelanggan'] . "</td>";
-                                                            echo "<td>" . $row['nama_item'] . "</td>";
-                                                            echo "<td>" . $row['total_besar'] . "</td>";
-                                                            echo "<td>" . $row['total_kecil'] . "</td>";
-                                                            echo "<td>" . $row['total_akumulasi_kecil'] . "</td>";
+                                                            echo "<td>" . $detail['nama_pelanggan'] . "</td>";
+                                                            echo "<td>" . $detail['nama_item'] . "</td>";
+                                                            echo "<td>" . $detail['total_besar'] . "</td>";
+                                                            echo "<td>" . $detail['total_kecil'] . "</td>";
+                                                            echo "<td>" . $detail['total_akumulasi_kecil'] . "</td>";
                                                             echo "</tr>";
                                                         }
                                                     } else {
-                                                        // Jika tidak ada data yang ditemukan
                                                         echo "<tr><td colspan='6'>Tidak ada detail item pembelian.</td></tr>";
                                                     }
                                                     ?>
