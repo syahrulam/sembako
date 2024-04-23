@@ -87,46 +87,58 @@ if (isset($_GET['nama_pelanggan'])) {
                                         <table id="empTable" class="table mt-3">
                                             <thead>
                                                 <tr>
-                                                    <th>No.</th>
-                                                    <th>Nomor Transaksi</th>
-                                                    <th>Kurangan Hutang</th>
-                                                    <th>Terbayar</th>
-                                                    <th>Tanggal Pembayaran</th>
-                                                    <th></th>
+                                                    <th>No.</th> <!-- Tetap urutan pertama -->
+                                                    <th>Nomor Transaksi</th> <!-- Tetap urutan kedua -->
+                                                    <th>Tanggal Pembayaran</th> <!-- Pindah menjadi urutan ketiga -->
+                                                    <th>Jumlah Bayar</th> <!-- Pindah menjadi urutan keempat -->
+                                                    <th>Sisa Hutang</th> <!-- Pindah menjadi urutan kelima -->
+                                                    <th></th> <!-- Kolom tambahan yang tidak digunakan -->
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <?php
                                                 $no = 1;
-                                                $previous_transaction = null;
-                                                $previous_debt = null;
+                                                $previous_transaction = null; // Variabel untuk melacak nomor transaksi sebelumnya
+                                                $previous_debt = null; // Variabel untuk melacak sisa hutang sebelumnya
                                                 if (mysqli_num_rows($result_data) > 0) {
                                                     while ($row = mysqli_fetch_assoc($result_data)) {
-                                                        if ($row['no_transaksi'] !== $previous_transaction || $row['kurangan_hutang'] !== $previous_debt) {
-                                                            echo "<tr>";
-                                                            echo "<td>" . $no . "</td>";
-                                                            echo "<td>" . $row['no_transaksi'] . "</td>"; // Menampilkan nomor transaksi
-                                                            echo "<td>" . 'Rp.' . number_format($row['kurangan_hutang'], 0, ',', '.') . "</td>"; // Menampilkan kurangan hutang
+                                                        echo "<tr>";
+                                                        echo "<td>" . $no . "</td>"; // Nomor urut
+
+                                                        // Jika nomor transaksi berbeda dari sebelumnya, tampilkan nomor transaksi, jika sama, biarkan kosong
+                                                        if ($row['no_transaksi'] !== $previous_transaction) {
+                                                            echo "<td>" . $row['no_transaksi'] . "</td>";
                                                             $previous_transaction = $row['no_transaksi'];
+                                                        } else {
+                                                            echo "<td></td>"; // Kosongkan jika nomor transaksi sama dengan sebelumnya
+                                                        }
+
+                                                        // Tampilkan tanggal pembayaran untuk setiap cicilan
+                                                        echo "<td>" . date('d F Y', strtotime($row['tanggal'])) . "</td>"; 
+
+                                                        // Tampilkan cicilan yang dibayarkan
+                                                        echo "<td>" . 'Rp.' . number_format($row['cicilan'], 0, ',', '.') . "</td>";
+
+                                                        // Jika sisa hutang berbeda dari sebelumnya, tampilkan kurangan hutang, jika sama, biarkan kosong
+                                                        if ($row['kurangan_hutang'] !== $previous_debt) {
+                                                            echo "<td>" . 'Rp.' . number_format($row['kurangan_hutang'], 0, ',', '.') . "</td>";
                                                             $previous_debt = $row['kurangan_hutang'];
                                                         } else {
-                                                            echo "<td></td>";
-                                                            echo "<td></td>"; // Karena data sama, kita tidak menampilkan nomor atau jumlah hutang
-                                                            echo "<td></td>";
+                                                            echo "<td></td>"; // Kosongkan jika sisa hutang sama dengan sebelumnya
                                                         }
-                                                        echo "<td>" . 'Rp.' . number_format($row['cicilan'], 0, ',', '.') . "</td>";
-                                                        echo "<td>" . date('d F Y', strtotime($row['tanggal'])) . "</td>";
+
                                                         echo "</tr>";
-                                                        $no++;
+                                                        $no++; // Tambah nomor urut
                                                     }
                                                 } else {
-                                                    echo "<tr><td colspan='7'>Tidak ada data piutang untuk nama pelanggan ini</td></tr>";
+                                                    echo "<tr><td colspan='6'>Tidak ada data piutang untuk nama pelanggan ini</td></tr>";
                                                 }
                                                 ?>
                                             </tbody>
                                         </table>
                                     </div>
                                 </div>
+
                             </div>
                         </div>
                     </div>
