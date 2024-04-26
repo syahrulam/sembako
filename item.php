@@ -39,7 +39,23 @@ $username = $_SESSION['username'];
                                     <div class="card-header">
                                         <h4>Items</h4>
                                     </div>
+
+
                                     <div class="card-body">
+                                        <form id="searchForm">
+                                        <h5 class="mb-3">Filder Data Item</h5>
+                                            <div class="row mb-3">
+                                                <div class="col-3">
+                                                    <input type="month" class="form-control" id="bulanTahun" name="bulanTahun">
+                                                </div>
+
+                                                <div class="col">
+                                                    <button type="button" class="btn btn-success" onclick="searchData()">Filter Data</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                        <hr>
+
                                         <a href="tambah_item.php" class="btn btn-primary mb-3">Tambah Item</a>
                                         <div class="table-responsive">
                                             <table id="empTable" class="table mt-4">
@@ -47,6 +63,7 @@ $username = $_SESSION['username'];
                                                     <tr>
                                                         <th>No</th>
                                                         <th>Kategori</th>
+                                                        <th>Tanggal</th>
                                                         <th>Nama Item</th>
                                                         <th>Stok Satuan Besar</th>
                                                         <th>Isi Satuan Besar</th>
@@ -69,6 +86,7 @@ $username = $_SESSION['username'];
                                                             echo "<tr>";
                                                             echo "<td>" . $no++ . "</td>";
                                                             echo "<td>" . $row['kategori'] . "</td>"; // Menggunakan kolom 'kategori' dari tabel kategori
+                                                            echo "<td>" . date('d F Y', strtotime($row['tanggal'])) . "</td>"; // Menggunakan kolom 'kategori' dari tabel kategori
                                                             echo "<td>" . $row['nama_item'] . "</td>";
 
                                                             // Menghitung Stok Satuan Besar dan Isi dalam Satuan Besar
@@ -207,6 +225,23 @@ $username = $_SESSION['username'];
                     });
 
                 });
+            </script>
+
+<script>
+                function searchData() {
+                    var bulanTahun = $('#bulanTahun').val();
+                    $.ajax({
+                        type: 'POST',
+                        url: 'search_data_item.php', // Ganti dengan nama file PHP yang akan memproses pencarian
+                        data: {
+                            bulanTahun,
+                            bulanTahun
+                        },
+                        success: function(data) {
+                            $('#empTable tbody').html(data);
+                        }
+                    });
+                }
             </script>
 
             <!-- jQuery Library -->
