@@ -77,7 +77,7 @@ if (isset($_GET['nama_pelanggan'])) {
                                         </div>
                                         <div class="col">
                                             <h4 class="mt-4">Riwayat Piutang</h4>
-                                            <p>Nama : <?php echo $nama_pelanggan; ?> | Sisa Hutang: Rp. <?php echo number_format($sisa_hutang, 0, ',', '.'); ?></p>
+                                            <p>Nama : <?php echo $nama_pelanggan; ?> | Hutang Seluruh Transaksi: Rp. <?php echo number_format($sisa_hutang, 0, ',', '.'); ?></p>
                                         </div>
                                     </div>
                                 </div>
