@@ -66,8 +66,8 @@ $no = 1;
                                                     <th>No.</th>
                                                     <th>Nama Pelanggan</th>
                                                     <th>Jumlah Transaksi</th>
-                                                    <th>Riwayat Total</th>
-                                                    <th>Hutang Sekarang</th>
+                                                    <th>Total Hutang</th>
+                                                    <th>Sisa Hutang</th>
                                                     <th>Detail</th>
                                                 </tr>
                                             </thead>

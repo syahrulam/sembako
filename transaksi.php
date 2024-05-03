@@ -54,6 +54,11 @@ include('koneksi/config.php');
                                                                         <input class="form-control nama" type="text" name="nama" placeholder="Nama Pelanggan" required />
                                                                         <div class="result_pelanggan"></div>
                                                                     </div>
+<!-- 
+                                                                    <div class="total_hutang_container">
+                                                                        Total Hutang: <span class="total_hutang_display"></span>
+                                                                    </div> -->
+
                                                                     <div class="col-2 m-0 p-0">
                                                                         <button type="button" class="btn btn-warning p-2 btn-bayar-cicilan" data-toggle="modal" data-target="#PelangganModal">Tambah Pelanggan</button>
                                                                     </div>
@@ -94,7 +99,7 @@ include('koneksi/config.php');
                                                         <div class="form-group">
                                                             <label for="total_harus_dibayar" class="text-dark" style="font-weight: bold;">Harus Dibayar
                                                                 (Rp.)<span class='red'> *</span></label>
-                                                            <input type="text" id="total_harus_dibayar" class="form-control"  style="font-weight: bold;" name="total_harga" value="Rp. 0" readonly />
+                                                            <input type="text" id="total_harus_dibayar" class="form-control" style="font-weight: bold;" name="total_harga" value="Rp. 0" readonly />
                                                         </div>
                                                     </div>
                                                     <div class="col-md-4 offset-md-8">
@@ -104,10 +109,13 @@ include('koneksi/config.php');
                                                             <select class="form-control" name="tipe_pembayaran" id="tipe_pembayaran" required>
                                                                 <option value="">Metode Pembayaran</option>
                                                                 <option value="Cash">Cash</option>
-                                                                <option value="Debit">Kredit</option>
+                                                                <option value="Debit" id="debit-select">Kredit</option>
                                                             </select>
                                                         </div>
                                                     </div>
+
+
+
                                                     <div class="col-md-4 offset-md-8">
                                                         <div class="form-group">
                                                             <label for="uang_diterima" id="label_uang_diterima" class="text-dark">Bayar (Rp.)<span class='red'>
@@ -218,8 +226,6 @@ include('koneksi/config.php');
     <?php include('layout/js.php'); ?>
     <!-- JavaScript -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-
     <script>
         // Ketika dokumen selesai dimuat
         $(document).ready(function() {
@@ -235,7 +241,6 @@ include('koneksi/config.php');
             }
         });
     </script>
-
     <!-- JavaScript -->
     <script>
         var itemCounter = 1;
@@ -420,24 +425,21 @@ include('koneksi/config.php');
 
             $(document).on("input", ".nama", function() {
                 var inputNamaPelanggan = $(this).val();
-
                 if (inputNamaPelanggan === '') {
-                    // Jika input nama pelanggan kosong, sembunyikan list pelanggan dan komponen form tersembunyi
                     $('.result_pelanggan').empty();
                     $('.hidden-form').hide();
                 } else {
-                    handleItemSearch($(this)); // Lakukan pencarian
+                    handleItemSearch($(this));
                 }
             });
 
             $(document).on("click", ".result_pelanggan li", function() {
                 var selectedPelanggan = $(this).text();
                 var pelangganContainer = $(this).closest(".pelanggan-container");
-                pelangganContainer.find(".nama").val(selectedPelanggan);
 
                 $.ajax({
                     type: "POST",
-                    url: "get_pelanggan.php",
+                    url: "get_pelanggan_hutang.php",
                     data: {
                         selectedPelanggan: selectedPelanggan
                     },
@@ -445,19 +447,23 @@ include('koneksi/config.php');
                         var data = JSON.parse(response);
                         pelangganContainer.find(".nama").val(data.nama);
                         pelangganContainer.find(".id_pelanggan").val(data.id);
+                        pelangganContainer.find(".total_hutang_display").text(data.total_hutang);
 
-                        // Menampilkan komponen form tersembunyi jika data pelanggan ditemukan
+                        // Check if total_hutang is greater than 0
+                        if (parseInt(data.total_hutang) > 0) {
+                            $('#debit-select').hide(); // Hide the "Kredit" option
+                        } else {
+                            $('#debit-select').show(); // Show the "Kredit" option
+                        }
+
                         $('.hidden-form').show();
                     },
                     error: function() {
-                        // Menyembunyikan komponen form tersembunyi jika data pelanggan tidak ditemukan
                         $('.hidden-form').hide();
                     }
                 });
-
-                pelangganContainer.find(".result_pelanggan").empty(); // Mengganti itemContainer menjadi pelangganContainer
+                pelangganContainer.find(".result_pelanggan").empty();
             });
-
         });
     </script>
 
@@ -589,9 +595,6 @@ include('koneksi/config.php');
             });
         });
     </script>
-
-
-
 
 </body>
 

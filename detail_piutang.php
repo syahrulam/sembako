@@ -83,7 +83,11 @@ $no = 1;
                                                         <td><?php echo $row['tanggal']; ?></td>
                                                         <td><?php echo 'Rp. ' . number_format($row['kurangan_hutang'], 0, ',', '.'); ?></td>
                                                         <td>
-                                                            <button type="button" class="btn btn-primary btn-bayar-cicilan" data-toggle="modal" data-target="#bayarCicilanModal" data-id="<?php echo $row['id_transaksi']; ?>">Bayar Cicilan</button>
+                                                            <?php if ($row['kurangan_hutang'] == 0) : ?>
+                                                            <span style="color: green;">Hutang Lunas</span>
+                                                            <?php else : ?>
+                                                                <button type="button" class="btn btn-primary btn-bayar-cicilan" data-toggle="modal" data-target="#bayarCicilanModal" data-id="<?php echo $row['id_transaksi']; ?>">Bayar Cicilan</button>
+                                                            <?php endif; ?>
                                                         </td>
                                                     </tr>
                                                 <?php endwhile; ?>

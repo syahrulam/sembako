@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 22 Apr 2024 pada 17.44
--- Versi server: 10.4.32-MariaDB
--- Versi PHP: 8.2.12
+-- Generation Time: May 03, 2024 at 03:04 PM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -24,11 +24,11 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `cicilan_piutang`
+-- Table structure for table `cicilan_piutang`
 --
 
 CREATE TABLE `cicilan_piutang` (
-  `id_cicilan` int(5) NOT NULL,
+  `id_cicilan` int(11) NOT NULL,
   `id_transaksi` int(5) NOT NULL,
   `tanggal` date NOT NULL DEFAULT current_timestamp(),
   `cicilan` int(100) NOT NULL
@@ -37,7 +37,7 @@ CREATE TABLE `cicilan_piutang` (
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `detail_transaksi`
+-- Table structure for table `detail_transaksi`
 --
 
 CREATE TABLE `detail_transaksi` (
@@ -53,7 +53,7 @@ CREATE TABLE `detail_transaksi` (
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `item`
+-- Table structure for table `item`
 --
 
 CREATE TABLE `item` (
@@ -74,13 +74,13 @@ CREATE TABLE `item` (
   `harga_jual_satuan_kecil2` int(11) DEFAULT NULL,
   `harga_jual_satuan_kecil3` int(11) DEFAULT NULL,
   `total_kulak` int(11) DEFAULT 0,
-  `tanggal` date NOT NULL
+  `tanggal` date NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `kategori`
+-- Table structure for table `kategori`
 --
 
 CREATE TABLE `kategori` (
@@ -88,17 +88,10 @@ CREATE TABLE `kategori` (
   `kategori` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data untuk tabel `kategori`
---
-
-INSERT INTO `kategori` (`id`, `kategori`) VALUES
-(12, 'Minuman');
-
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `opname`
+-- Table structure for table `opname`
 --
 
 CREATE TABLE `opname` (
@@ -114,7 +107,7 @@ CREATE TABLE `opname` (
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `pelanggan`
+-- Table structure for table `pelanggan`
 --
 
 CREATE TABLE `pelanggan` (
@@ -127,7 +120,7 @@ CREATE TABLE `pelanggan` (
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `piutang`
+-- Table structure for table `piutang`
 --
 
 CREATE TABLE `piutang` (
@@ -142,7 +135,7 @@ CREATE TABLE `piutang` (
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `sales`
+-- Table structure for table `sales`
 --
 
 CREATE TABLE `sales` (
@@ -152,17 +145,10 @@ CREATE TABLE `sales` (
   `alamat` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data untuk tabel `sales`
---
-
-INSERT INTO `sales` (`id`, `nama`, `nomor`, `alamat`) VALUES
-(1, 'Sales A', '085156665599', 'Jl Anggrek');
-
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `transaksi`
+-- Table structure for table `transaksi`
 --
 
 CREATE TABLE `transaksi` (
@@ -181,7 +167,7 @@ CREATE TABLE `transaksi` (
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `users`
+-- Table structure for table `users`
 --
 
 CREATE TABLE `users` (
@@ -192,7 +178,7 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `users`
+-- Dumping data for table `users`
 --
 
 INSERT INTO `users` (`id_users`, `username`, `role`, `password`) VALUES
@@ -204,127 +190,127 @@ INSERT INTO `users` (`id_users`, `username`, `role`, `password`) VALUES
 --
 
 --
--- Indeks untuk tabel `cicilan_piutang`
+-- Indexes for table `cicilan_piutang`
 --
 ALTER TABLE `cicilan_piutang`
   ADD PRIMARY KEY (`id_cicilan`);
 
 --
--- Indeks untuk tabel `detail_transaksi`
+-- Indexes for table `detail_transaksi`
 --
 ALTER TABLE `detail_transaksi`
   ADD PRIMARY KEY (`id_detail_transaksi`);
 
 --
--- Indeks untuk tabel `item`
+-- Indexes for table `item`
 --
 ALTER TABLE `item`
   ADD PRIMARY KEY (`id_item`);
 
 --
--- Indeks untuk tabel `kategori`
+-- Indexes for table `kategori`
 --
 ALTER TABLE `kategori`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indeks untuk tabel `opname`
+-- Indexes for table `opname`
 --
 ALTER TABLE `opname`
   ADD PRIMARY KEY (`id_opname`),
   ADD KEY `id_item` (`id_item`);
 
 --
--- Indeks untuk tabel `pelanggan`
+-- Indexes for table `pelanggan`
 --
 ALTER TABLE `pelanggan`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indeks untuk tabel `piutang`
+-- Indexes for table `piutang`
 --
 ALTER TABLE `piutang`
   ADD PRIMARY KEY (`id_piutang`),
   ADD KEY `id_transaksi` (`id_transaksi`);
 
 --
--- Indeks untuk tabel `sales`
+-- Indexes for table `sales`
 --
 ALTER TABLE `sales`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indeks untuk tabel `transaksi`
+-- Indexes for table `transaksi`
 --
 ALTER TABLE `transaksi`
   ADD PRIMARY KEY (`id_transaksi`);
 
 --
--- Indeks untuk tabel `users`
+-- Indexes for table `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id_users`);
 
 --
--- AUTO_INCREMENT untuk tabel yang dibuang
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT untuk tabel `cicilan_piutang`
+-- AUTO_INCREMENT for table `cicilan_piutang`
 --
 ALTER TABLE `cicilan_piutang`
-  MODIFY `id_cicilan` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id_cicilan` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT untuk tabel `detail_transaksi`
+-- AUTO_INCREMENT for table `detail_transaksi`
 --
 ALTER TABLE `detail_transaksi`
-  MODIFY `id_detail_transaksi` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id_detail_transaksi` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT untuk tabel `item`
+-- AUTO_INCREMENT for table `item`
 --
 ALTER TABLE `item`
-  MODIFY `id_item` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id_item` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT untuk tabel `kategori`
+-- AUTO_INCREMENT for table `kategori`
 --
 ALTER TABLE `kategori`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT untuk tabel `opname`
+-- AUTO_INCREMENT for table `opname`
 --
 ALTER TABLE `opname`
-  MODIFY `id_opname` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
+  MODIFY `id_opname` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT untuk tabel `pelanggan`
+-- AUTO_INCREMENT for table `pelanggan`
 --
 ALTER TABLE `pelanggan`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT untuk tabel `piutang`
+-- AUTO_INCREMENT for table `piutang`
 --
 ALTER TABLE `piutang`
-  MODIFY `id_piutang` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id_piutang` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT untuk tabel `sales`
+-- AUTO_INCREMENT for table `sales`
 --
 ALTER TABLE `sales`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT untuk tabel `transaksi`
+-- AUTO_INCREMENT for table `transaksi`
 --
 ALTER TABLE `transaksi`
-  MODIFY `id_transaksi` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id_transaksi` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT untuk tabel `users`
+-- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
   MODIFY `id_users` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
