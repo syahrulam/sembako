@@ -43,17 +43,17 @@ $username = $_SESSION['username'];
 
                                     <div class="card-body">
                                         <form id="searchForm">
-                                        <h5 class="mb-3">Filder Data Item</h5>
+                                            <h5 class="mb-3">Filter Data Item</h5>
                                             <div class="row mb-3">
                                                 <div class="col-3">
-                                                    <input type="month" class="form-control" id="bulanTahun" name="bulanTahun">
+                                                    <input type="date" class="form-control" id="tanggalFilter" name="tanggalFilter">
                                                 </div>
-
                                                 <div class="col">
                                                     <button type="button" class="btn btn-success" onclick="searchData()">Filter Data</button>
                                                 </div>
                                             </div>
                                         </form>
+
                                         <hr>
 
                                         <a href="tambah_item.php" class="btn btn-primary mb-3">Tambah Item</a>
@@ -227,15 +227,14 @@ $username = $_SESSION['username'];
                 });
             </script>
 
-<script>
+            <script>
                 function searchData() {
-                    var bulanTahun = $('#bulanTahun').val();
+                    var tanggalFilter = $('#tanggalFilter').val();
                     $.ajax({
                         type: 'POST',
-                        url: 'search_data_item.php', // Ganti dengan nama file PHP yang akan memproses pencarian
+                        url: 'search_data_item.php',
                         data: {
-                            bulanTahun,
-                            bulanTahun
+                            tanggalFilter: tanggalFilter
                         },
                         success: function(data) {
                             $('#empTable tbody').html(data);
@@ -243,6 +242,7 @@ $username = $_SESSION['username'];
                     });
                 }
             </script>
+
 
             <!-- jQuery Library -->
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>

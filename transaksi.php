@@ -375,21 +375,21 @@ include('koneksi/config.php');
 
             function toggleFields() {
                 var tipePembayaran = $('select[name="tipe_pembayaran"]').val();
-                var inputNamaPelanggan = $('.nama').val(); 
+                var inputNamaPelanggan = $('.nama').val();
                 var totalHutang = parseInt($('.total_hutang_display').text().replace(/\D/g, ''));
                 if (inputNamaPelanggan === '') {
-                    $('select[name="tipe_pembayaran"]').val(''); 
+                    $('select[name="tipe_pembayaran"]').val('');
                     $('input[name="uang_diterima"], input[name="kembalian"], input[name="kurangan"]').val(0).closest('.form-group').hide(); // Sembunyikan semua form terkait
-                    return; 
+                    return;
                 }
                 if (tipePembayaran === 'Cash') {
                     $('input[name="uang_diterima"]').closest('.form-group').show();
-                    $('input[name="kembalian"]').closest('.form-group').show(); 
+                    $('input[name="kembalian"]').closest('.form-group').show();
                     $('input[name="kurangan"]').closest('.form-group').hide();
                 } else if (tipePembayaran === 'Debit' && totalHutang === 0) {
-                    $('input[name="uang_diterima"]').closest('.form-group').show(); 
-                    $('input[name="kurangan"]').closest('.form-group').show(); 
-                    $('input[name="kembalian"]').closest('.form-group').hide(); 
+                    $('input[name="uang_diterima"]').closest('.form-group').show();
+                    $('input[name="kurangan"]').closest('.form-group').show();
+                    $('input[name="kembalian"]').closest('.form-group').hide();
                 } else {
                     $('input[name="uang_diterima"], input[name="kembalian"], input[name="kurangan"]').val(0).closest('.form-group').hide(); // Sembunyikan field bayar, kembalian, dan kurangan jika belum memilih metode pembayaran atau jika masih ada hutang
                 }
@@ -466,8 +466,9 @@ include('koneksi/config.php');
 
             $('#tipe_pembayaran').change(function() {
                 var totalHutang = parseInt($('.total_hutang_display').text().replace(/\D/g, ''));
+                var namaPelanggan = $('.nama').val(); 
                 if ($(this).val() === 'Debit' && totalHutang > 0) {
-                    alert('YBS masih memiliki hutang. Silakan ganti metode pembayaran lain.');
+                    alert(namaPelanggan + ' masih memiliki hutang. Silakan pilih metode pembayaran yang lain.');
                     $(this).val('');
                 }
             });
