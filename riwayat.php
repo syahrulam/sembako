@@ -177,7 +177,7 @@ $total_harga_bulan_ini = $row_total_harga['total_harga'];
                                                                 echo "<td>";
                                                                 if ($row['tipe_pembayaran'] == 'Cash') {
                                                                     echo "Lunas";
-                                                                } else if ($row['tipe_pembayaran'] == 'Debit' && intval($row['kekurangan']) == 0) {
+                                                                } else if ($row['tipe_pembayaran'] == 'Kredit' && intval($row['kekurangan']) == 0) {
                                                                     echo "Lunas";
                                                                 } else {
                                                                     echo "Kekurangan : Rp " . number_format($row['kekurangan'], 0, ',', '.');

@@ -99,7 +99,7 @@ include('koneksi/config.php');
                                                         <select class="form-control" name="tipe_pembayaran" id="tipe_pembayaran" required>
                                                             <option value="">Metode Pembayaran</option>
                                                             <option value="Cash">Cash</option>
-                                                            <option value="Debit">Debit</option>
+                                                            <option value="Kredit">Kredit</option>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -353,8 +353,8 @@ include('koneksi/config.php');
                         $('input[name="kembalian"]').val(0); // Reset nilai kembalian menjadi 0 jika nilai bayar tidak valid
                     }
                 }
-                // Jika jenis pembayaran adalah "Debit"
-                else if (tipePembayaran === 'Debit') {
+                // Jika jenis pembayaran adalah "Kredit"
+                else if (tipePembayaran === 'Kredit') {
                     if (!isNaN(bayar) && bayar < harusDibayar) {
                         var kurangan = harusDibayar - bayar;
                         $('input[name="kurangan"]').val(kurangan);
@@ -372,8 +372,8 @@ include('koneksi/config.php');
                     $('input[name="uang_diterima"]').closest('.form-group').show(); // Tampilkan field bayar jika memilih Cash
                     $('input[name="kembalian"]').closest('.form-group').show(); // Tampilkan field kembalian
                     $('input[name="kurangan"]').closest('.form-group').hide(); // Sembunyikan field kurangan
-                } else if (tipePembayaran === 'Debit') {
-                    $('input[name="uang_diterima"]').closest('.form-group').show(); // Tampilkan field bayar jika memilih Debit
+                } else if (tipePembayaran === 'Kredit') {
+                    $('input[name="uang_diterima"]').closest('.form-group').show(); // Tampilkan field bayar jika memilih Kredit
                     $('input[name="kurangan"]').closest('.form-group').show(); // Tampilkan field kurangan
                     $('input[name="kembalian"]').closest('.form-group').hide(); // Sembunyikan field kembalian
                 } else {

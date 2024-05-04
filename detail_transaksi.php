@@ -133,7 +133,7 @@ $result = $koneksi->query($query);
                                 <?php
                                 if ($row_transaksi['tipe_pembayaran'] === 'Cash') {
                                     echo "<div class='col-2'><strong>Kembalian</strong></div>";
-                                } elseif ($row_transaksi['tipe_pembayaran'] === 'Debit') {
+                                } elseif ($row_transaksi['tipe_pembayaran'] === 'Kredit') {
                                     echo "<div class='col-2'><strong>Kekurangan</strong></div>";
                                 }
                                 ?>

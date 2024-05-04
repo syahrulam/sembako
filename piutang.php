@@ -14,7 +14,7 @@ $username = $_SESSION['username'];
 // Menggunakan tanda == untuk perbandingan dalam query SQL
 include('koneksi/config.php');
 
-// Query untuk mengambil beberapa transaksi per masing-masing nama pelanggan yang tipe pembayarannya adalah Debit
+// Query untuk mengambil beberapa transaksi per masing-masing nama pelanggan yang tipe pembayarannya adalah Kredit
 $query = "SELECT
              t.nama_pelanggan,
              COUNT(t.id_transaksi) AS jumlah_transaksi,
@@ -26,7 +26,7 @@ $query = "SELECT
              transaksi t
              LEFT JOIN piutang p ON t.id_transaksi = p.id_transaksi
          WHERE
-             t.tipe_pembayaran = 'Debit' AND t.kekurangan <> 0 
+             t.tipe_pembayaran = 'Kredit' AND t.kekurangan <> 0 
          GROUP BY
              t.nama_pelanggan";
 
