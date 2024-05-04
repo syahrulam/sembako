@@ -466,7 +466,7 @@ include('koneksi/config.php');
 
             $('#tipe_pembayaran').change(function() {
                 var totalHutang = parseInt($('.total_hutang_display').text().replace(/\D/g, ''));
-                var namaPelanggan = $('.nama').val(); 
+                var namaPelanggan = $('.nama').val();
                 if ($(this).val() === 'Kredit' && totalHutang > 0) {
                     alert(namaPelanggan + ' masih memiliki hutang. Silakan pilih metode pembayaran yang lain.');
                     $(this).val('');
@@ -484,10 +484,14 @@ include('koneksi/config.php');
                 if (tipePembayaran === 'Cash' && uangDiterima < totalHarga) {
                     event.preventDefault();
                     alert('Jumlah yang dibayarkan kurang dari jumlah yang harus dibayar!');
+                } else if (tipePembayaran === 'Kredit' && uangDiterima > totalHarga) {
+                    event.preventDefault();
+                    alert('Pembayaran kredit, harga yang dibayarkan harus dibawah total!');
                 }
             });
         });
     </script>
+
 
     <script>
         $(document).ready(function() {
@@ -596,7 +600,6 @@ include('koneksi/config.php');
                     alert("Jumlah melebihi stok yang tersedia!");
                     $(this).val(maxStok);
                 }
-
                 if (jumlahItem <= 0) {
                     $(this).val(1);
                 }

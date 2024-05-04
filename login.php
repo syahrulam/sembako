@@ -10,7 +10,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if ($result && mysqli_num_rows($result) > 0) {
         $user = mysqli_fetch_assoc($result);
-        
+
         // Password cocok, simpan peran dan username pengguna di sesi
         session_start();
         $_SESSION['role'] = $user['role'];
@@ -25,22 +25,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Login | Toko Yu Yang</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
+
 <body style="background-color: #f8f9fa;">
 
     <div class="container mt-5">
         <!-- Logo -->
-        <div class="text-center mb-4">
-            <h3>Toko Sumber Jaya</h3>
-        </div>
+        <?php
+        $imagePath = 'layout/logo-toko.png';
+        ?>
+       
 
         <div class="card shadow p-4 mx-auto" style="max-width: 400px; border-radius: 10px;">
-            <h2 class="text-center mb-4">Login</h2>
+        <div class="text-center mb-4">
+            <img src="<?php echo $imagePath; ?>" alt="Gambar" style="width: 90%;">
+        </div>
 
             <?php if (isset($error_message)) : ?>
                 <div class="alert alert-danger" role="alert">
@@ -57,7 +62,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <label for="password">Password:</label>
                     <input type="password" class="form-control" name="password" placeholder="Password" required>
                 </div>
-                <button type="submit" class="btn btn-primary btn-block">Login</button>
+                <button type="submit" class="btn btn-success btn-block">Login</button>
             </form>
         </div>
     </div>
@@ -79,4 +84,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </style>
 
 </body>
+
 </html>
