@@ -1,6 +1,12 @@
+<?php
+$imagePath = 'layout/logo-toko.png';
+?>
 <aside id="sidebar-wrapper">
-  <div class="sidebar-brand">
-    <a href="index.php">Toko Sumber Jaya</a>
+  <div class="mt-4 mb-2 ml-3">
+    <a href="index.php">
+      <img src="<?php echo $imagePath; ?>" alt="Gambar" style="width: 80%;">
+    </a>
+    <!-- <a href="index.php">Toko Yuyang Sembako</a> -->
   </div>
   <div class="sidebar-brand sidebar-brand-sm">
     <a href="index.php"></a>

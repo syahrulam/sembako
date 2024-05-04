@@ -2,6 +2,7 @@
 // Include fpdf library
 require('assets/fpdf/fpdf.php');
 
+
 // Menghubungkan ke file config.php
 include('koneksi/config.php');
 
@@ -39,7 +40,7 @@ if (isset($_GET['id_transaksi'])) {
             WHERE 
                 detail_transaksi.id_transaksi = ?
         ";
-        
+
         $detailStmt = $koneksi->prepare($detailQuery);
         $detailStmt->bind_param("s", $id_transaksi);
         $detailStmt->execute();
@@ -48,15 +49,21 @@ if (isset($_GET['id_transaksi'])) {
         // Membuat kelas PDF yang diperluas dari FPDF
         class PDF extends FPDF
         {
+
+
             function Header()
             {
+                $imagePath = 'layout/logo-toko.png';
+                $this->Image($imagePath, 10, 10, 50);
                 $this->SetFont('Arial', 'B', 20);
+                $this->Ln(15);
                 $this->Cell(0, 5, 'INVOICE', 0, 1, 'C');
                 $this->SetFont('Arial', 'B', 15);
-                $this->Cell(0, 10, 'Toko Sumber Jaya', 0, 1, 'C');
-                $this->Ln(10); // Tambahkan jarak setelah judul
+                $this->Cell(0, 10, 'Toko Yu yang Sembako', 0, 1, 'C');
+                $this->Ln(10);
             }
 
+            
             function Footer()
             {
                 // Implementasi footer jika diperlukan
@@ -66,6 +73,10 @@ if (isset($_GET['id_transaksi'])) {
         // Membuat instance PDF dan menambahkan halaman
         $pdf = new PDF();
         $pdf->AddPage('P', array(200, 200));
+        
+        // Mengatur header untuk PDF
+        header('Content-type: application/pdf');
+        header('Content-Disposition: inline; filename="Invoice_' . date('Ymd', strtotime($row['tanggal'])) . '_' . str_replace(' ', '_', $row['nama_pelanggan']) . '.pdf"');
 
         // Menampilkan informasi transaksi di PDF
         $pdf->SetFont('Arial', 'B', 10);
@@ -90,31 +101,28 @@ if (isset($_GET['id_transaksi'])) {
             // Menampilkan detail transaksi dalam tabel
             while ($detailRow = $detailResult->fetch_assoc()) {
                 $pdf->Cell(40, 10, $detailRow['nama_item'], 1, 0, 'C');
-                
+
                 // Menampilkan jenis satuan yang benar
                 $jenis_satuan = $detailRow['jenis_satuan'] === 'Besar' ? $detailRow['jenis_satuan_besar'] : $detailRow['jenis_satuan_kecil'];
                 $pdf->Cell(30, 10, $jenis_satuan, 1, 0, 'C'); // Jenis Satuan
-                
+
                 $pdf->Cell(30, 10, $detailRow['jumlah'], 1, 0, 'C'); // Jumlah
                 $pdf->Cell(40, 10, 'Rp.' . number_format($detailRow['harga_satuan'], 0, ',', '.'), 1, 0, 'C'); // Harga Satuan
                 $pdf->Cell(40, 10, 'Rp.' . number_format($detailRow['total'], 0, ',', '.'), 1, 1, 'C'); // Subtotal
             }
         }
-
-        // Menampilkan informasi harga total dan pembayaran
-        $pdf->Ln(3); // Tambahkan sedikit jarak
+        $pdf->Ln(3);
         $pdf->SetFont('Arial', 'B', 11);
         $pdf->Cell(0, 10, 'Total Harga: Rp.' . number_format($row['total_harga'], 0, ',', '.'), 0, 1);
         $pdf->Cell(0, 10, 'Bayar: Rp.' . number_format($row['total_bayar'], 0, ',', '.'), 0, 1);
-        
+
         if ($row['tipe_pembayaran'] === 'Cash') {
             $pdf->Cell(0, 10, 'Kembalian: Rp.' . number_format($row['kembalian'], 0, ',', '.'), 0, 1);
         } else {
             $pdf->Cell(0, 10, 'Kekurangan: Rp.' . number_format($row['kekurangan'], 0, ',', '.'), 0, 1);
         }
 
-        // Output PDF ke browser
-        $pdf->Output();
+        $pdf->Output('Invoice_' . date('Ymd', strtotime($row['tanggal'])) . '_' . str_replace(' ', '_', $row['nama_pelanggan']) . '.pdf', 'I');
     } else {
         echo "Tidak ada data transaksi dengan ID tersebut.";
     }

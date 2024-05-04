@@ -54,10 +54,10 @@ include('koneksi/config.php');
                                                                         <input class="form-control nama" type="text" name="nama" placeholder="Nama Pelanggan" required />
                                                                         <div class="result_pelanggan"></div>
                                                                     </div>
-<!-- 
+
                                                                     <div class="total_hutang_container">
-                                                                        Total Hutang: <span class="total_hutang_display"></span>
-                                                                    </div> -->
+                                                                        <span class="total_hutang_display" style="display: none;"></span>
+                                                                    </div>
 
                                                                     <div class="col-2 m-0 p-0">
                                                                         <button type="button" class="btn btn-warning p-2 btn-bayar-cicilan" data-toggle="modal" data-target="#PelangganModal">Tambah Pelanggan</button>
@@ -113,8 +113,6 @@ include('koneksi/config.php');
                                                             </select>
                                                         </div>
                                                     </div>
-
-
 
                                                     <div class="col-md-4 offset-md-8">
                                                         <div class="form-group">
@@ -353,7 +351,6 @@ include('koneksi/config.php');
                 var bayar = parseFloat($('input[name="uang_diterima"]').val());
                 var harusDibayar = parseFloat($('#total_harus_dibayar').val());
 
-                // Jika jenis pembayaran adalah "Cash"
                 if (tipePembayaran === 'Cash') {
                     if (!isNaN(bayar) && bayar >= harusDibayar) {
                         var kembalian = bayar - harusDibayar;
@@ -364,9 +361,7 @@ include('koneksi/config.php');
                         var kekurangan = harusDibayar - bayar;
                         $('input[name="kurangan"]').val(parseInt(kekurangan)); // Menghapus angka di belakang koma dan tampilkan kekurangan
                     }
-                }
-                // Jika jenis pembayaran adalah "Debit"
-                else if (tipePembayaran === 'Debit') {
+                } else if (tipePembayaran === 'Debit') {
                     if (!isNaN(bayar) && bayar < harusDibayar) {
                         var kurangan = harusDibayar - bayar;
                         $('input[name="kurangan"]').val(parseInt(kurangan)); // Menghapus angka di belakang koma dan tampilkan kekurangan
@@ -378,26 +373,34 @@ include('koneksi/config.php');
                 }
             }
 
-
-            // Fungsi untuk menyembunyikan atau menampilkan field kurangan atau kembalian berdasarkan tipe pembayaran
             function toggleFields() {
                 var tipePembayaran = $('select[name="tipe_pembayaran"]').val();
+                var inputNamaPelanggan = $('.nama').val(); 
+                var totalHutang = parseInt($('.total_hutang_display').text().replace(/\D/g, ''));
+                if (inputNamaPelanggan === '') {
+                    $('select[name="tipe_pembayaran"]').val(''); 
+                    $('input[name="uang_diterima"], input[name="kembalian"], input[name="kurangan"]').val(0).closest('.form-group').hide(); // Sembunyikan semua form terkait
+                    return; 
+                }
                 if (tipePembayaran === 'Cash') {
-                    $('input[name="uang_diterima"]').closest('.form-group').show(); // Tampilkan field bayar jika memilih Cash
-                    $('input[name="kembalian"]').closest('.form-group').show(); // Tampilkan field kembalian
-                    $('input[name="kurangan"]').closest('.form-group').hide(); // Sembunyikan field kurangan
-                } else if (tipePembayaran === 'Debit') {
-                    $('input[name="uang_diterima"]').closest('.form-group').show(); // Tampilkan field bayar jika memilih Debit
-                    $('input[name="kurangan"]').closest('.form-group').show(); // Tampilkan field kurangan
-                    $('input[name="kembalian"]').closest('.form-group').hide(); // Sembunyikan field kembalian
+                    $('input[name="uang_diterima"]').closest('.form-group').show();
+                    $('input[name="kembalian"]').closest('.form-group').show(); 
+                    $('input[name="kurangan"]').closest('.form-group').hide();
+                } else if (tipePembayaran === 'Debit' && totalHutang === 0) {
+                    $('input[name="uang_diterima"]').closest('.form-group').show(); 
+                    $('input[name="kurangan"]').closest('.form-group').show(); 
+                    $('input[name="kembalian"]').closest('.form-group').hide(); 
                 } else {
-                    $('input[name="uang_diterima"], input[name="kembalian"], input[name="kurangan"]').val(0).closest('.form-group').hide(); // Sembunyikan field bayar, kembalian, dan kurangan jika belum memilih metode pembayaran
+                    $('input[name="uang_diterima"], input[name="kembalian"], input[name="kurangan"]').val(0).closest('.form-group').hide(); // Sembunyikan field bayar, kembalian, dan kurangan jika belum memilih metode pembayaran atau jika masih ada hutang
                 }
             }
 
-
-            // Panggil fungsi toggleFields untuk menyembunyikan atau menampilkan field sesuai dengan tipe pembayaran awal
-            toggleFields();
+            $(document).ready(function() {
+                toggleFields();
+                $(document).on("input", ".nama", function() {
+                    toggleFields();
+                });
+            });
         });
     </script>
 
@@ -427,6 +430,7 @@ include('koneksi/config.php');
                 var inputNamaPelanggan = $(this).val();
                 if (inputNamaPelanggan === '') {
                     $('.result_pelanggan').empty();
+                    $('select[name="tipe_pembayaran"]').val('');
                     $('.hidden-form').hide();
                 } else {
                     handleItemSearch($(this));
@@ -448,13 +452,7 @@ include('koneksi/config.php');
                         pelangganContainer.find(".nama").val(data.nama);
                         pelangganContainer.find(".id_pelanggan").val(data.id);
                         pelangganContainer.find(".total_hutang_display").text(data.total_hutang);
-
-                        // Check if total_hutang is greater than 0
-                        if (parseInt(data.total_hutang) > 0) {
-                            $('#debit-select').hide(); // Hide the "Kredit" option
-                        } else {
-                            $('#debit-select').show(); // Show the "Kredit" option
-                        }
+                        $('#debit-select').show();
 
                         $('.hidden-form').show();
                     },
@@ -462,7 +460,16 @@ include('koneksi/config.php');
                         $('.hidden-form').hide();
                     }
                 });
+
                 pelangganContainer.find(".result_pelanggan").empty();
+            });
+
+            $('#tipe_pembayaran').change(function() {
+                var totalHutang = parseInt($('.total_hutang_display').text().replace(/\D/g, ''));
+                if ($(this).val() === 'Debit' && totalHutang > 0) {
+                    alert('Anda masih memiliki hutang. Silakan pilih metode pembayaran yang lain.');
+                    $(this).val('');
+                }
             });
         });
     </script>

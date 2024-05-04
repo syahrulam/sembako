@@ -1,3 +1,4 @@
+<img src="/layout/logo-toko.png" alt="">
 <form id="pelangganForm" action="#" method="post">
     <div class="pelanggan-container">
         <input type="text" class="nama" placeholder="Nama Pelanggan">
@@ -22,68 +23,69 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function() {
-        function handleItemSearch(inputElement) {
-            var searchPelanggan = inputElement.val();
-            var resultPelanggan = inputElement.parent().find(".result_pelanggan");
+    function handleItemSearch(inputElement) {
+        var searchPelanggan = inputElement.val();
+        var resultPelanggan = inputElement.parent().find(".result_pelanggan");
 
-            if (searchPelanggan !== "") {
-                $.ajax({
-                    type: "POST",
-                    url: "search_pelanggan.php",
-                    data: {
-                        searchPelanggan: searchPelanggan
-                    },
-                    success: function(data) {
-                        resultPelanggan.html(data);
-                    }
-                });
-            } else {
-                resultPelanggan.empty();
-            }
-        }
-
-        $(document).on("input", ".nama", function() {
-            var inputNamaPelanggan = $(this).val();
-            if (inputNamaPelanggan === '') {
-                $('.result_pelanggan').empty();
-                $('.hidden-form').hide();
-            } else {
-                handleItemSearch($(this));
-            }
-        });
-
-        $(document).on("click", ".result_pelanggan li", function() {
-            var selectedPelanggan = $(this).text();
-            var pelangganContainer = $(this).closest(".pelanggan-container");
-
+        if (searchPelanggan !== "") {
             $.ajax({
                 type: "POST",
-                url: "get_pelanggan_hutang.php",
+                url: "search_pelanggan.php",
                 data: {
-                    selectedPelanggan: selectedPelanggan
+                    searchPelanggan: searchPelanggan
                 },
-                success: function(response) {
-                    var data = JSON.parse(response);
-                    pelangganContainer.find(".nama").val(data.nama);
-                    pelangganContainer.find(".id_pelanggan").val(data.id);
-                    pelangganContainer.find(".total_hutang_display").text(data.total_hutang);
-
-                    // Check if total_hutang is greater than 0
-                    if (parseInt(data.total_hutang) > 0) {
-                        $('#debit-select').hide(); // Hide the "Kredit" option
-                    } else {
-                        $('#debit-select').show(); // Show the "Kredit" option
-                    }
-
-                    $('.hidden-form').show();
-                },
-                error: function() {
-                    $('.hidden-form').hide();
+                success: function(data) {
+                    resultPelanggan.html(data);
                 }
             });
-            pelangganContainer.find(".result_pelanggan").empty();
+        } else {
+            resultPelanggan.empty();
+        }
+    }
+
+    $(document).on("input", ".nama", function() {
+        var inputNamaPelanggan = $(this).val();
+        if (inputNamaPelanggan === '') {
+            $('.result_pelanggan').empty();
+            $('.hidden-form').hide();
+        } else {
+            handleItemSearch($(this));
+        }
+    });
+
+    $(document).on("click", ".result_pelanggan li", function() {
+        var selectedPelanggan = $(this).text();
+        var pelangganContainer = $(this).closest(".pelanggan-container");
+
+        $.ajax({
+            type: "POST",
+            url: "get_pelanggan_hutang.php",
+            data: {
+                selectedPelanggan: selectedPelanggan
+            },
+            success: function(response) {
+                var data = JSON.parse(response);
+                pelangganContainer.find(".nama").val(data.nama);
+                pelangganContainer.find(".id_pelanggan").val(data.id);
+                pelangganContainer.find(".total_hutang_display").text(data.total_hutang);
+                $('#debit-select').show();
+
+                $('.hidden-form').show();
+            },
+            error: function() {
+                $('.hidden-form').hide();
+            }
         });
 
-
+        pelangganContainer.find(".result_pelanggan").empty();
     });
+
+    $('#tipe_pembayaran').change(function() {
+        var totalHutang = parseInt($('.total_hutang_display').text().replace(/\D/g, ''));
+        if ($(this).val() === 'Debit' && totalHutang > 0) {
+            alert('Anda masih memiliki hutang. Silakan pilih metode pembayaran yang lain.');
+            $(this).val('');
+        }
+    });
+});
 </script>
