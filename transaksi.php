@@ -467,7 +467,7 @@ include('koneksi/config.php');
             $('#tipe_pembayaran').change(function() {
                 var totalHutang = parseInt($('.total_hutang_display').text().replace(/\D/g, ''));
                 if ($(this).val() === 'Debit' && totalHutang > 0) {
-                    alert('Anda masih memiliki hutang. Silakan pilih metode pembayaran yang lain.');
+                    alert('YBS masih memiliki hutang. Silakan ganti metode pembayaran lain.');
                     $(this).val('');
                 }
             });
