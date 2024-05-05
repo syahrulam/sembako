@@ -483,10 +483,10 @@ include('koneksi/config.php');
                 var uangDiterima = parseFloat($('#uang_diterima').val());
                 if (tipePembayaran === 'Cash' && uangDiterima < totalHarga) {
                     event.preventDefault();
-                    alert('Jumlah yang dibayarkan kurang dari jumlah yang harus dibayar!');
+                    alert('Uang Kurang. Koreksi Nominal atau Ubah Tipe Kredit!');
                 } else if (tipePembayaran === 'Kredit' && uangDiterima > totalHarga) {
                     event.preventDefault();
-                    alert('Pembayaran kredit, harga yang dibayarkan harus dibawah total!');
+                    alert('Uang Lebih. Koreksi Nominal atau Ubah Tipe Cash!');
                 }
             });
         });
