@@ -40,7 +40,7 @@ $result_data = mysqli_query($koneksi, $query_data);
                         <div class="col-lg-12 col-md-12 col-sm-12">
                             <div class="card mt-4">
                                 <div class="card-header">
-                                    <h4>Riwayat Piutang</h4>
+                                    <h4>Riwayat Pembayaran Hutang Pertransaksi</h4>
                                 </div>
                                 <div class="card-body">
                                     <div class="table-responsive">

@@ -76,7 +76,7 @@ if (isset($_GET['nama_pelanggan'])) {
                                             <a href="javascript:history.go(-1)" class="btn btn-primary">Kembali</a>
                                         </div>
                                         <div class="col">
-                                            <h4 class="mt-4">Riwayat Piutang</h4>
+                                            <h4 class="mt-4">Riwayat Pembayaran Hutang</h4>
                                             <p>Total Hutang "<?php echo $nama_pelanggan; ?>" dari Seluruh Transaksi Sekarang: Rp. <?php echo number_format($sisa_hutang, 0, ',', '.'); ?></p>
                                         </div>
                                     </div>
