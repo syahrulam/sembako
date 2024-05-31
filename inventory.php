@@ -114,15 +114,14 @@ $username = $_SESSION['username'];
             <script>
                 $(document).ready(function() {
                     var empDataTable = $('#empTable').DataTable({
-                        dom: 'Blfrtip',
-                        buttons: [{
-                            extend: 'pdf',
-                            exportOptions: {
-                                columns: [0, 1, 2, 3, 4, 5] // Column index which needs to export
-                            }
-                        }, ]
-
-                    });
+    dom: 'Blfrtip',
+    buttons: [{
+        extend: 'pdf',
+        exportOptions: {
+            columns: [0, 1, 2, 3, 4] // Adjusted to match the actual columns in the table
+        }
+    }]
+});
 
                 });
             </script>
