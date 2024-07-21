@@ -386,7 +386,7 @@ include('koneksi/config.php');
                     $('input[name="uang_diterima"]').closest('.form-group').show();
                     $('input[name="kembalian"]').closest('.form-group').show();
                     $('input[name="kurangan"]').closest('.form-group').hide();
-                } else if (tipePembayaran === 'Kredit' && totalHutang === 0) {
+                } else if (tipePembayaran === 'Kredit') {
                     $('input[name="uang_diterima"]').closest('.form-group').show();
                     $('input[name="kurangan"]').closest('.form-group').show();
                     $('input[name="kembalian"]').closest('.form-group').hide();
@@ -468,10 +468,13 @@ include('koneksi/config.php');
                 var totalHutang = parseInt($('.total_hutang_display').text().replace(/\D/g, ''));
                 var namaPelanggan = $('.nama').val();
                 if ($(this).val() === 'Kredit' && totalHutang > 0) {
-                    alert(namaPelanggan + ' masih memiliki hutang. Silakan pilih metode pembayaran yang lain.');
-                    $(this).val('');
+                    var confirmHutang = confirm(namaPelanggan + ' masih memiliki hutang. Anda yakin memilih KREDIT?');
+                    if (!confirmHutang) {
+                        $(this).val('');
+                    }
                 }
             });
+
         });
     </script>
 

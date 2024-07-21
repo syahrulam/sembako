@@ -2,7 +2,6 @@
 // Include fpdf library
 require('assets/fpdf/fpdf.php');
 
-
 // Menghubungkan ke file config.php
 include('koneksi/config.php');
 
@@ -49,77 +48,62 @@ if (isset($_GET['id_transaksi'])) {
         // Membuat kelas PDF yang diperluas dari FPDF
         class PDF extends FPDF
         {
-
-
             function Header()
             {
                 $imagePath = 'layout/logo-toko.png';
-                $this->Image($imagePath, 10, 10, 50);
-                $this->SetFont('Arial', 'B', 20);
-                $this->Ln(15);
-                $this->Cell(0, 5, 'INVOICE', 0, 1, 'C');
-                $this->SetFont('Arial', 'B', 15);
-                $this->Cell(0, 10, 'Toko Yu yang Sembako', 0, 1, 'C');
-                $this->Ln(10);
-            }
-
-            
-            function Footer()
-            {
-                // Implementasi footer jika diperlukan
+                $this->Image($imagePath, 4, 4, 40); // Sesuaikan ukuran gambar agar sesuai dengan lebar kertas
+                $this->SetFont('Arial', 'B', 7);
+                $this->Ln(5); // Sesuaikan posisi vertikal setelah logo
             }
         }
 
-        // Membuat instance PDF dan menambahkan halaman
+        // Membuat instance PDF dan menambahkan halaman dengan ukuran 48mm x 210mm
         $pdf = new PDF();
-        $pdf->AddPage('P', array(200, 200));
-        
+        $pdf->AddPage('P', array(48, 210));
+
         // Mengatur header untuk PDF
         header('Content-type: application/pdf');
         header('Content-Disposition: inline; filename="Invoice_' . date('Ymd', strtotime($row['tanggal'])) . '_' . str_replace(' ', '_', $row['nama_pelanggan']) . '.pdf"');
 
+        // Mengatur margin kiri dan kanan
+        $pdf->SetLeftMargin(2); 
+        $pdf->SetRightMargin(2);
+
         // Menampilkan informasi transaksi di PDF
-        $pdf->SetFont('Arial', 'B', 10);
-        $pdf->Cell(0, 10, 'No. Transaksi: ' . $row['no_transaksi'], 0, 1);
-        $pdf->SetFont('Arial', '', 10);
-        $pdf->Cell(0, 10, 'Tanggal: ' . date('d F Y', strtotime($row['tanggal'])), 0, 1);
-        $pdf->Cell(0, 10, 'Nama Pelanggan: ' . ucwords($row['nama_pelanggan']), 0, 1);
-        $pdf->Cell(0, 10, 'Sales: ' . $row['sales'], 0, 1);
-        $pdf->Cell(0, 10, 'Tipe Pembayaran: ' . $row['tipe_pembayaran'], 0, 1);
+        $pdf->SetFont('Arial', 'B', 9);
+        $pdf->Cell(0, 5, '', 0, 1);
+        $pdf->Cell(0, 5, 'Faktur Pembelian', 0, 1,);
+        $pdf->SetFont('Arial', '', 9);
+        $pdf->Cell(0, 5, 'No_transaksi: ' . $row['no_transaksi'], 0, 1);
+        $pdf->Cell(0, 5, 'Tanggal: ' . date('d F Y', strtotime($row['tanggal'])), 0, 1);
+        $pdf->Cell(0, 5, 'Nama Pelanggan: ' . ucwords($row['nama_pelanggan']), 0, 1);
+        $pdf->Cell(0, 5, 'Sales: ' . $row['sales'], 0, 1);
+        $pdf->Cell(0, 5, 'Tipe Pembayaran: ' . $row['tipe_pembayaran'], 0, 1);
+        $pdf->Ln(2);
 
-        // Jika ada detail transaksi, tampilkan dalam tabel
+        // Jika ada detail transaksi, tampilkan dalam format teks
         if ($detailResult->num_rows > 0) {
-            $pdf->Ln(); // Tambahkan baris baru untuk ruang
-            $pdf->SetFont('Arial', 'B', 10);
-            $pdf->Cell(40, 10, 'Item', 1, 0, 'C');
-            $pdf->Cell(30, 10, 'Jenis Satuan', 1, 0, 'C');
-            $pdf->Cell(30, 10, 'Jumlah', 1, 0, 'C');
-            $pdf->Cell(40, 10, 'Harga Satuan', 1, 0, 'C');
-            $pdf->Cell(40, 10, 'Subtotal', 1, 1, 'C'); // Baris baru
-
-            $pdf->SetFont('Arial', '', 10);
-            // Menampilkan detail transaksi dalam tabel
+            $pdf->SetFont('Arial', 'B', 9);
+            $pdf->Cell(0, 5, 'Detail Item:', 0, 1);
+            $pdf->SetFont('Arial', '', 9);
             while ($detailRow = $detailResult->fetch_assoc()) {
-                $pdf->Cell(40, 10, $detailRow['nama_item'], 1, 0, 'C');
-
-                // Menampilkan jenis satuan yang benar
-                $jenis_satuan = $detailRow['jenis_satuan'] === 'Besar' ? $detailRow['jenis_satuan_besar'] : $detailRow['jenis_satuan_kecil'];
-                $pdf->Cell(30, 10, $jenis_satuan, 1, 0, 'C'); // Jenis Satuan
-
-                $pdf->Cell(30, 10, $detailRow['jumlah'], 1, 0, 'C'); // Jumlah
-                $pdf->Cell(40, 10, 'Rp.' . number_format($detailRow['harga_satuan'], 0, ',', '.'), 1, 0, 'C'); // Harga Satuan
-                $pdf->Cell(40, 10, 'Rp.' . number_format($detailRow['total'], 0, ',', '.'), 1, 1, 'C'); // Subtotal
+                $itemLine = $detailRow['nama_item'] . 
+                            ' x ' . $detailRow['jumlah'] . 
+                            ' @ Rp.' . number_format($detailRow['harga_satuan'], 0, ',', '.') .
+                            ' = Rp.' . number_format($detailRow['total'], 0, ',', '.');
+                $pdf->MultiCell(0, 5, $itemLine, 0, 'L');
             }
         }
-        $pdf->Ln(3);
-        $pdf->SetFont('Arial', 'B', 11);
-        $pdf->Cell(0, 10, 'Total Harga: Rp.' . number_format($row['total_harga'], 0, ',', '.'), 0, 1);
-        $pdf->Cell(0, 10, 'Bayar: Rp.' . number_format($row['total_bayar'], 0, ',', '.'), 0, 1);
+
+        $pdf->Ln(2);
+        $pdf->SetFont('Arial', 'B', 9);
+        $pdf->Cell(0, 5, 'Total Harga: Rp.' . number_format($row['total_harga'], 0, ',', '.'), 0, 1);
+        $pdf->Cell(0, 5, 'Bayar: Rp.' . number_format($row['total_bayar'], 0, ',', '.'), 0, 1);
 
         if ($row['tipe_pembayaran'] === 'Cash') {
-            $pdf->Cell(0, 10, 'Kembalian: Rp.' . number_format($row['kembalian'], 0, ',', '.'), 0, 1);
+            $pdf->Cell(0, 5, 'Kembalian: Rp.' . number_format($row['kembalian'], 0, ',', '.'), 0, 1);
         } else {
-            $pdf->Cell(0, 10, 'Kekurangan: Rp.' . number_format($row['kekurangan'], 0, ',', '.'), 0, 1);
+            $pdf->Cell(0, 5, 'Kekurangan: Rp.' . number_format($row['kekurangan'], 0, ',', '.'), 0, 1);
         }
 
         $pdf->Output('Invoice_' . date('Ymd', strtotime($row['tanggal'])) . '_' . str_replace(' ', '_', $row['nama_pelanggan']) . '.pdf', 'I');
@@ -132,3 +116,4 @@ if (isset($_GET['id_transaksi'])) {
 
 // Menutup koneksi database
 $koneksi->close();
+?>
