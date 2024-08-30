@@ -54,7 +54,7 @@ if (isset($_GET['id_transaksi'])) {
                 $this->Image($imagePath, 10, 10, 30); // Sesuaikan ukuran gambar
                 $this->SetFont('Arial', 'B', 12);
                 $this->Cell(0, 10, 'Invoice', 0, 1, 'C');
-                $this->Ln(10);
+                $this->Ln(5); // Kurangi jarak
             }
         }
 
@@ -72,23 +72,23 @@ if (isset($_GET['id_transaksi'])) {
 
         // Menampilkan informasi transaksi di PDF
         $pdf->SetFont('Arial', 'B', 12);
-        $pdf->Cell(0, 10, 'Faktur Pembelian', 0, 1,);
+        $pdf->Cell(0, 8, 'Faktur Pembelian', 0, 1); // Tinggi 8
         $pdf->SetFont('Arial', '', 10);
-        $pdf->Cell(0, 10, 'No_transaksi: ' . $row['no_transaksi'], 0, 1);
-        $pdf->Cell(0, 10, 'Tanggal: ' . date('d F Y', strtotime($row['tanggal'])), 0, 1);
-        $pdf->Cell(0, 10, 'Nama Pelanggan: ' . ucwords($row['nama_pelanggan']), 0, 1);
-        $pdf->Cell(0, 10, 'Sales: ' . $row['sales'], 0, 1);
-        $pdf->Cell(0, 10, 'Tipe Pembayaran: ' . $row['tipe_pembayaran'], 0, 1);
-        $pdf->Ln(10);
+        $pdf->Cell(0, 6, 'No_transaksi: ' . $row['no_transaksi'], 0, 1); // Tinggi 6
+        $pdf->Cell(0, 6, 'Tanggal: ' . date('d F Y', strtotime($row['tanggal'])), 0, 1); // Tinggi 6
+        $pdf->Cell(0, 6, 'Nama Pelanggan: ' . ucwords($row['nama_pelanggan']), 0, 1); // Tinggi 6
+        $pdf->Cell(0, 6, 'Sales: ' . $row['sales'], 0, 1); // Tinggi 6
+        $pdf->Cell(0, 6, 'Tipe Pembayaran: ' . $row['tipe_pembayaran'], 0, 1); // Tinggi 6
+        $pdf->Ln(2); // Kurangi jarak
 
         // Jika ada detail transaksi, tampilkan dalam bentuk tabel
         if ($detailResult->num_rows > 0) {
             $pdf->SetFont('Arial', 'B', 10);
-            $pdf->Cell(50, 10, 'Nama Item', 1);
-            $pdf->Cell(30, 10, 'Jumlah', 1);
-            $pdf->Cell(30, 10, 'Satuan', 1);
-            $pdf->Cell(40, 10, 'Harga Satuan', 1);
-            $pdf->Cell(40, 10, 'Total', 1);
+            $pdf->Cell(50, 8, 'Nama Item', 1); // Tinggi 8
+            $pdf->Cell(30, 8, 'Jumlah', 1); // Tinggi 8
+            $pdf->Cell(30, 8, 'Satuan', 1); // Tinggi 8
+            $pdf->Cell(40, 8, 'Harga Satuan', 1); // Tinggi 8
+            $pdf->Cell(40, 8, 'Total', 1); // Tinggi 8
             $pdf->Ln();
 
             $pdf->SetFont('Arial', '', 10);
@@ -98,24 +98,24 @@ if (isset($_GET['id_transaksi'])) {
                     ? $detailRow['jenis_satuan_besar'] 
                     : $detailRow['jenis_satuan_kecil'];
 
-                $pdf->Cell(50, 10, $detailRow['nama_item'], 1);
-                $pdf->Cell(30, 10, $detailRow['jumlah'], 1);
-                $pdf->Cell(30, 10, $satuan, 1);
-                $pdf->Cell(40, 10, 'Rp. ' . number_format($detailRow['harga_satuan'], 0, ',', '.'), 1);
-                $pdf->Cell(40, 10, 'Rp. ' . number_format($detailRow['total'], 0, ',', '.'), 1);
+                $pdf->Cell(50, 6, $detailRow['nama_item'], 1); // Tinggi 6
+                $pdf->Cell(30, 6, $detailRow['jumlah'], 1); // Tinggi 6
+                $pdf->Cell(30, 6, $satuan, 1); // Tinggi 6
+                $pdf->Cell(40, 6, 'Rp. ' . number_format($detailRow['harga_satuan'], 0, ',', '.'), 1); // Tinggi 6
+                $pdf->Cell(40, 6, 'Rp. ' . number_format($detailRow['total'], 0, ',', '.'), 1); // Tinggi 6
                 $pdf->Ln();
             }
         }
 
-        $pdf->Ln(10);
+        $pdf->Ln(2); // Kurangi jarak
         $pdf->SetFont('Arial', 'B', 12);
-        $pdf->Cell(0, 10, 'Total Harga: Rp. ' . number_format($row['total_harga'], 0, ',', '.'), 0, 1);
-        $pdf->Cell(0, 10, 'Bayar: Rp. ' . number_format($row['total_bayar'], 0, ',', '.'), 0, 1);
+        $pdf->Cell(0, 8, 'Total Harga: Rp. ' . number_format($row['total_harga'], 0, ',', '.'), 0, 1); // Tinggi 8
+        $pdf->Cell(0, 8, 'Bayar: Rp. ' . number_format($row['total_bayar'], 0, ',', '.'), 0, 1); // Tinggi 8
 
         if ($row['tipe_pembayaran'] === 'Cash') {
-            $pdf->Cell(0, 10, 'Kembalian: Rp. ' . number_format($row['kembalian'], 0, ',', '.'), 0, 1);
+            $pdf->Cell(0, 8, 'Kembalian: Rp. ' . number_format($row['kembalian'], 0, ',', '.'), 0, 1); // Tinggi 8
         } else {
-            $pdf->Cell(0, 10, 'Kekurangan: Rp. ' . number_format($row['kekurangan'], 0, ',', '.'), 0, 1);
+            $pdf->Cell(0, 8, 'Kekurangan: Rp. ' . number_format($row['kekurangan'], 0, ',', '.'), 0, 1); // Tinggi 8
         }
 
         $pdf->Output('Invoice_' . date('Ymd', strtotime($row['tanggal'])) . '_' . str_replace(' ', '_', $row['nama_pelanggan']) . '.pdf', 'I');

@@ -33,7 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Simpan ke dalam tabel piutang jika ada kekurangan
         if ($kurangan > 0) {
             $query_piutang = "INSERT INTO piutang (id_transaksi, bayar, kurangan_hutang, tanggal, status)
-                  VALUES ('$id_transaksi', '$uang_diterima', '$kurangan', '$tgl_transaksi', 'Belum Lunas')";
+                              VALUES ('$id_transaksi', '$uang_diterima', '$kurangan', '$tgl_transaksi', 'Belum Lunas')";
             if (!mysqli_query($koneksi, $query_piutang)) {
                 echo "Error: " . $query_piutang . "<br>" . mysqli_error($koneksi);
             }
@@ -55,7 +55,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 // Simpan ke dalam tabel detail_transaksi
                 $query_detail_transaksi = "INSERT INTO detail_transaksi (id_transaksi, id_item, jenis_satuan, harga_satuan, jumlah_satuan, total)
-                                          VALUES ('$id_transaksi', '$id_item', '$jenis_satuan', '$harga_satuan', '$jumlah', '$total_harga_item')";
+                                           VALUES ('$id_transaksi', '$id_item', '$jenis_satuan', '$harga_satuan', '$jumlah', '$total_harga_item')";
                 
                 if (mysqli_query($koneksi, $query_detail_transaksi)) {
                     // Update stok berdasarkan jenis satuan
@@ -87,12 +87,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 }
             }
         }
+
+        // Redirect berdasarkan tipe pembayaran
+        if ($tipe_pembayaran === 'Cash') {
+            header("Location: print_invoice.php?id_transaksi=$id_transaksi");
+        } else if ($tipe_pembayaran === 'Kredit') {
+            header("Location: print_invoice_besar.php?id_transaksi=$id_transaksi");
+        }
     } else {
         echo "Error: " . $query_transaksi . "<br>" . mysqli_error($koneksi);
     }
 
-    // Tutup koneksi dan redirect
+    // Tutup koneksi
     mysqli_close($koneksi);
-    header("Location: riwayat.php");
 }
 ?>
