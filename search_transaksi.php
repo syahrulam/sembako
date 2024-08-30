@@ -65,9 +65,11 @@ if ($result) {
             }
 
             echo "<td>
-            <!-- Tombol aksi -->
-            <a class='btn btn-warning btn-sm px-4 mt-2' href='print_invoice.php?id_transaksi=" . $row['id_transaksi'] . "'>Print</a>";
-
+                                                                <!-- Tombol aksi -->
+                                                                <a class='btn btn-warning btn-sm px-4 mt-2' href='print_invoice.php?id_transaksi=" . $row['id_transaksi'] . "'>Nota Kecil</a>";
+                                                                echo "
+                                                                <!-- Tombol aksi -->
+                                                                <a class='btn btn-success btn-sm px-4 mt-2' href='print_invoice_besar.php?id_transaksi=" . $row['id_transaksi'] . "'>Nota Besar</a>";
             if ($_SESSION['role'] === 'Admin') {
                 echo "<a class='btn btn-danger btn-sm px-4 mt-2' href='hapus_transaksi.php?id_transaksi=" . $row['id_transaksi'] . "' onclick='return confirmDelete()'>Hapus</a>";
             }

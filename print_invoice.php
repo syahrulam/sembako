@@ -39,13 +39,11 @@ if (isset($_GET['id_transaksi'])) {
             WHERE 
                 detail_transaksi.id_transaksi = ?
         ";
-
         $detailStmt = $koneksi->prepare($detailQuery);
         $detailStmt->bind_param("s", $id_transaksi);
         $detailStmt->execute();
         $detailResult = $detailStmt->get_result();
 
-        // Membuat kelas PDF yang diperluas dari FPDF
         class PDF extends FPDF
         {
             function Header()
@@ -57,22 +55,16 @@ if (isset($_GET['id_transaksi'])) {
             }
         }
 
-        // Membuat instance PDF dan menambahkan halaman dengan ukuran 48mm x 210mm
         $pdf = new PDF();
         $pdf->AddPage('P', array(48, 210));
-
-        // Mengatur header untuk PDF
         header('Content-type: application/pdf');
         header('Content-Disposition: inline; filename="Invoice_' . date('Ymd', strtotime($row['tanggal'])) . '_' . str_replace(' ', '_', $row['nama_pelanggan']) . '.pdf"');
 
-        // Mengatur margin kiri dan kanan
         $pdf->SetLeftMargin(2); 
         $pdf->SetRightMargin(2);
-
-        // Menampilkan informasi transaksi di PDF
         $pdf->SetFont('Arial', 'B', 9);
         $pdf->Cell(0, 5, '', 0, 1);
-        $pdf->Cell(0, 5, 'Faktur Pembelian', 0, 1,);
+        $pdf->Cell(0, 5, 'Faktur Pembelian', 0, 1);
         $pdf->SetFont('Arial', '', 9);
         $pdf->Cell(0, 5, 'No_transaksi: ' . $row['no_transaksi'], 0, 1);
         $pdf->Cell(0, 5, 'Tanggal: ' . date('d F Y', strtotime($row['tanggal'])), 0, 1);
@@ -81,14 +73,22 @@ if (isset($_GET['id_transaksi'])) {
         $pdf->Cell(0, 5, 'Tipe Pembayaran: ' . $row['tipe_pembayaran'], 0, 1);
         $pdf->Ln(2);
 
-        // Jika ada detail transaksi, tampilkan dalam format teks
         if ($detailResult->num_rows > 0) {
             $pdf->SetFont('Arial', 'B', 9);
             $pdf->Cell(0, 5, 'Detail Item:', 0, 1);
             $pdf->SetFont('Arial', '', 9);
             while ($detailRow = $detailResult->fetch_assoc()) {
+                // Menentukan jenis satuan berdasarkan field jenis_satuan
+                if ($detailRow['jenis_satuan'] === 'Besar') {
+                    $jenis_satuan = $detailRow['jenis_satuan_besar'];
+                } elseif ($detailRow['jenis_satuan'] === 'Kecil') {
+                    $jenis_satuan = $detailRow['jenis_satuan_kecil'];
+                } else {
+                    $jenis_satuan = 'Unknown';
+                }
+
                 $itemLine = $detailRow['nama_item'] . 
-                            ' x ' . $detailRow['jumlah'] . 
+                            ' x ' . $detailRow['jumlah'] . ' ' . $jenis_satuan . // Menambahkan jenis_satuan
                             ' @ Rp.' . number_format($detailRow['harga_satuan'], 0, ',', '.') .
                             ' = Rp.' . number_format($detailRow['total'], 0, ',', '.');
                 $pdf->MultiCell(0, 5, $itemLine, 0, 'L');
@@ -114,6 +114,5 @@ if (isset($_GET['id_transaksi'])) {
     echo "Parameter id_transaksi tidak tersedia.";
 }
 
-// Menutup koneksi database
 $koneksi->close();
 ?>

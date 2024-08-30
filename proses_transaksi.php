@@ -93,6 +93,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Tutup koneksi dan redirect
     mysqli_close($koneksi);
-    header("Location: print_invoice.php?id_transaksi=" . $id_transaksi);
+    header("Location: riwayat.php");
 }
 ?>
