@@ -272,7 +272,7 @@ include('koneksi/config.php');
                 <div class="col-md-2">
                     <div class="form-group">
                         <label for="jumlah_${itemCounter}" class="text-dark">Jumlah</label>
-                        <input type="number" class="form-control jumlah" name="jumlah_${itemCounter}" id="jumlah_${itemCounter}" min="1" onchange="updateTotal(${itemCounter})" required />
+                        <input type="number" class="form-control jumlah" name="jumlah_${itemCounter}" id="jumlah_${itemCounter}" min="1" data-max-stok="0" onchange="updateTotal(${itemCounter})" required />
                     </div>
                 </div>
                 <div class="col-md-2">

@@ -176,39 +176,42 @@ $username = $_SESSION['username'];
                 }
 
                 function submitRestock(itemId) {
-                    var restockQuantity = document.getElementById('restockQuantity_' + itemId).value;
+    // Ambil nilai dari input restock
+    var restockQuantity = document.getElementById('restockQuantity_' + itemId).value;
 
-                    // Validasi input (misalnya, pastikan bahwa restockQuantity adalah angka positif)
-                    if (isNaN(restockQuantity) || restockQuantity <= 0) {
-                        alert('Jumlah restok harus angka positif.');
-                        return;
-                    }
+    // Validasi input
+    if (isNaN(restockQuantity) || restockQuantity <= 0) {
+        alert('Jumlah restok harus angka positif.');
+        return;
+    }
 
-                    // Kirim data restok ke server (Anda dapat menggunakan AJAX atau bentuk pengiriman data yang sesuai)
-                    // Misalnya, Anda dapat menggunakan fetch() atau jQuery.ajax() untuk mengirim data ke server.
-                    // Pastikan untuk mengatur endpoint yang sesuai di sisi server (contoh: restock_item.php).
-                    fetch('restock_item.php', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/x-www-form-urlencoded',
-                            },
-                            body: 'id_item=' + itemId + '&restock_quantity=' + restockQuantity,
-                        })
-                        .then(response => response.text())
-                        .then(data => {
-                            // Tampilkan pesan feedback dari server (misalnya, "Restok berhasil dilakukan.")
-                            alert(data);
-                            // Sembunyikan field restok setelah restok berhasil
-                            var restockField = document.getElementById('restockField_' + itemId);
-                            restockField.style.display = 'none';
-                            // Refresh halaman item
-                            window.location.reload();
-                        })
-                        .catch(error => {
-                            // Tangani kesalahan jika terjadi
-                            console.error('Error:', error);
-                        });
-                }
+    // Kirim data ke server menggunakan Fetch API
+    fetch('restock_item.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'id_item=' + encodeURIComponent(itemId) + '&restock_quantity=' + encodeURIComponent(restockQuantity),
+    })
+    .then(response => response.text())
+    .then(data => {
+        // Tampilkan hasil dari server
+        alert(data);
+
+        // Sembunyikan field input restock
+        var restockField = document.getElementById('restockField_' + itemId);
+        restockField.style.display = 'none';
+
+        // Segarkan halaman untuk memperbarui data
+        window.location.reload();
+    })
+    .catch(error => {
+        // Tangani kesalahan
+        console.error('Error:', error);
+    });
+}
+
+
             </script>
 
             <script>

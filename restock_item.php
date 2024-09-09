@@ -1,32 +1,58 @@
 <?php
-// Sertakan file koneksi
-include('koneksi/config.php');
+function submitRestock($itemId, $restockQuantity) {
+    include('koneksi/config.php');
 
-// Lakukan validasi input
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Pastikan data yang dibutuhkan ada
-    if (isset($_POST['id_item']) && isset($_POST['restock_quantity'])) {
-        // Tangkap nilai dari form
-        $id_item = $_POST['id_item'];
-        $restock_quantity = intval($_POST['restock_quantity']); // Konversi ke integer
+    // Validasi input
+    $itemId = intval($itemId);
+    $restockQuantity = floatval($restockQuantity);
 
-        // Pastikan jumlah restok tidak negatif
-        if ($restock_quantity > 0) {
-            // Lakukan query untuk memperbarui jumlah satuan
-            $sql = "UPDATE item SET jumlah_satuan_besar = jumlah_satuan_besar + $restock_quantity, 
-                    total_kulak = total_kulak + $restock_quantity,
-                    total_isi_satuan_kecil = jumlah_satuan_besar * jumlah_isi_satuan_besar
-                    WHERE id_item = $id_item";
+    // Ambil data item berdasarkan ID
+    $sql = "SELECT item.*, kategori.kategori FROM item 
+            INNER JOIN kategori ON item.kategori_id = kategori.id 
+            WHERE item.id_item = ?";
+    $stmt = $koneksi->prepare($sql);
+    $stmt->bind_param("i", $itemId);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-            if ($koneksi->query($sql) === TRUE) {
-                echo "Restok berhasil dilakukan.";
-            } else {
-                echo "Error: " . $sql . "<br>" . $koneksi->error;
-            }
-        } else {
-            echo "Jumlah restok harus lebih besar dari 0.";
-        }
-    } else {
-        echo "ID item dan jumlah restok harus disediakan.";
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+
+        // Menghitung stok baru untuk satuan besar
+        $stokBaru = $row['jumlah_satuan_besar'] + $restockQuantity;
+        
+        // Menghitung total isi satuan kecil yang baru
+        $totalIsiSatuanKecilBaru = $stokBaru * $row['jumlah_isi_satuan_besar'];
+
+        // Update stok di tabel item
+        $sqlUpdate = "UPDATE item 
+                      SET jumlah_satuan_besar = ?, 
+                          total_isi_satuan_kecil = ? 
+                      WHERE id_item = ?";
+        $stmtUpdate = $koneksi->prepare($sqlUpdate);
+        $stmtUpdate->bind_param("dii", $stokBaru, $totalIsiSatuanKecilBaru, $itemId);
+        $stmtUpdate->execute();
+
+        // Simpan riwayat restock di tabel restock
+        $sqlInsert = "INSERT INTO restock (id_item, kategori, tanggal, nama_item, stok_satuan_besar, isi_satuan_besar, totalnya, jumlah_restock) 
+                      VALUES (?, ?, NOW(), ?, ?, ?, ?, ?)";
+        $totalnya = $totalIsiSatuanKecilBaru; // Totalnya di sini diambil dari perhitungan sebelumnya
+        $stmtInsert = $koneksi->prepare($sqlInsert);
+        $stmtInsert->bind_param("issddii", $itemId, $row['kategori'], $row['nama_item'], $stokBaru, $row['jumlah_isi_satuan_besar'], $totalnya, $restockQuantity);
+        $stmtInsert->execute();
     }
+
+    $stmt->close();
+    $stmtUpdate->close();
+    $stmtInsert->close();
+    $koneksi->close();
 }
+
+// Proses data yang dikirim dari JavaScript
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $itemId = $_POST['id_item'];
+    $restockQuantity = $_POST['restock_quantity'];
+    submitRestock($itemId, $restockQuantity);
+    echo "Restock berhasil!";
+}
+?>
