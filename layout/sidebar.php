@@ -22,6 +22,7 @@ $imagePath = 'layout/logo-toko.png';
       <li class="menu-header">Master Items</li>
       <li><a class="nav-link" href="kategori.php"><i class="fa-solid fa-table-list"></i><span>Kategori</span></a></li>
       <li><a class="nav-link" href="item.php"><i class="fa-solid fa-mug-saucer"></i><span>Item</span></a></li>
+      <li><a class="nav-link" href="riwayat_restock.php"><i class="fa-solid fa-history"></i><span>Riwayat Restock</span></a></li>
       <li><a class="nav-link" href="item_terjual.php"><i class="fa-solid fa-check"></i><span>Item Terjual</span></a></li>
     <?php endif; ?>
 
