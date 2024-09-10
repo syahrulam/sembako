@@ -357,7 +357,7 @@ include('koneksi/config.php');
                         $('input[name="kembalian"]').val(parseInt(kembalian)); // Menghapus angka di belakang koma
                         $('input[name="kurangan"]').val(0); // Reset nilai kurangan menjadi 0
                     } else {
-                        $('input[name="kembalian"]').val("Uang Kurang");
+                        $('input[name="kembalian"]').val("Uang Kurang, Ingin Ubah Tipe Pembayaran?");
                         var kekurangan = harusDibayar - bayar;
                         $('input[name="kurangan"]').val(parseInt(kekurangan)); // Menghapus angka di belakang koma dan tampilkan kekurangan
                     }
@@ -367,7 +367,7 @@ include('koneksi/config.php');
                         $('input[name="kurangan"]').val(parseInt(kurangan)); // Menghapus angka di belakang koma dan tampilkan kekurangan
                         $('input[name="kembalian"]').val(0); // Reset nilai kembalian menjadi 0
                     } else {
-                        $('input[name="kurangan"]').val("Uang Lebih"); // Tampilkan Uang Lebih
+                        $('input[name="kurangan"]').val("Uang Lebih, Silahakan Ubah Tipe Pembayaran"); // Tampilkan Uang Lebih
                         $('input[name="kembalian"]').val(0); // Reset nilai kembalian menjadi 0
                     }
                 }
