@@ -565,7 +565,6 @@ function addItemToTable(itemContainer, index) {
             } else {
                 $('#kembalian').val('Uang Kurang');
             }
-<<<<<<< HEAD
         } else if (tipePembayaran === 'Kredit') {
             $('#kurangan').parent().show();
             $('#kembalian').parent().hide(); // Sembunyikan kolom kembalian
@@ -574,35 +573,6 @@ function addItemToTable(itemContainer, index) {
                 $('#kurangan').val(parseInt(kurangan));
             } else {
                 $('#kurangan').val('Uang Lebih');
-=======
-
-
-            function updatePembayaran() {
-                var tipePembayaran = $('select[name="tipe_pembayaran"]').val();
-                var bayar = parseFloat($('input[name="uang_diterima"]').val());
-                var harusDibayar = parseFloat($('#total_harus_dibayar').val());
-
-                if (tipePembayaran === 'Cash') {
-                    if (!isNaN(bayar) && bayar >= harusDibayar) {
-                        var kembalian = bayar - harusDibayar;
-                        $('input[name="kembalian"]').val(parseInt(kembalian)); // Menghapus angka di belakang koma
-                        $('input[name="kurangan"]').val(0); // Reset nilai kurangan menjadi 0
-                    } else {
-                        $('input[name="kembalian"]').val("Uang Kurang, Ingin Ubah Tipe Pembayaran?");
-                        var kekurangan = harusDibayar - bayar;
-                        $('input[name="kurangan"]').val(parseInt(kekurangan)); // Menghapus angka di belakang koma dan tampilkan kekurangan
-                    }
-                } else if (tipePembayaran === 'Kredit') {
-                    if (!isNaN(bayar) && bayar < harusDibayar) {
-                        var kurangan = harusDibayar - bayar;
-                        $('input[name="kurangan"]').val(parseInt(kurangan)); // Menghapus angka di belakang koma dan tampilkan kekurangan
-                        $('input[name="kembalian"]').val(0); // Reset nilai kembalian menjadi 0
-                    } else {
-                        $('input[name="kurangan"]').val("Uang Lebih, Silahakan Ubah Tipe Pembayaran"); // Tampilkan Uang Lebih
-                        $('input[name="kembalian"]').val(0); // Reset nilai kembalian menjadi 0
-                    }
-                }
->>>>>>> 741cbfd64e4617ecf859757b9a02d9ec31dd5ad6
             }
         }
     }
