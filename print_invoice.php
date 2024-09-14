@@ -27,9 +27,9 @@ if (isset($_GET['id_transaksi'])) {
                 item.nama_item,
                 item.jenis_satuan_besar,
                 item.jenis_satuan_kecil,
-                detail_transaksi.jumlah_satuan AS jumlah,
+                detail_transaksi.jumlah AS jumlah,
                 detail_transaksi.harga_satuan,
-                detail_transaksi.total
+                detail_transaksi.total_harga
             FROM 
                 detail_transaksi
             INNER JOIN 
@@ -90,7 +90,7 @@ if (isset($_GET['id_transaksi'])) {
                 $itemLine = $detailRow['nama_item'] . 
                             ' x ' . $detailRow['jumlah'] . ' ' . $jenis_satuan . // Menambahkan jenis_satuan
                             ' @ Rp.' . number_format($detailRow['harga_satuan'], 0, ',', '.') .
-                            ' = Rp.' . number_format($detailRow['total'], 0, ',', '.');
+                            ' = Rp.' . number_format($detailRow['total_harga'], 0, ',', '.');
                 $pdf->MultiCell(0, 5, $itemLine, 0, 'L');
             }
         }

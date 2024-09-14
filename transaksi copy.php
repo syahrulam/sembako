@@ -87,7 +87,7 @@ include('koneksi/config.php');
                                             <div class="row item-row item-container" id="item-1">
                                                 <div class="col-md-3">
                                                     <label for="nama_item_1" class="text-dark">Nama Item<span class='red'> *</span></label>
-                                                    <input class="form-control nama_item" type="text" name="nama_item_1"/>
+                                                    <input class="form-control nama_item" type="text" name="nama_item_1" required />
                                                     <input class="form-control id_item" type="text" name="id_item_1" style="display:none;" />
                                                     <div class="result"></div>
                                                 </div>
@@ -111,7 +111,7 @@ include('koneksi/config.php');
                                                 <div class="col-md-2">
                                                     <div class="form-group">
                                                         <label for="jumlah_1" class="text-dark">Jumlah</label>
-                                                        <input type="number" class="form-control jumlah" name="jumlah_1" id="jumlah_1" min="1" />
+                                                        <input type="number" class="form-control jumlah" name="jumlah_1" id="jumlah_1" min="1" required />
                                                     </div>
                                                 </div>
 
@@ -458,39 +458,35 @@ function calculateTotalPrice(itemContainer) {
         }
     });
 
-// Fungsi untuk menambahkan item ke tabel
-function addItemToTable(itemContainer, index) {
-    let idItem = itemContainer.find('.id_item').val();          // ID item
-    let namaItem = itemContainer.find('.nama_item').val();      // Nama item
-    let jenisSatuan = itemContainer.find('.jenis_satuan').val();  // Jenis satuan
-    let hargaSatuan = itemContainer.find('.harga_satuan').val();  // Harga satuan
-    let jumlah = itemContainer.find('.jumlah').val();           // Jumlah
-    let totalHarga = itemContainer.find('.total_harga').val();  // Total harga
+    // Fungsi untuk menambahkan item ke tabel
+    function addItemToTable(itemContainer) {
+        let namaItem = itemContainer.find(".nama_item").val();
+        let jenisSatuan = itemContainer.find(".jenis_satuan").val();
+        let hargaSatuan = itemContainer.find(".harga_satuan").val();
+        let jumlah = itemContainer.find(".jumlah").val();
+        let totalHarga = itemContainer.find(".total_harga").val();
 
-    // Buat baris baru dengan input array untuk mengirimkan ke PHP
-    let newRow = `<tr data-id-item="${idItem}" data-jumlah="${jumlah}" data-jenis-satuan="${jenisSatuan}">
-        <td><input type="hidden" name="items[${index}][id_item]" value="${idItem}" />${namaItem}</td>
-        <td><input type="hidden" name="items[${index}][jenis_satuan]" value="${jenisSatuan}" />${jenisSatuan}</td>
-        <td><input type="hidden" name="items[${index}][harga_satuan]" value="${hargaSatuan}" />${hargaSatuan}</td>
-        <td><input type="hidden" name="items[${index}][jumlah]" value="${jumlah}" />${jumlah}</td>
-        <td><input type="hidden" name="items[${index}][total_harga]" value="${totalHarga}" />${totalHarga}</td>
-        <td><button class="btn btn-danger btn-sm remove-item-table">Hapus</button></td>
-    </tr>`;
+        let newRow = `<tr data-id-item="${itemContainer.find('.id_item').val()}" data-jumlah="${jumlah}" data-jenis-satuan="${jenisSatuan}">
+            <td>${namaItem}</td>
+            <td>${jenisSatuan}</td>
+            <td>${hargaSatuan}</td>
+            <td>${jumlah}</td>
+            <td>${totalHarga}</td>
+            <td><button class="btn btn-danger btn-sm remove-item-table">Hapus</button></td>
+        </tr>`;
 
-    // Tambahkan baris baru ke dalam tabel
-    $('#itemTable tbody').append(newRow);
+        $('#itemTable tbody').append(newRow);
 
-    // Kosongkan input setelah item ditambahkan ke tabel
-    itemContainer.find('.nama_item').val('');
-    itemContainer.find('.jenis_satuan').val('');
-    itemContainer.find('.harga_satuan').val('');
-    itemContainer.find('.jumlah').val('');
-    itemContainer.find('.total_harga').val('');
+        // Kosongkan input setelah item ditambahkan ke tabel
+        itemContainer.find(".nama_item").val('');
+        itemContainer.find(".jenis_satuan").val('');
+        itemContainer.find(".harga_satuan").val('');
+        itemContainer.find(".jumlah").val('');
+        itemContainer.find(".total_harga").val('');
 
-    // Update total harga setelah item ditambahkan
-    updateTotalHarga();
-}
-
+        // Update total harga setelah item ditambahkan
+        updateTotalHarga();
+    }
 
     // Event listener untuk menghapus item dari tabel
     $(document).on('click', '.remove-item-table', function () {

@@ -27,9 +27,9 @@ if (isset($_GET['id_transaksi'])) {
                 item.nama_item,
                 item.jenis_satuan_besar,
                 item.jenis_satuan_kecil,
-                detail_transaksi.jumlah_satuan AS jumlah,
+                detail_transaksi.jumlah AS jumlah,
                 detail_transaksi.harga_satuan,
-                detail_transaksi.total
+                detail_transaksi.total_harga
             FROM 
                 detail_transaksi
             INNER JOIN 
@@ -96,7 +96,7 @@ if (isset($_GET['id_transaksi'])) {
             $pdf->Cell(15, 8, 'Jumlah', 1); // Tinggi 8
             $pdf->Cell(15, 8, 'Satuan', 1); // Tinggi 8
             $pdf->Cell(40, 8, 'Harga Satuan', 1); // Tinggi 8
-            $pdf->Cell(60, 8, 'Total', 1); // Tinggi 8
+            $pdf->Cell(60, 8, 'total_harga', 1); // Tinggi 8
             $pdf->Ln();
 
             $pdf->SetFont('Arial', '', 10);
@@ -110,7 +110,7 @@ if (isset($_GET['id_transaksi'])) {
                 $pdf->Cell(15, 6, $detailRow['jumlah'], 1); // Tinggi 6
                 $pdf->Cell(15, 6, $satuan, 1); // Tinggi 6
                 $pdf->Cell(40, 6, 'Rp. ' . number_format($detailRow['harga_satuan'], 0, ',', '.'), 1); // Tinggi 6
-                $pdf->Cell(60, 6, 'Rp. ' . number_format($detailRow['total'], 0, ',', '.'), 1); // Tinggi 6
+                $pdf->Cell(60, 6, 'Rp. ' . number_format($detailRow['total_harga'], 0, ',', '.'), 1); // Tinggi 6
                 $pdf->Ln();
             }
         }
