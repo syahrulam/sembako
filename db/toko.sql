@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 14, 2024 at 12:59 PM
+-- Generation Time: Sep 15, 2024 at 06:18 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -50,16 +50,6 @@ CREATE TABLE `detail_transaksi` (
   `total_harga` int(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `detail_transaksi`
---
-
-INSERT INTO `detail_transaksi` (`id_detail_transaksi`, `id_transaksi`, `id_item`, `jenis_satuan`, `harga_satuan`, `jumlah`, `total_harga`) VALUES
-(40, '31', 1, '', 0, 0, 0),
-(41, '32', 1, '', 0, 0, 0),
-(42, '33', 2, '', 0, 0, 0),
-(43, '37', 2, 'Besar', 45000, 1, 45000);
-
 -- --------------------------------------------------------
 
 --
@@ -87,14 +77,6 @@ CREATE TABLE `item` (
   `tanggal` date NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `item`
---
-
-INSERT INTO `item` (`id_item`, `kategori_id`, `nama_item`, `jenis_satuan_besar`, `jenis_satuan_kecil`, `jumlah_satuan_besar`, `jumlah_isi_satuan_besar`, `total_isi_satuan_kecil`, `harga_satuan_kulak`, `total_harga_kulak`, `harga_jual_satuan_besar1`, `harga_jual_satuan_besar2`, `harga_jual_satuan_besar3`, `harga_jual_satuan_kecil1`, `harga_jual_satuan_kecil2`, `harga_jual_satuan_kecil3`, `total_kulak`, `tanggal`) VALUES
-(1, 1, 'Teh Pucuk', 'Dus', 'Botol', 51.16, 100, 5116, 50000, 2500000, 50000, 51000, 52000, 5000, 5100, 5200, 50, '2024-05-02'),
-(2, 1, 'Lee Mineral ', 'Dus', 'Botol', 0.50, 10, 5, 40000, 2000000, 45000, 50000, 55000, 3000, 3500, 4000, 77, '2024-05-03');
-
 -- --------------------------------------------------------
 
 --
@@ -105,13 +87,6 @@ CREATE TABLE `kategori` (
   `id` int(11) NOT NULL,
   `kategori` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `kategori`
---
-
-INSERT INTO `kategori` (`id`, `kategori`) VALUES
-(1, 'Minuman');
 
 -- --------------------------------------------------------
 
@@ -126,6 +101,7 @@ CREATE TABLE `opname` (
   `balance` varchar(255) NOT NULL,
   `balance_small` varchar(225) NOT NULL,
   `keterangan` varchar(255) NOT NULL,
+  `jenis_pengecekan` varchar(100) NOT NULL,
   `tanggal` date DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -142,18 +118,6 @@ CREATE TABLE `pelanggan` (
   `nomor` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `pelanggan`
---
-
-INSERT INTO `pelanggan` (`id`, `nama`, `alamat`, `nomor`) VALUES
-(1, 'adi', 'Jl Mawar', '087234723468'),
-(2, 'azky', 'Jl Melati', '085675756555'),
-(3, 'Budi', 'jl sultan agung', '087234234433'),
-(4, 'Toni', 'Jl Mangga', '087234234433'),
-(5, 'Yudi', 'Jl Duren', '087234234411'),
-(6, 'Dini', 'Jl Cempaka', '087234234123');
-
 -- --------------------------------------------------------
 
 --
@@ -168,19 +132,6 @@ CREATE TABLE `piutang` (
   `tanggal` date DEFAULT NULL,
   `status` varchar(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `piutang`
---
-
-INSERT INTO `piutang` (`id_piutang`, `id_transaksi`, `bayar`, `kurangan_hutang`, `tanggal`, `status`) VALUES
-(24, 31, 10000, 85000, '2024-09-14', 'Belum Lunas'),
-(25, 32, 10000, 85000, '2024-09-14', 'Belum Lunas'),
-(26, 33, 1, 44999, '2024-09-14', 'Belum Lunas'),
-(27, 34, 8000, 40000, '2024-09-14', 'Belum Lunas'),
-(28, 35, 5000, 40000, '2024-09-14', 'Belum Lunas'),
-(29, 36, 3, 49997, '2024-09-14', 'Belum Lunas'),
-(30, 37, 1, 44999, '2024-09-14', 'Belum Lunas');
 
 -- --------------------------------------------------------
 
@@ -200,23 +151,6 @@ CREATE TABLE `restock` (
   `totalnya` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `restock`
---
-
-INSERT INTO `restock` (`id_restock`, `id_item`, `jumlah_restock`, `kategori`, `tanggal`, `nama_item`, `stok_satuan_besar`, `isi_satuan_besar`, `totalnya`) VALUES
-(1, 2, 0, 'Minuman', '2024-09-10', 'Lee Mineral ', 15.00, 10, 150),
-(2, 2, 0, 'Minuman', '2024-09-10', 'Lee Mineral ', 1015.00, 10, 10150),
-(3, 2, 0, 'Minuman', '2024-09-10', 'Lee Mineral ', 1025.00, 10, 10250),
-(4, 2, 0, 'Minuman', '2024-09-10', 'Lee Mineral ', 1000.00, 10, 10000),
-(5, 1, 0, 'Minuman', '2024-09-10', 'Teh Pucuk', 46.16, 100, 4616),
-(6, 2, 10, 'Minuman', '2024-09-10', 'Lee Mineral ', 1020.00, 10, 10200),
-(7, 2, 10, 'Minuman', '2024-09-10', 'Lee Mineral ', 1010.00, 10, 10100),
-(8, 2, 10, 'Minuman', '2024-09-14', 'Lee Mineral ', 10.00, 10, 100),
-(9, 2, 9, 'Minuman', '2024-09-14', 'Lee Mineral ', 10.00, 10, 100),
-(10, 2, 9, 'Minuman', '2024-09-14', 'Lee Mineral ', 10.00, 10, 100),
-(11, 2, 10, 'Minuman', '2024-09-14', 'Lee Mineral ', 10.10, 10, 101);
-
 -- --------------------------------------------------------
 
 --
@@ -229,13 +163,6 @@ CREATE TABLE `sales` (
   `nomor` varchar(13) NOT NULL,
   `alamat` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `sales`
---
-
-INSERT INTO `sales` (`id`, `nama`, `nomor`, `alamat`) VALUES
-(1, 'Anwar', '087234723468', 'Jl Mawar');
 
 -- --------------------------------------------------------
 
@@ -255,19 +182,6 @@ CREATE TABLE `transaksi` (
   `kekurangan` varchar(100) DEFAULT NULL,
   `sales` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `transaksi`
---
-
-INSERT INTO `transaksi` (`id_transaksi`, `no_transaksi`, `tanggal`, `nama_pelanggan`, `total_harga`, `total_bayar`, `kembalian`, `tipe_pembayaran`, `kekurangan`, `sales`) VALUES
-(31, 'TR16676961', '2024-09-14', 'adi', 95000, 10000, 0, 'Kredit', '85000', 'Anwar'),
-(32, 'TR17149905', '2024-09-14', 'adi', 95000, 10000, 0, 'Kredit', '85000', 'Anwar'),
-(33, 'TR17317387', '2024-09-14', 'adi', 45000, 1, 0, 'Kredit', '44999', 'Anwar'),
-(34, 'TR20544542', '2024-09-14', 'adi', 48000, 8000, 2000, 'Kredit', '40000', 'Anwar'),
-(35, 'TR66124104', '2024-09-14', 'adi', 45000, 5000, 0, 'Kredit', '40000', 'Anwar'),
-(36, 'TR18027048', '2024-09-14', 'adi', 50000, 3, 0, 'Kredit', '49997', 'Anwar'),
-(37, 'TR12617535', '2024-09-14', 'adi', 45000, 1, 0, 'Kredit', '44999', 'Anwar');
 
 -- --------------------------------------------------------
 
@@ -371,61 +285,61 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `cicilan_piutang`
 --
 ALTER TABLE `cicilan_piutang`
-  MODIFY `id_cicilan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_cicilan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `detail_transaksi`
 --
 ALTER TABLE `detail_transaksi`
-  MODIFY `id_detail_transaksi` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
+  MODIFY `id_detail_transaksi` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT for table `item`
 --
 ALTER TABLE `item`
-  MODIFY `id_item` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_item` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `kategori`
 --
 ALTER TABLE `kategori`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `opname`
 --
 ALTER TABLE `opname`
-  MODIFY `id_opname` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_opname` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `pelanggan`
 --
 ALTER TABLE `pelanggan`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `piutang`
 --
 ALTER TABLE `piutang`
-  MODIFY `id_piutang` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `id_piutang` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
 
 --
 -- AUTO_INCREMENT for table `restock`
 --
 ALTER TABLE `restock`
-  MODIFY `id_restock` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id_restock` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `sales`
 --
 ALTER TABLE `sales`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `transaksi`
 --
 ALTER TABLE `transaksi`
-  MODIFY `id_transaksi` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
+  MODIFY `id_transaksi` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
 
 --
 -- AUTO_INCREMENT for table `users`
