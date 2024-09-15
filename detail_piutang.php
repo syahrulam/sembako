@@ -1,6 +1,6 @@
-<?php include('layout/head.php'); ?>
 <?php
 session_start();
+include('layout/head.php');
 
 // Periksa apakah pengguna sudah login
 if (!isset($_SESSION['username'])) {
@@ -8,14 +8,12 @@ if (!isset($_SESSION['username'])) {
     exit();
 }
 
-// Menggunakan tanda == untuk perbandingan dalam query SQL
 include('koneksi/config.php');
 
 // Ambil ID pelanggan dari URL
 $id_pelanggan = $_GET['id'];
 
 // Query untuk mengambil transaksi berdasarkan ID pelanggan
-// Menggunakan ORDER BY untuk mendapatkan data terbaru
 $query = "SELECT
             t.id_transaksi,
             t.no_transaksi,
@@ -28,14 +26,13 @@ $query = "SELECT
             JOIN piutang p ON t.id_transaksi = p.id_transaksi
           WHERE
             t.nama_pelanggan = ?
-            AND t.kekurangan > 0"; // Hanya mengambil data transaksi dengan kekurangan
+            AND t.kekurangan > 0";
 
 $stmt = mysqli_prepare($koneksi, $query);
 mysqli_stmt_bind_param($stmt, "s", $id_pelanggan);
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 
-// Variabel untuk menyimpan nomor urut
 $no = 1;
 ?>
 
@@ -50,18 +47,16 @@ $no = 1;
                 <?php include('layout/sidebar.php'); ?>
             </div>
 
-            <!-- Bagian Utama -->
             <div class="main-content">
                 <section class="section">
                     <div class="row">
                         <div class="col-lg-12 col-md-12 col-sm-12">
-                            <!-- Tabel Detail Piutang -->
                             <div class="card mt-4"><br>
                                 <div class="col-12">
                                     <a href="javascript:history.go(-1)" class="btn btn-primary">Kembali</a>
                                 </div>
                                 <div class="card-header">
-                                    <h4>Detail Piutang = <?php echo $id_pelanggan; ?>
+                                    <h4>Detail Piutang = <?php echo $id_pelanggan; ?></h4>
                                 </div>
                                 <div class="card-body">
                                     <div class="table-responsive">
@@ -83,27 +78,19 @@ $no = 1;
                                                         <td><?php echo $row['tanggal']; ?></td>
                                                         <td><?php echo 'Rp. ' . number_format($row['kurangan_hutang'], 0, ',', '.'); ?></td>
                                                         <td>
-                                                            <?php if ($row['kurangan_hutang'] == 0) : ?>
-                                                            <span style="color: green;">Hutang Lunas</span>
-                                                            <?php else : ?>
-                                                                <button type="button" class="btn btn-primary btn-bayar-cicilan" data-toggle="modal" data-target="#bayarCicilanModal" data-id="<?php echo $row['id_transaksi']; ?>">Bayar Cicilan</button>
-                                                            <?php endif; ?>
+                                                            <button type="button" class="btn btn-primary btn-bayar-cicilan" data-toggle="modal" data-target="#bayarCicilanModal" data-id="<?php echo $row['id_transaksi']; ?>" data-hutang="<?php echo $row['kurangan_hutang']; ?>">Bayar Cicilan</button>
                                                         </td>
                                                     </tr>
                                                 <?php endwhile; ?>
                                             </tbody>
                                         </table>
-
                                     </div>
                                 </div>
                             </div>
-                            <!-- End Tabel Detail Piutang -->
-
                         </div>
                     </div>
                 </section>
             </div>
-            <!-- End Bagian Utama -->
 
             <!-- Modal Bayar Cicilan -->
             <div class="modal fade" id="bayarCicilanModal" tabindex="-1" role="dialog" aria-labelledby="bayarCicilanModalLabel" aria-hidden="true">
@@ -121,11 +108,11 @@ $no = 1;
                                     <label for="cicilan">Jumlah Pembayaran:</label>
                                     <!-- Hidden input untuk ID transaksi -->
                                     <input type="hidden" class="form-control" id="id_transaksi" name="id_transaksi">
+                                    <input type="hidden" class="form-control" id="kurangan_hutang" name="kurangan_hutang">
                                     <input type="text" class="form-control" id="cicilan" name="cicilan" placeholder="Jumlah Cicilan (Rp)" required>
                                 </div>
                                 <button type="submit" class="btn btn-primary">Bayar Cicilan</button>
                             </form>
-
                         </div>
                     </div>
                 </div>
@@ -139,12 +126,23 @@ $no = 1;
             $(document).ready(function() {
                 $('.btn-bayar-cicilan').click(function() {
                     var id_transaksi = $(this).data('id');
+                    var kurangan_hutang = $(this).data('hutang');
+                    
                     $('#id_transaksi').val(id_transaksi);
+                    $('#kurangan_hutang').val(kurangan_hutang);
+                });
+
+                $('#formBayarCicilan').submit(function(e) {
+                    var cicilan = parseInt($('#cicilan').val());
+                    var kurangan_hutang = parseInt($('#kurangan_hutang').val());
+
+                    if (cicilan > kurangan_hutang) {
+                        e.preventDefault();
+                        alert("Tidak boleh melebihi Hutang");
+                    }
                 });
             });
         </script>
-
-
     </div>
 </body>
 

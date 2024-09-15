@@ -28,7 +28,7 @@ $query = "
     SELECT 
         detail_transaksi.*, 
         item.*, 
-        detail_transaksi.jumlah_satuan AS jumlah,
+        detail_transaksi.jumlah AS jumlah,
         item.jenis_satuan_besar,
         item.jenis_satuan_kecil
     FROM 
@@ -101,7 +101,7 @@ $result = $koneksi->query($query);
                                             
                                             echo "<td>{$data['jumlah']}</td>";
                                             echo "<td>Rp." . number_format($data['harga_satuan'], 0, ',', '.') . "</td>";
-                                            echo "<td>Rp." . number_format($data['total'], 0, ',', '.') . "</td>";
+                                            echo "<td>Rp." . number_format($data['total_harga'], 0, ',', '.') . "</td>";
                                             echo "</tr>";
                                         }
                                     } else {

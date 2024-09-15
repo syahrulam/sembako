@@ -13,7 +13,7 @@ if (!isset($_SESSION['username'])) {
     exit();
 }
 // Ambil data dari tabel opname
-$query_opname = "SELECT opname.id_opname, opname.tanggal, item.nama_item, item.total_isi_satuan_kecil, opname.stok_opname, opname.balance, opname.balance_small, opname.keterangan, item.jenis_satuan_kecil, item.jenis_satuan_besar
+$query_opname = "SELECT opname.id_opname, opname.tanggal, item.nama_item, item.total_isi_satuan_kecil, opname.stok_opname, opname.balance, opname.balance_small, opname.keterangan, item.jenis_satuan_kecil, item.jenis_satuan_besar, opname.jenis_pengecekan
                  FROM opname
                  INNER JOIN item ON opname.id_item = item.id_item";
 
@@ -22,7 +22,6 @@ $result_opname = $koneksi->query($query_opname);
 // Ambil username dari sesi
 $username = $_SESSION['username'];
 ?>
-
 <?php include('layout/head.php'); ?>
 
 <body>
@@ -108,8 +107,8 @@ $username = $_SESSION['username'];
                                                         <th>No</th>
                                                         <th>Tanggal</th>
                                                         <th>Nama Item</th>
-                                                        <th>Total Jumlah Fisik Satuan Kecil</th>
-                                                        <th>Balance Satuan Besar</th>
+                                                        <th>Total Pengecekan</th>
+                                                        <th>Balance Satuan Besar (Fisik)</th>
                                                         <th>Balance Satuan Kecil</th>
                                                         <th>Keterangan</th>
                                                         <th>Aksi</th>
@@ -124,11 +123,17 @@ $username = $_SESSION['username'];
                                                             echo "<td>" . $no++ . "</td>";
 
                                                             // Mengubah format tanggal dari "tahun-bulan-hari" menjadi "hari-bulan-tahun"
-
-                                                            echo "<td>" . date('d F Y', strtotime($row_opname['tanggal'])) . "</td>"; // Menampilkan tanggal dengan format "hari-bulan-tahun"
+                                                            echo "<td>" . date('d F Y', strtotime($row_opname['tanggal'])) . "</td>"; 
 
                                                             echo "<td>" . $row_opname['nama_item'] . "</td>";
-                                                            echo "<td>" . $row_opname['stok_opname'] . " " . $row_opname['jenis_satuan_kecil'] . "</td>";
+
+                                                            // Cek jenis pengecekan untuk menampilkan satuan besar atau kecil
+                                                            if ($row_opname['jenis_pengecekan'] == "besar") {
+                                                                echo "<td>" . $row_opname['stok_opname'] . " " . $row_opname['jenis_satuan_besar'] . "</td>";
+                                                            } else {
+                                                                echo "<td>" . $row_opname['stok_opname'] . " " . $row_opname['jenis_satuan_kecil'] . "</td>";
+                                                            }
+
                                                             echo "<td>" . $row_opname['balance'] . " (" . $row_opname['jenis_satuan_besar'] . ")" . "</td>";
                                                             echo "<td>" . $row_opname['balance_small'] . " (" . $row_opname['jenis_satuan_kecil'] . ")" . "</td>";
                                                             echo "<td><input type='text' name='keterangan_" . $row_opname['id_opname'] . "' value='" . $row_opname['keterangan'] . "'></td>";

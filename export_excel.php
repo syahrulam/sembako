@@ -14,7 +14,7 @@ if (isset($_POST['export'])) {
         list($tahunAkhir, $bulanAkhir) = explode('-', $bulanTahunAkhir);
 
         // Query untuk mengambil data transaksi berdasarkan rentang bulan dan tahun
-        $query = "SELECT transaksi.*, detail_transaksi.*, item.*, detail_transaksi.jumlah_satuan as jumlah
+        $query = "SELECT transaksi.*, detail_transaksi.*, item.*, detail_transaksi.jumlah as jumlah
                     FROM transaksi
                     INNER JOIN detail_transaksi ON transaksi.id_transaksi = detail_transaksi.id_transaksi
                     INNER JOIN item ON detail_transaksi.id_item = item.id_item
@@ -39,7 +39,7 @@ if (isset($_POST['export'])) {
             while ($row = $result->fetch_assoc()) {
                 // Ubah format tanggal menjadi yyyy-mm-dd
                 $tanggal_excel = date('Y-m-d', strtotime($row['tanggal']));
-                echo $row['no_transaksi']."\t".$tanggal_excel."\t".$row['nama_pelanggan']."\t".$row['nama_item']."\t".$row['jenis_satuan']."\t".$row['jumlah']."\t"."Rp. ".number_format($row['harga_satuan'], 0, ',', '.')."\t"."Rp. ".number_format($row['total'], 0, ',', '.')."\n";
+                echo $row['no_transaksi']."\t".$tanggal_excel."\t".$row['nama_pelanggan']."\t".$row['nama_item']."\t".$row['jenis_satuan']."\t".$row['jumlah']."\t"."Rp. ".number_format($row['harga_satuan'], 0, ',', '.')."\t"."Rp. ".number_format($row['total_harga'], 0, ',', '.')."\n";
             }
         } else {
             echo "Tidak ada data yang ditemukan.";

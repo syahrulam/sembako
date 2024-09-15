@@ -11,7 +11,6 @@ if (isset($_GET['id_transaksi'])) {
 
     // Query untuk mengambil data transaksi berdasarkan id_transaksi
     $query = "SELECT * FROM transaksi WHERE id_transaksi = ?";
-
     $stmt = $koneksi->prepare($query);
     $stmt->bind_param("s", $id_transaksi);
     $stmt->execute();
@@ -37,8 +36,7 @@ if (isset($_GET['id_transaksi'])) {
             ON 
                 detail_transaksi.id_item = item.id_item
             WHERE 
-                detail_transaksi.id_transaksi = ?
-        ";
+                detail_transaksi.id_transaksi = ?";
         $detailStmt = $koneksi->prepare($detailQuery);
         $detailStmt->bind_param("s", $id_transaksi);
         $detailStmt->execute();
@@ -48,10 +46,10 @@ if (isset($_GET['id_transaksi'])) {
         {
             function Header()
             {
-                $imagePath = 'layout/logo-toko.png';
+                $imagePath = 'layout/toko-logo.png';
                 $this->Image($imagePath, 4, 4, 40); // Sesuaikan ukuran gambar agar sesuai dengan lebar kertas
                 $this->SetFont('Arial', 'B', 7);
-                $this->Ln(5); // Sesuaikan posisi vertikal setelah logo
+                $this->Ln(2); // Sesuaikan posisi vertikal setelah logo
             }
         }
 
@@ -62,21 +60,21 @@ if (isset($_GET['id_transaksi'])) {
 
         $pdf->SetLeftMargin(2); 
         $pdf->SetRightMargin(2);
-        $pdf->SetFont('Arial', 'B', 9);
-        $pdf->Cell(0, 5, '', 0, 1);
-        $pdf->Cell(0, 5, 'Faktur Pembelian', 0, 1);
-        $pdf->SetFont('Arial', '', 9);
-        $pdf->Cell(0, 5, 'No_transaksi: ' . $row['no_transaksi'], 0, 1);
-        $pdf->Cell(0, 5, 'Tanggal: ' . date('d F Y', strtotime($row['tanggal'])), 0, 1);
-        $pdf->Cell(0, 5, 'Nama Pelanggan: ' . ucwords($row['nama_pelanggan']), 0, 1);
-        $pdf->Cell(0, 5, 'Sales: ' . $row['sales'], 0, 1);
-        $pdf->Cell(0, 5, 'Tipe Pembayaran: ' . $row['tipe_pembayaran'], 0, 1);
-        $pdf->Ln(2);
+        $pdf->SetFont('Arial', 'B', 8);
+        $pdf->Cell(0, 4, '', 0, 1);
+        $pdf->Cell(0, 4, 'Faktur Pembelian', 0, 1);
+        $pdf->SetFont('Arial', '', 8);
+        $pdf->Cell(0, 4, 'No_transaksi: ' . $row['no_transaksi'], 0, 1);
+        $pdf->Cell(0, 4, 'Tanggal: ' . date('d F Y', strtotime($row['tanggal'])), 0, 1);
+        $pdf->Cell(0, 4, 'Nama Pelanggan: ' . ucwords($row['nama_pelanggan']), 0, 1);
+        $pdf->Cell(0, 4, 'Sales: ' . $row['sales'], 0, 1);
+        $pdf->Cell(0, 4, 'Tipe Pembayaran: ' . $row['tipe_pembayaran'], 0, 1);
+        $pdf->Ln(1);
 
         if ($detailResult->num_rows > 0) {
-            $pdf->SetFont('Arial', 'B', 9);
-            $pdf->Cell(0, 5, 'Detail Item:', 0, 1);
-            $pdf->SetFont('Arial', '', 9);
+            $pdf->SetFont('Arial', 'B', 8);
+            $pdf->Cell(0, 4, 'Detail Item:', 0, 1);
+            $pdf->SetFont('Arial', '', 8);
             while ($detailRow = $detailResult->fetch_assoc()) {
                 // Menentukan jenis satuan berdasarkan field jenis_satuan
                 if ($detailRow['jenis_satuan'] === 'Besar') {
@@ -91,19 +89,19 @@ if (isset($_GET['id_transaksi'])) {
                             ' x ' . $detailRow['jumlah'] . ' ' . $jenis_satuan . // Menambahkan jenis_satuan
                             ' @ Rp.' . number_format($detailRow['harga_satuan'], 0, ',', '.') .
                             ' = Rp.' . number_format($detailRow['total_harga'], 0, ',', '.');
-                $pdf->MultiCell(0, 5, $itemLine, 0, 'L');
+                $pdf->MultiCell(0, 4, $itemLine, 0, 'L');
             }
         }
 
-        $pdf->Ln(2);
-        $pdf->SetFont('Arial', 'B', 9);
-        $pdf->Cell(0, 5, 'Total Harga: Rp.' . number_format($row['total_harga'], 0, ',', '.'), 0, 1);
-        $pdf->Cell(0, 5, 'Bayar: Rp.' . number_format($row['total_bayar'], 0, ',', '.'), 0, 1);
+        $pdf->Ln(1);
+        $pdf->SetFont('Arial', 'B', 8);
+        $pdf->Cell(0, 4, 'Total Harga: Rp.' . number_format($row['total_harga'], 0, ',', '.'), 0, 1);
+        $pdf->Cell(0, 4, 'Bayar: Rp.' . number_format($row['total_bayar'], 0, ',', '.'), 0, 1);
 
         if ($row['tipe_pembayaran'] === 'Cash') {
-            $pdf->Cell(0, 5, 'Kembalian: Rp.' . number_format($row['kembalian'], 0, ',', '.'), 0, 1);
+            $pdf->Cell(0, 4, 'Kembalian: Rp.' . number_format($row['kembalian'], 0, ',', '.'), 0, 1);
         } else {
-            $pdf->Cell(0, 5, 'Kekurangan: Rp.' . number_format($row['kekurangan'], 0, ',', '.'), 0, 1);
+            $pdf->Cell(0, 4, 'Kekurangan: Rp.' . number_format($row['kekurangan'], 0, ',', '.'), 0, 1);
         }
 
         $pdf->Output('Invoice_' . date('Ymd', strtotime($row['tanggal'])) . '_' . str_replace(' ', '_', $row['nama_pelanggan']) . '.pdf', 'I');

@@ -61,9 +61,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Redirect setelah transaksi berhasil
         if ($tipe_pembayaran === 'Cash') {
             header("Location: print_invoice.php?id_transaksi=$id_transaksi");
+            exit(); // Pastikan untuk menghentikan eksekusi setelah header Location
         } else if ($tipe_pembayaran === 'Kredit') {
             header("Location: print_invoice_besar.php?id_transaksi=$id_transaksi");
+            exit(); // Pastikan untuk menghentikan eksekusi setelah header Location
         }
+        
     } else {
         echo "Error: " . $query_transaksi . "<br>" . mysqli_error($koneksi);
     }

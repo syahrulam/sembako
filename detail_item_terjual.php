@@ -17,7 +17,7 @@ $sql = "SELECT
             trans.nama_pelanggan,
             item.nama_item,
             det.jenis_satuan,
-            det.jumlah_satuan,
+            det.jumlah,
             item.jumlah_isi_satuan_besar
         FROM 
             detail_transaksi AS det
@@ -46,11 +46,11 @@ while ($row = $result->fetch_assoc()) {
     }
 
     if ($row['jenis_satuan'] == 'Besar') {
-        $details[$key]['total_besar'] += $row['jumlah_satuan'];
-        $details[$key]['total_akumulasi_kecil'] += $row['jumlah_satuan'] * $row['jumlah_isi_satuan_besar'];
+        $details[$key]['total_besar'] += $row['jumlah'];
+        $details[$key]['total_akumulasi_kecil'] += $row['jumlah'] * $row['jumlah_isi_satuan_besar'];
     } else {
-        $details[$key]['total_kecil'] += $row['jumlah_satuan'];
-        $details[$key]['total_akumulasi_kecil'] += $row['jumlah_satuan'];
+        $details[$key]['total_kecil'] += $row['jumlah'];
+        $details[$key]['total_akumulasi_kecil'] += $row['jumlah'];
     }
 }
 ?>
@@ -72,7 +72,6 @@ while ($row = $result->fetch_assoc()) {
                     <section class="section">
                         <div class="row">
                             <div class="col-lg-12 col-md-12 col-sm-12">
-
                                 <!-- Tabel Detail Item Terjual -->
                                 <div class="card mt-4">
                                     <div class="card-header">
@@ -80,7 +79,7 @@ while ($row = $result->fetch_assoc()) {
                                     </div>
                                     <div class="card-body">
                                         <div class="table-responsive">
-                                            <table class="table mt-4">
+                                            <table id="detailItemTable" class="table table-striped table-bordered">
                                                 <thead>
                                                     <tr>
                                                         <th>No</th>
@@ -115,18 +114,41 @@ while ($row = $result->fetch_assoc()) {
                                     </div>
                                 </div>
                                 <!-- End Tabel Detail Item Terjual -->
-
                             </div>
                         </div>
                     </section>
                 </div>
                 <!-- End Bagian Utama -->
-
             </div>
 
             <?php include('layout/js.php'); ?>
         </div>
     </div>
+
+    <!-- jQuery Library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!-- Datatable JS -->
+    <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.html5.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('#detailItemTable').DataTable({
+                dom: 'Blfrtip',
+                buttons: [{
+                    extend: 'pdf',
+                    exportOptions: {
+                        columns: [0, 1, 2, 3, 4, 5] // Hanya export kolom ini
+                    }
+                }]
+            });
+        });
+    </script>
 </body>
 
 </html>

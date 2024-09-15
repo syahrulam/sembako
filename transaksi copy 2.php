@@ -531,37 +531,22 @@ include('koneksi/config.php');
 
         // Validasi saat form disubmit
         $('form').on('submit', function(e) {
-            // Ambil nilai uang diterima dan total harga tanpa pemisah ribuan
-            let tipePembayaran = $('#tipe_pembayaran').val();
-            let bayar = parseFloat(unformatNumber($('#uang_diterima').val()));
-            let totalHarga = parseFloat(unformatNumber($('#total_harus_dibayar').val()));
-
-            // Validasi untuk Cash dan Kredit
-            if (tipePembayaran === 'Cash' && bayar < totalHarga) {
-                alert("Pembayaran Cash tidak boleh kurang dari total harga.");
-                e.preventDefault(); // Mencegah form terkirim
-                return false; // Menghentikan pengiriman data ke server
-            }
-
-            if (tipePembayaran === 'Kredit' && bayar > totalHarga) {
-                alert("Pembayaran Kredit tidak boleh lebih dari total harga.");
-                e.preventDefault(); // Mencegah form terkirim
-                return false; // Menghentikan pengiriman data ke server
-            }
-
             // Hapus format ribuan dari semua input angka sebelum dikirim ke server
             $('#uang_diterima').val(unformatNumber($('#uang_diterima').val()));
             $('#total_harus_dibayar').val(unformatNumber($('#total_harus_dibayar').val()));
             $('#kembalian').val(unformatNumber($('#kembalian').val()));
             $('#kurangan').val(unformatNumber($('#kurangan').val()));
 
-            // Hapus format ribuan dari semua total_harga dan harga satuan di tabel item
+            // Hapus format ribuan dari semua total_harga di tabel item
             $('#itemTable tbody tr').each(function() {
                 let totalHargaInput = $(this).find('input[name^="items"][name$="[total_harga]"]');
-                totalHargaInput.val(unformatNumber(totalHargaInput.val()));
-
+                let totalHargaValue = totalHargaInput.val();
+                totalHargaInput.val(unformatNumber(totalHargaValue)); // Hapus format ribuan pada total harga
+                
+                // Hapus format ribuan dari harga satuan
                 let hargaSatuanInput = $(this).find('input[name^="items"][name$="[harga_satuan]"]');
-                hargaSatuanInput.val(unformatNumber(hargaSatuanInput.val()));
+                let hargaSatuanValue = hargaSatuanInput.val();
+                hargaSatuanInput.val(unformatNumber(hargaSatuanValue)); // Hapus format ribuan pada harga satuan
             });
         });
 

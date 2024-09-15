@@ -27,6 +27,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($row) {
         $kurangan_hutang_sekarang = $row['kurangan_hutang'];
 
+        // Validasi: Pastikan cicilan tidak lebih besar dari kurangan hutang
+        if ($cicilan > $kurangan_hutang_sekarang) {
+            echo "<script>alert('Tidak boleh melebihi hutang yang tersisa'); window.history.back();</script>";
+            exit();
+        }
+
         // Hitung jumlah hutang baru setelah pembayaran
         $kurangan_hutang_terbaru = $kurangan_hutang_sekarang - $cicilan;
 
@@ -34,7 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $status_piutang = $kurangan_hutang_terbaru <= 0 ? 'Lunas' : 'Belum Lunas';
         $query_update_piutang = "UPDATE piutang SET kurangan_hutang = ?, status = ? WHERE id_transaksi = ?";
         $stmt_update = mysqli_prepare($koneksi, $query_update_piutang);
-        mysqli_stmt_bind_param($stmt_update, "dss", $kurangan_hutang_terbaru, $status_piutang, $id_transaksi);
+        mysqli_stmt_bind_param($stmt_update, "dsi", $kurangan_hutang_terbaru, $status_piutang, $id_transaksi);
         $result_update = mysqli_stmt_execute($stmt_update);
 
         // Masukkan detail pembayaran ke dalam tabel pembayaran hutang
@@ -49,7 +55,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 header("Location: piutang.php");
                 exit();
             } else {
-                echo "Terjadi kesalahan saat menyimspan pembayaran ke dalam tabel cicilan piutang.";
+                echo "Terjadi kesalahan saat menyimpan pembayaran ke dalam tabel cicilan piutang.";
             }
         } else {
             echo "Terjadi kesalahan saat memperbarui data piutang.";

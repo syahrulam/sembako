@@ -87,7 +87,7 @@ include('koneksi/config.php');
                                             <div class="row item-row item-container" id="item-1">
                                                 <div class="col-md-3">
                                                     <label for="nama_item_1" class="text-dark">Nama Item<span class='red'> *</span></label>
-                                                    <input class="form-control nama_item" type="text" name="nama_item_1" required />
+                                                    <input class="form-control nama_item" type="text" name="nama_item_1"/>
                                                     <input class="form-control id_item" type="text" name="id_item_1" style="display:none;" />
                                                     <div class="result"></div>
                                                 </div>
@@ -111,7 +111,7 @@ include('koneksi/config.php');
                                                 <div class="col-md-2">
                                                     <div class="form-group">
                                                         <label for="jumlah_1" class="text-dark">Jumlah</label>
-                                                        <input type="number" class="form-control jumlah" name="jumlah_1" id="jumlah_1" min="1" required />
+                                                        <input type="number" class="form-control jumlah" name="jumlah_1" id="jumlah_1" min="1" />
                                                     </div>
                                                 </div>
 
@@ -155,7 +155,7 @@ include('koneksi/config.php');
                                                     </div>
                                                 </div>
                                             </div>
-
+<br>
                                             <div class="row">
                                                 <div class="col-md-4 offset-md-8">
                                                     <div class="form-group">
@@ -323,14 +323,15 @@ include('koneksi/config.php');
         pelangganContainer.find(".nama").val(selectedPelanggan);
         pelangganContainer.find(".result_pelanggan").empty();
     });
+
     // --------------------------------------fungsi cari nama item---------------------------------------------
-    var itemSelected = false; // Tambahkan flag untuk memeriksa apakah item sudah dipilih
+    var itemSelected = false;
 
     $(document).on("input", ".nama_item", function () {
         var searchTerm = $(this).val();
         var resultContainer = $(this).parent().find(".result");
 
-        if (searchTerm !== "" && !itemSelected) {  // Hanya jalankan jika item belum dipilih
+        if (searchTerm !== "" && !itemSelected) {
             $.ajax({
                 type: "POST",
                 url: "search_item.php",
@@ -340,73 +341,66 @@ include('koneksi/config.php');
                 }
             });
         } else {
-            resultContainer.empty(); // Kosongkan hasil pencarian jika input kosong
+            resultContainer.empty();
         }
     });
 
     $(document).on("click", ".result li", function () {
-    var selectedItem = $(this).text();
-    var itemId = $(this).data('id');
-    var jenisSatuanBesar = $(this).data('besar');  // Mengambil jenis satuan besar dari data
-    var jenisSatuanKecil = $(this).data('kecil');  // Mengambil jenis satuan kecil dari data
-    var hargaBesar1 = $(this).data('harga-besar1');
-    var hargaBesar2 = $(this).data('harga-besar2');
-    var hargaBesar3 = $(this).data('harga-besar3');
-    var hargaKecil1 = $(this).data('harga-kecil1');
-    var hargaKecil2 = $(this).data('harga-kecil2');
-    var hargaKecil3 = $(this).data('harga-kecil3');
-    var itemContainer = $(this).closest(".item-container");
+        var selectedItem = $(this).text();
+        var itemId = $(this).data('id');
+        var jenisSatuanBesar = $(this).data('besar');
+        var jenisSatuanKecil = $(this).data('kecil');
+        var hargaBesar1 = $(this).data('harga-besar1');
+        var hargaBesar2 = $(this).data('harga-besar2');
+        var hargaBesar3 = $(this).data('harga-besar3');
+        var hargaKecil1 = $(this).data('harga-kecil1');
+        var hargaKecil2 = $(this).data('harga-kecil2');
+        var hargaKecil3 = $(this).data('harga-kecil3');
+        var itemContainer = $(this).closest(".item-container");
 
-    // Masukkan nilai item yang dipilih ke dalam input nama_item
-    itemContainer.find(".nama_item").val(selectedItem);
-    itemContainer.find(".id_item").val(itemId);
+        itemContainer.find(".nama_item").val(selectedItem);
+        itemContainer.find(".id_item").val(itemId);
 
-    // Tampilkan jenis satuan berdasarkan data dari database
-    var jenisSatuanSelect = itemContainer.find(".jenis_satuan");
-    jenisSatuanSelect.empty();  // Kosongkan opsi sebelumnya
-    if (jenisSatuanBesar) {
-        jenisSatuanSelect.append(`<option value="Besar">${jenisSatuanBesar}</option>`);
-    }
-    if (jenisSatuanKecil) {
-        jenisSatuanSelect.append(`<option value="Kecil">${jenisSatuanKecil}</option>`);
-    }
-
-    // Set harga berdasarkan jenis satuan yang dipilih
-    jenisSatuanSelect.on("change", function () {
-        var hargaSelect = itemContainer.find(".harga_satuan");
-        var selectedJenisSatuan = $(this).val();
-
-        hargaSelect.empty();  // Kosongkan opsi harga sebelumnya
-
-        if (selectedJenisSatuan === "Besar") {
-            hargaSelect.append(`<option value="${hargaBesar1}">${hargaBesar1}</option>`);
-            hargaSelect.append(`<option value="${hargaBesar2}">${hargaBesar2}</option>`);
-            hargaSelect.append(`<option value="${hargaBesar3}">${hargaBesar3}</option>`);
-        } else if (selectedJenisSatuan === "Kecil") {
-            hargaSelect.append(`<option value="${hargaKecil1}">${hargaKecil1}</option>`);
-            hargaSelect.append(`<option value="${hargaKecil2}">${hargaKecil2}</option>`);
-            hargaSelect.append(`<option value="${hargaKecil3}">${hargaKecil3}</option>`);
+        var jenisSatuanSelect = itemContainer.find(".jenis_satuan");
+        jenisSatuanSelect.empty();
+        if (jenisSatuanBesar) {
+            jenisSatuanSelect.append(`<option value="Besar">${jenisSatuanBesar}</option>`);
+        }
+        if (jenisSatuanKecil) {
+            jenisSatuanSelect.append(`<option value="Kecil">${jenisSatuanKecil}</option>`);
         }
 
-        // Hitung ulang total harga
-        calculateTotalPrice(itemContainer);
-    }).trigger("change");  // Jalankan untuk menetapkan harga awal
+        jenisSatuanSelect.on("change", function () {
+            var hargaSelect = itemContainer.find(".harga_satuan");
+            var selectedJenisSatuan = $(this).val();
 
-    // Kosongkan hasil pencarian setelah item dipilih
-    itemContainer.find(".result").empty();
-});
+            hargaSelect.empty();
 
-// Fungsi untuk menghitung total harga
-function calculateTotalPrice(itemContainer) {
-    var hargaSatuan = parseFloat(itemContainer.find(".harga_satuan").val());
-    var jumlah = parseInt(itemContainer.find(".jumlah").val());
+            if (selectedJenisSatuan === "Besar") {
+                hargaSelect.append(`<option value="${hargaBesar1}">${hargaBesar1}</option>`);
+                hargaSelect.append(`<option value="${hargaBesar2}">${hargaBesar2}</option>`);
+                hargaSelect.append(`<option value="${hargaBesar3}">${hargaBesar3}</option>`);
+            } else if (selectedJenisSatuan === "Kecil") {
+                hargaSelect.append(`<option value="${hargaKecil1}">${hargaKecil1}</option>`);
+                hargaSelect.append(`<option value="${hargaKecil2}">${hargaKecil2}</option>`);
+                hargaSelect.append(`<option value="${hargaKecil3}">${hargaKecil3}</option>`);
+            }
 
-    if (!isNaN(hargaSatuan) && !isNaN(jumlah)) {
-        var totalHarga = hargaSatuan * jumlah;
-        itemContainer.find(".total_harga").val(totalHarga);
+            calculateTotalPrice(itemContainer);
+        }).trigger("change");
+
+        itemContainer.find(".result").empty();
+    });
+
+    function calculateTotalPrice(itemContainer) {
+        var hargaSatuan = parseFloat(itemContainer.find(".harga_satuan").val());
+        var jumlah = parseInt(itemContainer.find(".jumlah").val());
+
+        if (!isNaN(hargaSatuan) && !isNaN(jumlah)) {
+            var totalHarga = hargaSatuan * jumlah;
+            itemContainer.find(".total_harga").val(totalHarga);
+        }
     }
-}
-
 
     $(document).on("change", ".harga_satuan, .jumlah, .jenis_satuan", function () {
         calculateTotalPrice($(this).closest(".item-container"));
@@ -424,92 +418,83 @@ function calculateTotalPrice(itemContainer) {
         var jenisSatuan = itemContainer.find(".jenis_satuan").val();
         var jumlah = itemContainer.find(".jumlah").val();
 
-        // Cek apakah input item sudah lengkap
         if (idItem && jenisSatuan && jumlah) {
-            // Validasi stok
             $.ajax({
-    type: "POST",
-    url: "check_stock.php",
-    data: { id_item: idItem, jenis_satuan: jenisSatuan, jumlah: jumlah },
-    success: function (response) {
-        try {
-            var data = JSON.parse(response);
+                type: "POST",
+                url: "check_stock.php",
+                data: { id_item: idItem, jenis_satuan: jenisSatuan, jumlah: jumlah },
+                success: function (response) {
+                    try {
+                        var data = JSON.parse(response);
 
-            if (data.status === "success") {
-                updateStok(idItem, jumlah, jenisSatuan, 'kurangi');
-                addItemToTable(itemContainer);
-            } else if (data.status === "error") {
-                // Ganti pesan di modal dan tampilkan modal
-                $('#notificationMessage').text(data.message);  // Setel pesan di modal
-                $('#notificationModal').modal('show');  // Tampilkan modal Bootstrap
-            }
-        } catch (e) {
-            console.error("Error parsing JSON response:", e);
-        }
-    },
-    error: function (xhr, status, error) {
-        console.error("Error in AJAX request:", status, error);
-    }
-});
-
+                        if (data.status === "success") {
+                            updateStok(idItem, jumlah, jenisSatuan, 'kurangi');
+                            addItemToTable(itemContainer);
+                        } else if (data.status === "error") {
+                            $('#notificationMessage').text(data.message);
+                            $('#notificationModal').modal('show');
+                        }
+                    } catch (e) {
+                        console.error("Error parsing JSON response:", e);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error in AJAX request:", status, error);
+                }
+            });
         } else {
             console.log("Data item tidak lengkap.");
             return;
         }
     });
 
-    // Fungsi untuk menambahkan item ke tabel
     function addItemToTable(itemContainer) {
-        let namaItem = itemContainer.find(".nama_item").val();
-        let jenisSatuan = itemContainer.find(".jenis_satuan").val();
-        let hargaSatuan = itemContainer.find(".harga_satuan").val();
-        let jumlah = itemContainer.find(".jumlah").val();
-        let totalHarga = itemContainer.find(".total_harga").val();
+        let idItem = itemContainer.find('.id_item').val();
+        let namaItem = itemContainer.find('.nama_item').val();
+        let jenisSatuan = itemContainer.find('.jenis_satuan').val();
+        let hargaSatuan = itemContainer.find('.harga_satuan').val();
+        let jumlah = itemContainer.find('.jumlah').val();
+        let totalHarga = itemContainer.find('.total_harga').val();
 
-        let newRow = `<tr data-id-item="${itemContainer.find('.id_item').val()}" data-jumlah="${jumlah}" data-jenis-satuan="${jenisSatuan}">
-            <td>${namaItem}</td>
-            <td>${jenisSatuan}</td>
-            <td>${hargaSatuan}</td>
-            <td>${jumlah}</td>
-            <td>${totalHarga}</td>
+        let newRow = `<tr data-id-item="${idItem}" data-jumlah="${jumlah}" data-jenis-satuan="${jenisSatuan}">
+            <td><input type="hidden" name="items[${itemCounter}][id_item]" value="${idItem}" />${namaItem}</td>
+            <td><input type="hidden" name="items[${itemCounter}][jenis_satuan]" value="${jenisSatuan}" />${jenisSatuan}</td>
+            <td><input type="hidden" name="items[${itemCounter}][harga_satuan]" value="${hargaSatuan}" />${hargaSatuan}</td>
+            <td><input type="hidden" name="items[${itemCounter}][jumlah]" value="${jumlah}" />${jumlah}</td>
+            <td><input type="hidden" name="items[${itemCounter}][total_harga]" value="${totalHarga}" />${totalHarga}</td>
             <td><button class="btn btn-danger btn-sm remove-item-table">Hapus</button></td>
         </tr>`;
 
         $('#itemTable tbody').append(newRow);
 
-        // Kosongkan input setelah item ditambahkan ke tabel
-        itemContainer.find(".nama_item").val('');
-        itemContainer.find(".jenis_satuan").val('');
-        itemContainer.find(".harga_satuan").val('');
-        itemContainer.find(".jumlah").val('');
-        itemContainer.find(".total_harga").val('');
+        itemCounter++;
 
-        // Update total harga setelah item ditambahkan
+        itemContainer.find('.nama_item').val('');
+        itemContainer.find('.jenis_satuan').val('');
+        itemContainer.find('.harga_satuan').val('');
+        itemContainer.find('.jumlah').val('');
+        itemContainer.find('.total_harga').val('');
+
         updateTotalHarga();
     }
 
-    // Event listener untuk menghapus item dari tabel
     $(document).on('click', '.remove-item-table', function () {
         let row = $(this).closest('tr');
         let idItem = row.data('id-item');
         let jumlah = row.data('jumlah');
         let jenisSatuan = row.data('jenis-satuan');
 
-        // Kembalikan stok di database saat item dihapus
         updateStok(idItem, jumlah, jenisSatuan, 'tambah');
 
-        // Hapus baris dari tabel
         row.remove();
 
-        // Update total harga setelah item dihapus
         updateTotalHarga();
     });
 
-    // Fungsi untuk mengurangi atau menambah stok di database
     function updateStok(idItem, jumlah, jenisSatuan, operasi) {
         $.ajax({
             type: "POST",
-            url: "update_stok.php",  // File PHP untuk meng-update stok
+            url: "update_stok.php",
             data: { id_item: idItem, jumlah: jumlah, jenis_satuan: jenisSatuan, operasi: operasi },
             success: function (response) {
                 console.log("Stok diperbarui: " + response);
@@ -520,7 +505,6 @@ function calculateTotalPrice(itemContainer) {
         });
     }
 
-    // Fungsi untuk menghitung total harga keseluruhan
     function updateTotalHarga() {
         let totalHarga = 0;
 
@@ -534,8 +518,28 @@ function calculateTotalPrice(itemContainer) {
         $('#total_harus_dibayar').val(totalHarga);
         updatePembayaran();
     }
+    // Validasi saat form disubmit
+    $('form').on('submit', function(e) {
+        let tipePembayaran = $('#tipe_pembayaran').val();
+        let bayar = parseFloat($('#uang_diterima').val());
+        let totalHarga = parseFloat($('#total_harus_dibayar').val());
 
-    // Fungsi untuk update pembayaran
+        // Jika metode pembayaran adalah Cash dan uang kurang
+        if (tipePembayaran === 'Cash' && bayar < totalHarga) {
+            alert("Uang Kurang. Ubah Kredit?");
+            e.preventDefault(); // Mencegah form terkirim
+            return;
+        }
+
+        // Jika metode pembayaran adalah Kredit dan uang lebih
+        if (tipePembayaran === 'Kredit' && bayar > totalHarga) {
+            alert("Uang Lebih. Ubah Cash?");
+            e.preventDefault(); // Mencegah form terkirim
+            return;
+        }
+    });
+
+    // Fungsi update pembayaran yang sudah diperbaiki
     function updatePembayaran() {
         let tipePembayaran = $('#tipe_pembayaran').val();
         let bayar = parseFloat($('#uang_diterima').val());
@@ -552,28 +556,43 @@ function calculateTotalPrice(itemContainer) {
         // Tampilkan input Bayar setelah metode pembayaran dipilih
         $('#uang_diterima').parent().show();
 
-        if (tipePembayaran === 'Cash') {
-            $('#kembalian').parent().show();
-            $('#kurangan').parent().hide(); // Sembunyikan kolom kurangan
-            if (!isNaN(bayar) && bayar >= totalHarga) {
-                let kembalian = bayar - totalHarga;
-                $('#kembalian').val(parseInt(kembalian));
-            } else {
-                $('#kembalian').val('Uang Kurang');
+        // Pastikan kolom Bayar sudah diisi sebelum menghitung
+        if (!isNaN(bayar) && bayar > 0) {
+            if (tipePembayaran === 'Cash') {
+                $('#kembalian').parent().show();
+                $('#kurangan').parent().hide(); // Sembunyikan kolom kurangan
+
+                // Hitung kembalian untuk pembayaran cash
+                if (bayar >= totalHarga) {
+                    let kembalian = bayar - totalHarga;
+                    $('#kembalian').val(parseInt(kembalian));
+                } else {
+                    $('#kembalian').val('Uang Kurang');
+                }
+            } else if (tipePembayaran === 'Kredit') {
+                $('#kurangan').parent().show();
+                $('#kembalian').parent().hide(); // Sembunyikan kolom kembalian
+
+                // Hitung kurangan atau uang lebih untuk kredit
+                if (bayar < totalHarga) {
+                    let kurangan = totalHarga - bayar;
+                    $('#kurangan').val(parseInt(kurangan));
+                } else if (bayar > totalHarga) {
+                    $('#kurangan').val('Uang Lebih'); // Tampilkan pesan uang lebih untuk kredit
+                } else {
+                    $('#kurangan').val('');
+                }
             }
-        } else if (tipePembayaran === 'Kredit') {
-            $('#kurangan').parent().show();
-            $('#kembalian').parent().hide(); // Sembunyikan kolom kembalian
-            if (!isNaN(bayar) && bayar < totalHarga) {
-                let kurangan = totalHarga - bayar;
-                $('#kurangan').val(parseInt(kurangan));
-            } else {
-                $('#kurangan').val('Uang Lebih');
-            }
+        } else {
+            // Jika input Bayar kosong, sembunyikan kolom Kembalian dan Kurangan
+            $('#kembalian').val('');
+            $('#kurangan').val('');
+            $('#kembalian').parent().hide();
+            $('#kurangan').parent().hide();
         }
     }
 
-    // Event untuk memantau perubahan tipe pembayaran dan jumlah bayar
+    // Event listener untuk memantau perubahan tipe pembayaran dan jumlah bayar
     $('#tipe_pembayaran').on('change', updatePembayaran);
     $('#uang_diterima').on('input', updatePembayaran);
 
@@ -582,6 +601,7 @@ function calculateTotalPrice(itemContainer) {
     $('#kembalian').parent().hide();
     $('#kurangan').parent().hide();
 });
+
 </script>
 
 
